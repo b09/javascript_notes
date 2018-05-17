@@ -1,13 +1,24 @@
 # Variable Scope
 
 
+### Learning Objectives
+- Understand function scope
+- Know the difference between the `var`, `let` and `const` keywords
+- Be able to use `var`, `let` and `const` variable declarations appropriately
+
 ## Intro
 
-We're going to look at variable scoping, how `var` works, and then `let` and `const`.
+Variables can help us organise and keep track of data in our code, we give a piece of data a name and can then pass it around and keep track of its value. We've seen that we can declare variables with the `var` keyword, but we haven't talked about the details of how `var` affects the scope of a variable. We're going to take a closer look at variable scoping, how `var` works, and then we'll take a look at two more keywords JavaScript gives us for declaring variables: `let` and `const`.
 
 ## Function Scope with `var`
 
-The `var` keyword declares a variable in the current function's scope, is only defined within that function, and can't be seen outside it.
+When declaring variables so far we've used the `var` keyword. The `var` keyword declares a variable in the current function's scope. It is only defined within that function, and can't be seen outside it.
+
+Let's make a new file and take a look.
+
+```sh
+touch scope.js
+```
 
 ```js
 var secretsFunction = function () {
@@ -20,11 +31,11 @@ console.log('pinCode outside secretsFunction:', pinCode);
 // -> ReferenceError: pinCode is not defined
 ```
 
-This means that our variables aren't all in the same global scope. When working globally scoped variables, we can end up with variable name clashes. `var` saves us from this.
+This is pretty useful, it means that our variables aren't all in the same global scope. When working globally scoped variables, it can be hard to be sure which variables are relevant to the current task, and we can end up with variable name clashes. Things would get really messy as our applications get larger. `var` saves us from this.
 
 ### Lexical Scope
 
-Lexical scope: functions capture the variables from the parent scope in which they are defined. We can access variables inside the function that are declared outside the function.
+Another cool thing about variable scope in JavaScript is that our functions capture the variables from the parent scope in which they are defined. This is called lexical scope. This means we can access variables inside the function that are declared outside the function.
 
 ```js
 var name = 'Jill'; // NEW
@@ -40,7 +51,38 @@ console.log('name outside secretsFunction:', name); // MODIFIED
 
 ## Block Scope with `let`
 
- We want a variable scoped only to the `for` loop's block `{}`. We want block scope, and to get it, we can use the `let` keyword.
+Function scope with `var` isn't always ideal though as it can leave things in our scope that we don't expect. Let's write a function to find names that begin with a certain letter.
+
+```js
+var filterNamesByFirstLetter = function (names, letter) {
+  var filteredNames = [];
+  for (var name of names) {
+    if (name[0] === letter) {
+      filteredNames.push(name);
+    }
+  }
+  return filteredNames
+}
+
+var students = ['Alice', 'Bob', 'Alyssia', 'Artem', 'Babs'];
+var filteredStudents = filterNamesByFirstLetter(students, 'A');
+console.log('filteredStudents:', filteredStudents);
+```
+
+Great, no problems here right? Everything's working as we expect. However, `var` is actually doing something it probably shouldn't. What should the value of `name` be after the loop, just before we `return`?
+
+```js
+var filterNames = function (names, letter) {
+  // ...
+  console.log('name after loop:', name); // NEW
+  // -> name after loop: Babs
+  return filteredNames
+}
+```
+
+That's strange, the loop is over. `name` was just a temporary variable for storing each name for one iteration of the loop. Now that the loop's over, we don't need it anymore, but it's still hanging around in our function scope. Because we used `var`, it exists for the entire life of the function, even after the loop, when it's not relevant anymore, and is just polluting our scope.
+
+Function scope is not what we want here. We want a variable scoped only to the `for` loop's block `{}`. We want block scope, and to get it, we can use the `let` keyword.
 
 ```js
 var filterNames = function (names, letter) {
@@ -56,7 +98,7 @@ var filterNames = function (names, letter) {
 }
 ```
 
-Variables declared with `let` are "block scoped" sothey don't exist outside the block `{}`. Like function scopes, any further, nested blocks within a certain block scope will be able to access the `let` declared variable. Anything outside the block (again, in a similar way to how function scopes work) won't be able to access variable within the block where the `let` variable is declared.
+Variables declared with `let` are "block scoped". This means they don't exist outside the block `{}` they are declared in. Like function scopes, any further, nested blocks within a certain block scope will be able to access the `let` declared variable. Anything outside the block (again, in a similar way to how function scopes work) won't be able to access variable within the block where the `let` variable is declared.
 
 Many people argue that you should never use `var`. Using `let` you can still create variables that are scoped to a whole function, by declaring them at the "top level" of the function, outside any other blocks. This can often signal your intentions for the variable better than using `var` and its unusual function scoping behaviour.
 
@@ -90,10 +132,38 @@ let isItFive = function (number) {
 }
 ```
 
+### Paired discussion: 5 minutes
+
+Have a look at the following code. Discuss it in pairs or small groups.
+
+Without running the code, try to figure out what the value of the `console.log`ed variables will be.
+
+```js
+let temperature = 30;
+
+if (temperature > 15) {
+  let jacket = false;
+  var happy = true;
+}
+else {
+  let jacket = true;
+  var happy = false;
+}
+console.log('jacket after if-else blocks:', jacket);
+console.log('happy after if-else blocks:', happy);
+```
+
+<details>
+<summary>Answer</summary>
+
+1. ReferenceError: jacket is not defined
+2. happy after if-else blocks:, true);
+
+</details>
 
 ## Constants with `const`
 
-Sometimes we don't ever intend for a variable to change so we can use `const`. The scope of `const` variables is block scoped just like `let`.
+Sometimes we don't ever intend for a variable to change. These types of value are referred to as constants. JavaScript provides yet another way to declare variables, for constants we can use `const`. The scope of `const` variables is block scoped just like `let`.
 
 ```js
 let calculateEnergy = function (mass) {

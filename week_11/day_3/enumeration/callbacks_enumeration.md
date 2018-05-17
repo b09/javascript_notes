@@ -113,9 +113,6 @@ const multiplyByTwo = function (numbersArray) {
 
 console.log(multiplyByTwo(numbers))
 ```
-<details>
-something does here
-</details>
 
 </details>
 <br>

@@ -730,3 +730,85 @@ describe('Park', function() {
     </details>
     <br />
 </details>
+
+<details>
+  <summary>
+    Traveller - Hw Callbacks Enumeration
+  </summary>
+  <br />
+    <details>
+      <summary>
+        cards.js
+      </summary>
+        <details>
+          <summary>
+            cards_spec.js
+          </summary>
+        </details>
+        <br />
+    </details>
+    <details>
+      <summary>
+        game.js
+      </summary>
+      <details>
+        <summary>
+          game_spec.js
+        </summary>
+      </details>
+      <br />
+    </details>
+    <details>
+      <summary>
+      player.js
+      </summary>
+        <details>
+          <summary>
+          player_spec.js
+          </summary>
+        </details>
+        <br />
+    </details>
+    <br />
+</details>
+
+<details>
+  <summary>
+    Films - Lab Callbacks Enumeration
+  </summary>
+  <br />
+    <details>
+      <summary>
+        cards.js
+      </summary>
+        <details>
+          <summary>
+            cards_spec.js
+          </summary>
+        </details>
+        <br />
+    </details>
+    <details>
+      <summary>
+        game.js
+      </summary>
+      <details>
+        <summary>
+          game_spec.js
+        </summary>
+      </details>
+      <br />
+    </details>
+    <details>
+      <summary>
+      player.js
+      </summary>
+        <details>
+          <summary>
+          player_spec.js
+          </summary>
+        </details>
+        <br />
+    </details>
+    <br />
+</details>
