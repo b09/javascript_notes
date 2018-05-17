@@ -1451,11 +1451,12 @@ shaggy.feedPet('Scooby Snack');
 
 
 # Test-Driven Development Using Assert and Mocha
-<details>
+
 <details>
 <summary>
 Writing Tests with Assert
 </summary>
+
 ### Writing Tests with Assert
 
 
