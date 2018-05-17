@@ -6,6 +6,7 @@
 <summary>
 Variables
 </summary>
+
 #### Variables
 
 JavaScript, like other programming languages, allows us to declare variables and assign values to them, so that we can reference them later.
@@ -24,6 +25,7 @@ JavaScript has a feature called automatic semicolon insertion which means that s
 <summary>
 Dynamic Typing
 </summary>
+
 #### Dynamic Typing
 
 Dynamically typed languages type check at run time, in contrast to statically typed languages which type check at compile time. Type checking is the verification of a value's type, so that the environment can determine which operations are safe or unsafe. For example, whether or not it is safe to call a particular method on it.
@@ -60,6 +62,7 @@ check the data type of a value using the `typeof` operator
 <summary>
 Number
 </summary>
+
 #### Number
 
 
