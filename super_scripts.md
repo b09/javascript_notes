@@ -1563,6 +1563,29 @@ anagram_finder.js
 </summary>
 
 ```js
+const AnagramFinder = function (word) {
+  this.word = word;
+}
+
+AnagramFinder.prototype.findAnagrams = function (otherWords) {
+  return otherWords.filter((otherWord) => {
+    return this.isAnagram(otherWord) && this.isDifferentWord(otherWord);
+  });
+}
+
+AnagramFinder.prototype.isAnagram = function (otherWord) {
+  return this.prepare(this.word) === this.prepare(otherWord);
+}
+
+AnagramFinder.prototype.isDifferentWord = function (otherWord) {
+  return this.word.toLowerCase() !== otherWord.toLowerCase();
+}
+
+AnagramFinder.prototype.prepare = function (word) {
+  return word.toLowerCase().split('').sort().join('');
+}
+
+module.exports = AnagramFinder;
 
 ```
 
@@ -1572,6 +1595,45 @@ anagram_finder_spec.js
 </summary>
 
 ```js
+const assert = require('assert');
+const AnagramFinder = require('./anagram_finder.js');
+
+describe('AnagramFinder', function () {
+  it('should be able to detect an anagram', function () {
+    const anagramFinder = new AnagramFinder('act');
+    assert.deepStrictEqual(anagramFinder.findAnagrams(['cat', 'dog']), ['cat']);
+  });
+
+  it('should be able to detect a non-anagram', function () {
+    const anagramFinder = new AnagramFinder('potato');
+    assert.deepStrictEqual(anagramFinder.findAnagrams(['tomato']), []);
+  })
+
+  it('should not detect words with too few letters as an anagram', function () {
+    const anagramFinder = new AnagramFinder('good');
+    assert.deepStrictEqual(anagramFinder.findAnagrams(['dog']), []);
+  });
+
+  it('should not detect words with too many letters as an anagram', function () {
+    const anagramFinder = new AnagramFinder('dog');
+    assert.deepStrictEqual(anagramFinder.findAnagrams(['good']), []);
+  });
+
+  it('should detect an anagram regardless of case', function () {
+    const anagramFinder = new AnagramFinder('DeduCTionS');
+    assert.deepStrictEqual(anagramFinder.findAnagrams(['DiscOUnteD']), ['DiscOUnteD']);
+  });
+
+  it('should not detect a word as it\'s own anagram', function () {
+    const anagramFinder = new AnagramFinder('javascript');
+    assert.deepStrictEqual(anagramFinder.findAnagrams(['javascript']), []);
+  });
+
+  it('should not detect an empty string as an anagram', function () {
+    const anagramFinder = new AnagramFinder('word');
+    assert.deepStrictEqual(anagramFinder.findAnagrams(['']), []);
+  });
+});
 
 ```
 
@@ -1584,6 +1646,19 @@ isogram_finder.js
 </summary>
 
 ```js
+const IsogramFinder = function (word) {
+  this.word = word.toLowerCase();
+}
+
+IsogramFinder.prototype.isIsogram = function () {
+  return this.word.split('').every(this.isUnique.bind(this));
+}
+
+IsogramFinder.prototype.isUnique = function (letter) {
+  return this.word.indexOf(letter) === this.word.lastIndexOf(letter);
+}
+
+module.exports = IsogramFinder;
 
 ```
 
@@ -1593,6 +1668,30 @@ isogram_finder_spec.js
 </summary>
 
 ```js
+const assert = require('assert');
+const IsogramFinder = require('./isogram_finder.js');
+
+describe('IsogramFinder', function () {
+  it('should be able to detect an isogram', function () {
+    const isogramFinder = new IsogramFinder('subdermatoglyphic');
+    assert.strictEqual(isogramFinder.isIsogram(), true);
+  });
+
+  it('should be able to detect a non-isogram', function () {
+    const isogramFinder = new IsogramFinder('repeated');
+    assert.strictEqual(isogramFinder.isIsogram(), false);
+  });
+
+  it('should be able to detect an isogram case insensitively', function () {
+    const isogramFinder = new IsogramFinder('Uncopyrightable');
+    assert.strictEqual(isogramFinder.isIsogram(), true);
+  });
+
+  it('should be able to detect a non-isogram case insensitively', function () {
+    const isogramFinder = new IsogramFinder('NotAnIsogram');
+    assert.strictEqual(isogramFinder.isIsogram(), false);
+  });
+});
 
 ```
 
@@ -1605,6 +1704,16 @@ panagram_finder.js
 </summary>
 
 ```js
+const PangramFinder = function (phrase) {
+  this.phrase = phrase.toLowerCase();
+  this.alphabet = 'qwertyuiopasdfghjklzxcvbnm'.split('');
+}
+
+PangramFinder.prototype.isPangram = function () {
+  return this.alphabet.every(letter => this.phrase.includes(letter));
+}
+
+module.exports = PangramFinder;
 
 ```
 
@@ -1614,6 +1723,40 @@ panagram_finder_spec.js
 </summary>
 
 ```js
+const assert = require('assert');
+const PangramFinder = require('./pangram_finder.js');
+
+describe('PangramFinder', function () {
+  it('should be able to detect a pangram', function () {
+    const pangramFinder = new PangramFinder('the quick brown fox jumps over the lazy dog');
+    assert.strictEqual(pangramFinder.isPangram(), true);
+  });
+
+  it('should be able to detect a non-pangram', function () {
+    const pangramFinder = new PangramFinder('this is not a pangram');
+    assert.strictEqual(pangramFinder.isPangram(), false);
+  });
+
+  it('should be able to detect a pangram with mixed case', function () {
+    const pangramFinder = new PangramFinder('The FIVE boxinG WiZaRdS JUMP quickly');
+    assert.strictEqual(pangramFinder.isPangram(), true);
+  });
+
+  it('should be able to detect a non-pangram with mixed case', function () {
+    const pangramFinder = new PangramFinder('');
+    assert.strictEqual(pangramFinder.isPangram(), false);
+  });
+
+  it('should be able to detect a pangram with special characters', function () {
+    const pangramFinder = new PangramFinder('how_vexingly_quick_daft_zebras_jump!');
+    assert.strictEqual(pangramFinder.isPangram(), true);
+  });
+
+  it('should be able to detect a non-pangram with special characters', function () {
+    const pangramFinder = new PangramFinder('is_this_a_pangram?!');
+    assert.strictEqual(pangramFinder.isPangram(), false);
+  });
+});
 
 ```
 
@@ -1626,6 +1769,15 @@ upper_caser.js
 </summary>
 
 ```js
+const UpperCaser = function (words) {
+  this.words = words;
+}
+
+UpperCaser.prototype.toUpperCase = function () {
+  return this.words.map(word => word.toUpperCase());
+}
+
+module.exports = UpperCaser;
 
 ```
 
@@ -1635,6 +1787,20 @@ upper_caser_spec.js
 </summary>
 
 ```js
+const assert = require('assert');
+const UpperCaser = require('./upper_caser.js');
+
+describe('UpperCaser', function () {
+  it('should be able to convert a single word to uppercase', function () {
+    const upperCaser = new UpperCaser(['shouting']);
+    assert.deepStrictEqual(upperCaser.toUpperCase(), ['SHOUTING']);
+  });
+
+  it('should be able to convert multiple words to uppercase', function () {
+    const upperCaser = new UpperCaser(['i', 'am', 'shouting']);
+    assert.deepStrictEqual(upperCaser.toUpperCase(), ['I', 'AM', 'SHOUTING']);
+  });
+});
 
 ```
 
