@@ -395,6 +395,8 @@ function sayHello(name = 'World', greeting) { // MODIFIED
 Anonymous Function Expressions
 </summary>
 
+### Anonymous Function Expressions
+
 
  Functions are first-class objects. This means, like numbers, strings, arrays or objects, we can store functions in variables, put them in arrays or objects. We can also call methods on functions, pass functions into functions as arguments and even `return` a function from another function.
 
@@ -414,6 +416,8 @@ Since we can store function objects in variables, we can refer to them later by 
 <summary>
 Arrow Functions
 </summary>
+
+### Arrow Functions
 
 
 ```js
@@ -450,6 +454,8 @@ In JavaScript, _all_ objects inherently store their data in a key-value pair str
 Arrays
 </summary>
 
+### Array
+
 
 ```js
 var sports = [];
@@ -461,7 +467,7 @@ To put data in our array as we create it, we list the values separated by commas
 var sports = ['football', 'tennis', 'rugby']; // UPDATED
 ```
 
-### Array Methods
+#### Array Methods
 
 We can add a new element to the end of our array with the `push` method.
 
@@ -531,7 +537,7 @@ console.log(sports);
 // -> [ 'football', 'tennis', 'rugby', 'snooker' ]
 ```
 
-### Iterating Over Arrays
+#### Iterating Over Arrays
 
 When we have an array, and want to do the same thing with each value in the array, we can use a `for` loop. To loop through an array we can use the `for...of` statement. This probably looks similar to `for` loops you might have seen in other languages.
 
