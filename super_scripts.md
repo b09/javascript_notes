@@ -83,6 +83,7 @@ for (var i = 0; i < properties.length; i++) {
 <summary>
 Scope
 </summary>
+
 ```js
 var name = 'Jill';
 var secretsFunction = function () {
