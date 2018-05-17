@@ -530,7 +530,7 @@ Park.prototype.numberOfDinosaursByDiet = function () {
 module.exports = Park;
 
 ```
-</details>
+
 <details>
 <summary>
 park_spec.js
@@ -683,3 +683,5 @@ describe('Park', function() {
 ```
 <br />
 <br />
+</details>
+</details>
