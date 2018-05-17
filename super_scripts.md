@@ -384,9 +384,11 @@ Make up your own episode!
 <summary>
 Jurassic Park - TDD
 </summary>
-<br/>
-<br/>
+<br />
+<br />
+
 dinasaur.js
+
 ```js
 const Dinosaur = function (species, diet, guestsAttractedPerDay) {
   this.species = species;
@@ -397,10 +399,12 @@ const Dinosaur = function (species, diet, guestsAttractedPerDay) {
 module.exports = Dinosaur;
 
 ```
-  <details>
-  <summary>
-  dinasaur_spec.js
-  </summary>
+
+<details>
+<summary>
+dinasaur_spec.js
+</summary>
+
   ```js
   const assert = require('assert');
   const Dinosaur = require('../models/dinosaur.js');
@@ -430,7 +434,7 @@ module.exports = Dinosaur;
 
   });
   ```
-  </details>
+</details>
 
 park.js
 ```js
