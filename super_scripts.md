@@ -4,6 +4,7 @@
 <details>
 <summary>
 Loops Arrays Objects
+</summary>
 
 ```js
 var sports = ['football', 'tennis', 'rugby'];
@@ -81,7 +82,7 @@ for (var i = 0; i < properties.length; i++) {
 <details>
 <summary>
 Scope
-</summary
+</summary>
 ```js
 var name = 'Jill';
 var secretsFunction = function () {
