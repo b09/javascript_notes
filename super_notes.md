@@ -447,7 +447,7 @@ console.log('multiply 2 by 5:', multiply(2, 5));
 </details>
 
 # Loops, Arrays & Objects
-<details>
+
 In JavaScript, _all_ objects inherently store their data in a key-value pair structure. So these are simply called objects.
 <details>
 <summary>
@@ -800,16 +800,15 @@ for (var i = 0; i < keys.length; i++) {
 ```
 </details>
 </details>
-</details>
 
 # Variable Scope
+
+
 <details>
-
-## Intro
-
-We're going to look at variable scoping, how `var` works, and then `let` and `const`.
-
-## Function Scope with `var`
+<summary>
+Function Scope with `var`
+</summary>
+### Function Scope with `var`
 
 The `var` keyword declares a variable in the current function's scope, is only defined within that function, and can't be seen outside it.
 
@@ -826,7 +825,7 @@ console.log('pinCode outside secretsFunction:', pinCode);
 
 This means that our variables aren't all in the same global scope. When working globally scoped variables, we can end up with variable name clashes. `var` saves us from this.
 
-### Lexical Scope
+#### Lexical Scope
 
 Lexical scope: functions capture the variables from the parent scope in which they are defined. We can access variables inside the function that are declared outside the function.
 
@@ -841,8 +840,13 @@ secretsFunction();
 console.log('name outside secretsFunction:', name); // MODIFIED
 // -> name outside secretsFunction: Jill
 ```
+</details>
+<details>
+<summary>
+Block Scope with `let`
+</summary>
 
-## Block Scope with `let`
+### Block Scope with `let`
 
  We want a variable scoped only to the `for` loop's block `{}`. We want block scope, and to get it, we can use the `let` keyword.
 
@@ -893,9 +897,13 @@ let isItFive = function (number) {
   return result;
 }
 ```
+</details>
+<details>
+<summary>
+Constants with `const`
+</summary>
 
-
-## Constants with `const`
+### Constants with `const`
 
 Sometimes we don't ever intend for a variable to change so we can use `const`. The scope of `const` variables is block scoped just like `let`.
 
@@ -980,8 +988,13 @@ console.log('songs array after mutation', songs);
 ```
 
 `const` still prevents us accidentally reassigning the variable to a totally new object, so we still want to use it for mutable objects as well as [immutable](https://en.wikipedia.org/wiki/Immutable_object) values like `number`s and `string`s.
+</details>
+<details>
+<summary>
+Global Scope
+</summary>
 
-## Global Scope
+### Global Scope
 
 If we don't use one of the key words (`var`, `let` or `const`) when declaring a variable, it will be in global scope, and available everywhere.
 
@@ -995,43 +1008,7 @@ console.log(result);
 ```
 
 Polluting the global scope in this way is bad practice. We always want to use a key word when declaring a variable.
-
-## Recap
-
-What is the difference between `let` and `const`?
-
-<details>
-<summary>Answer</summary>
-`const` variables cannot be reassigned later in the program.
 </details>
-
-What are the respective scopes of `var`, `let` and `const` declared varaiables?
-
-<details>
-<summary>Answer</summary>
-
-- `var`: function scope
-- `let`: block scope
-- `const`: block scope
-
-</details>
-
-What does `const` not prevent us from modifying?
-
-<details>
-<summary>Answer</summary>
-
-The contents of any mutatable objects, like arrays or objects. `const` **only** prevents reassignment to the variable.
-
-</details>
-
-## Conclusion
-
-Now we know the different behaviours and uses for `var`, `let` and `const`, we can make our code safer and less prone to mistakes. We can avoid `var`s unusual function scoping, and avoid accidental mutations with `const`.
-
-Broadly speaking, when defining a variable, use `const`. If you need to reassign that variable's value, switch to `let`. `var` is only actually appropriate in rare circumstances. So we're not going to see it much from this point on.
-</details>
-
 
 # Constructor Functions & Prototype Objects
 <details>
