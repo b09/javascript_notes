@@ -438,6 +438,7 @@ describe('Dinosaur', function() {
 </details>
 <br />
 <br />
+
 park.js
 ```js
 const Park = function (name, ticketPrice) {
