@@ -2117,30 +2117,20 @@ Which Mocha function can we use to group similar tests?
 `describe()`
 
 </details>
-
-## Further Resources
-
-- [Assert Documentation](https://nodejs.org/api/assert.html)
-- [Mocha Documentation ](https://mochajs.org)
-- [Introducing BDD](https://dannorth.net/introducing-bdd/)
-
-## Conclusion
-
-We can now write descriptive and well organised unit tests, which will help us to determine whether or not our code is working. Providing that we write good tests they can even ensure that we write better code.
-
-Once our unit tests are in place we can safely refactor without having to worry about breaking anything. If our tests still pass then we know that our code is still working.
-
-Our code will be better and more maintainable as a result of unit testing.
 </details>
+
 
 # Callback Functions & Enumeration
 <details>
 
+<details>
+<summary>
 ## Introduction
+</summary>
 
 A higher order function accepts or returns another function. A callback is a function that is passed to a function as an argument.
-Today we are going to be using some of JavaScript's built in higher-order functions that handle iterating over arrays; the enumeration methods.
-
+JavaScript's built in higher-order functions that handle iterating over arrays; the enumeration methods.
+</details>
 ## Higher-order Functions and Callbacks
 
 In JavaScript, functions are first class objects, they can be stored in variables and data structures; and passed as arguments to other functions.
@@ -2219,21 +2209,6 @@ const multiplyByTwo = function (numbersArray) {
 
 console.log(multiplyByTwo(numbers))
 ```
-<details>
-something does here
-</details>
-
-</details>
-<br>
-
-> Instructor note: Ask the class...
-
-Looking at the docs again, what is the return value of `forEach`?
-
-<details>
-<summary>Answer:</summary>
-`undefined`
-</details>
 <br>
 
 `forEach` doesn't return a value and we can't return anything from the callback that we pass to it. If we try and return from the callback, we are returning into the `forEach` and as `forEach` is implemented in a way that it doesn't do anything with the return value, for have no way of accessing that value. Instead we have to manually handle the value. In this case we have added the modified element into the previously declared empty array. In this way `forEach` is a direct replacement for a `for` loop.
@@ -2287,10 +2262,6 @@ const sumElements = function (numbersArray) {
 
 ### Paired discussion (5 minutes)
 
-1. Look at the MDN docs and find out the return value of `map`, `filter` and `reduce` and think of a situation when you might want to use each of them.
-
-2. Using what you found out in question one, decide which of these enumeration methods would be useful for which of our functions, `multipleByTwo`, `getEvens`, `sumElements`.
-
 <details>
 <summary>Answers:</summary>
 
@@ -2307,11 +2278,6 @@ const sumElements = function (numbersArray) {
 </details>
 <br>
 
-Let's refactor `multiplyByTwo` to use `map`.
-
-> Instructor note: Ask the class...
-
-We know that the return value of `map` is a new array. Looking at the MDN docs, what parameter will our callback need, and what does it need to return?
 
 <details>
 <summary>Answers:</summary>
@@ -2335,12 +2301,10 @@ console.log(multiplyByTwo(numbers));
 
 ### Task (15 minutes):
 
-Using the docs refactor:
+Refactor:
 
  - `getEvens` to use filter
  - `sumElements` to use reduce
-
-Make sure you are returning the right value from the callback. You may need to look at the docs to check what this should be for the different enumeration methods.
 
 <details>
 <summary>Example Solution</summary>
@@ -2376,8 +2340,6 @@ console.log(sumElements(numbers))
 
 ### How are these higher-order functions implemented?
 
-We have used some of JavaScript's enumeration methods, which we know are higher-order functions because they take in a callback. Let's have a look at what they are doing with the callback that we pass to them.
-
 If we were writing our own version of `forEach`, it would need to take in two arguments:
 
 1. The array, because we are not writing this on the Array prototype we need to get access to the array by taking it in as argument.
@@ -2398,51 +2360,3 @@ ourForEach(numbers, (number) => {
   console.log('the number is:', number);
 });
 ```
-
-## Recap
-
-What is a higher-order function?
-
-<details>
-<summary>Answer:</summary>
-A function that takes in another function as an argument, or returns a function.
-</details>
-
-What is a callback?
-
-<details>
-<summary>Answer:</summary>
-A function that is passed to another function as an argument
-</details>
-
-What are the benefits of using JavaScripts enumeration methods?
-
-<details>
-<summary>Answer:</summary>
-
-- cleaner, more readable and expressive code
-- inversion of control - we don't have to worry about the implementation details of how JavaScript `maps`, `filters` or `reduces`
-
-</details>
-
-In the MDN docs, what do the square brackets around arguments signify?
-
-<details>
-<summary>Answer:</summary>
-The arguments are optional
-</details>
-
-What happens if you try and return from the callback that you pass to `forEach`?
-<details>
-<summary>Answer:</summary>
-Nothing. You can't access the value.
-</details>
-
-## Conclusion
-
-We have written callbacks and passed them to a number of JavaScript enumeration methods, which are higher-order functions.
-
-We started by using `forEach` to iterate over the array, manually creating the value we wanted to return from our function.
-
-After refactoring the code to use `map`, `filter` and `reduce` we acheived the same results, but by using the functionality of these methods we were able to write cleaner more expressive code.
-</details>
