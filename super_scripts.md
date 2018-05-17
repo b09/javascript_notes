@@ -699,7 +699,7 @@ describe('Park', function() {
       <summary>
         cards.js
       </summary>
-      
+
       ```js
       const Card = function (options) {
         this.name = options.name;
@@ -710,6 +710,7 @@ describe('Park', function() {
 
       module.exports = Card;
       ```
+
         <details>
           <summary>
             cards_spec.js
@@ -755,6 +756,7 @@ describe('Park', function() {
           });
 
           ```
+
         </details>
         <br />
     </details>
@@ -819,6 +821,7 @@ describe('Park', function() {
       module.exports = Game;
 
       ```
+
       <details>
         <summary>
           game_spec.js
@@ -982,6 +985,7 @@ describe('Park', function() {
         });
 
         ```
+
       </details>
       <br />
     </details>
@@ -1025,6 +1029,7 @@ describe('Park', function() {
       module.exports = Player;
 
       ```
+
         <details>
           <summary>
           player_spec.js
@@ -1112,6 +1117,7 @@ describe('Park', function() {
           });
 
           ```
+          
         </details>
         <br />
     </details>
