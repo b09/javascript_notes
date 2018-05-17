@@ -691,4 +691,42 @@ describe('Park', function() {
 <br />
 </details>
 </details>
+<br />
+<br />
+</details>
+
+<details>
+  <summary>
+    Top Trumps - TDD Lab
+  </summary>
+    <details>
+      <summary>
+        cards.js
+      </summary>
+        <details>
+          <summary>
+            cards_spec.js
+          </summary>
+        </details>
+    </details>
+    <details>
+      <summary>
+        game.js
+      </summary>
+      <details>
+        <summary>
+          game_spec.js
+        </summary>
+      </details>
+    </details>
+    <details>
+    <summary>
+    player.js
+    </summary>
+    <details>
+    <summary>
+    player_spec.js
+    </summary>
+    </details>
+    </details>
 </details>
