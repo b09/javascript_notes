@@ -2142,6 +2142,7 @@ console.log(multiplyByTwo(numbers))
 <br>
 
 `forEach` doesn't return a value and we can't return anything from the callback that we pass to it. If we try and return from the callback, we are returning into the `forEach` and as `forEach` is implemented in a way that it doesn't do anything with the return value, for have no way of accessing that value. Instead we have to manually handle the value. In this case we have added the modified element into the previously declared empty array. In this way `forEach` is a direct replacement for a `for` loop.
+</details>
 
 #### Task: (10 minutes)
 
@@ -2294,12 +2295,22 @@ ourForEach(numbers, (number) => {
 
 ## Introduction to Context and `this`
 
+<details>
+<details>
+<summary>
+Introduction
+</summary>
 
 ### Introduction
 
 We have used the `this` keyword in constructor functions to assign properties to the instance of the object. We have also used it to access an object's properties inside its methods. In both cases `this` refers to the object and allows us to access its properties and methods from inside itself.
 
 In JavaScript, however, `this` inside a function body doesn't always refer to the object where the function is defined. Sometimes it refers to the object that it is being executed by. This is determined by the function type being used, which means we can choose the context `this` refers to. This makes JavsScript very flexible.
+</details>
+<details>
+<summary>
+Function Types and Context
+</summary>
 
 ### Function Types and Context
 
@@ -2363,6 +2374,11 @@ person.talk();
 ![`talk` is now executed by `person` (`person.talk()`)](./images/context2.png)
 
 *`talk` is now executed by `person` (`person.talk()`) so its `this.name` has the value `Betty`*
+</details>
+<details>
+<summary>
+Context in Protype Methods
+</summary>
 
 ### Context in Prototype Methods
 
@@ -2405,6 +2421,11 @@ Teacher.prototype.createStudentNameList = () => {
 ```
 
 For this reason we don't use arrow function expressions when adding methods to an object's prototype.
+</details>
+<details>
+<summary>
+Context in Callbacks
+</summary>
 
 ### Context in Callbacks
 
@@ -2452,21 +2473,15 @@ teacher.createStudentNameList()
 #### Why is This Useful?
 
 In this case we would use an arrow function expression to define the callback, but there may be other occasions when we want to make use of the execution context. JavaScript allows us to do either, using the different types of functions.
-
-### Conclusion
-
-In JavaScript, context (accessed by the `this` keyword) refers to an object. Inside a function body, which object it refers to depends on the type of function being used.
-
-This makes JavaScript a highly flexible language, but we need to use the appropriate function type based on the context that we want a function to have.
-
+</details>
+</details>
 
 ## Closures
 
-### Learning Objectives
-
-- Understand what closures are in JavaScript
-- Be able to use closures to encapsulate data
-
+<details>
+<summary>
+Closures
+</summary>
 ### Closures  
 
 Closures are an interesting concept in JavaScript that don't exist in any of the other languages that we've learned so far.
@@ -2590,3 +2605,4 @@ var setupConversation = function () {
 	}
 }
 ```
+</details>
