@@ -113,12 +113,16 @@ var name = "Donald";
 Null
 </summary>
 
+#### Null
+
 The `null` value is used when a value is deliberately absent. A database might return `null` if you are trying to fetch a record that doesn't exist or you might return `null` from a search function when it finds no matches.
 </details>
 <details>
 <summary>
 Undefined
 </summary>
+
+#### Undefined
 Undefined is the default value and type of declared variables where no value has been assigned.
 
 ```js
@@ -150,6 +154,8 @@ undefined + 1;
 Boolean
 </summary>
 
+#### Boolean
+
 A `Boolean` has one of two values, either true or false. Like in other languages the key role of the `Boolean` values is for control flow.
 
 </details>
@@ -157,6 +163,8 @@ A `Boolean` has one of two values, either true or false. Like in other languages
 <summary>
 Symbol
 </summary>
+
+#### Symbol
 
 In newer versions of JavaScript, we have a new type of primitive: `Symbol`. They are not widely used yet, and you will see them far less frequently than the other types of primitive we have looked at.
 
@@ -169,6 +177,8 @@ They function quite differently from symbols that you might have seen in other l
 <summary>
 Conditionals
 </summary>
+
+#### Conditionals
 
 As with other programming languages, JavaScript allows us to write conditionals. This is the syntax for the `if` statement:
 
@@ -219,6 +229,8 @@ node control_flow.js
 Short-circuiting
 </summary>
 
+#### Short-circuiting
+
 JavaScript employs short-circuiting. This means that in the above `if` statement, as the first condition is satisfied, the `else if` and `else` conditions and associated code blocks are never executed.
 
 </details>
@@ -226,6 +238,8 @@ JavaScript employs short-circuiting. This means that in the above `if` statement
 <summary>
 Truthy and Falsy Values
 </summary>
+
+#### Truthy and Falsy Values
 
 While we know that the boolean values are true or false, we often want to evaluate a non-boolean value as true or false when working with control flow. For example, as an `if` statement expects a boolean value as its condition, whatever you pass to it will be coerced to either `true` or `false`. `null` is a falsy value so will be coerced to `false`.
 
@@ -250,6 +264,8 @@ When we are learning a language we need to know which expressions and non-boolea
 Strict Equality (`===`)
 </summary>
 
+#### Strict Equality (`===`)
+
 The triple equals (strict equality) operator compares for equality by checking if both the type and value are the same.
 </details>
 <details>
@@ -257,6 +273,7 @@ The triple equals (strict equality) operator compares for equality by checking i
 Loose Equality (`==`)
 </summary>
 
+#### Loose Equality (`==`)
 
 The double equals (abstract or loose equality) operator compares for equality *after* having coerced the values to a common type. This is a product of JavaScript being a weakly typed language, as previously discussed.
 
@@ -266,6 +283,8 @@ Because loose equality can cause unexpected behaviour, unless you have a good re
 <summary>
 Logical Operators
 </summary>
+
+#### Logical Operators
 
 We can use the logical operators 'and' (`&&`) and 'or' (`||`) to make logic expressions.
 
@@ -297,6 +316,8 @@ Similarly, if the first expression in an `||` statement is true, JavaScript does
 Named Function Declarations
 </summary>
 
+### Named Function Declarations
+
 To declare the function we use the `function` keyword followed by a name for the function and brackets (`()`). Then braces are used to define the function body. To return a value from our function we use the `return` keyword.
 
 ```js
@@ -320,6 +341,8 @@ console.log('sayHello message:', sayHello());
 Arguments and Parameters
 </summary>
 
+### Arguments and Parameters
+
 To use the argument inside our function we need to declare a parameter.
 
 ```js
@@ -332,7 +355,7 @@ console.log('sayHello message:', sayHello('Danielle'));
 ```
 
 
-### Default Parameters
+#### Default Parameters
 
 ```js
 function sayHello(name = 'World') { // MODIFIED
@@ -354,7 +377,7 @@ console.log('sayHello message:', sayHello('Hi', 'Danielle')); // MODIFIED
 ```
 Note: We have put the default parameter second, so that if only one argument is passed, the argument will be treated as `greeting`, and `World!` with be used as the value for `name`.
 
-### Hoisting
+#### Hoisting
 
 A slightly strange feature of the named `function` declaration is that the `function` declaration is "hoisted". This means that when the JavaScript interpreter parses the code, and just before it actually runs, it essentially moves the function declaration to the top of the file. This means that we can use our function before it is declared.
 
@@ -403,7 +426,7 @@ console.log('multiply 2 by 5:', multiply(2, 5));
 
 This time the `function` keyword is dropped and an arrow function has a "fat arrow" (`=>`). This forms an anonymous function expression: `() => {}`. Arrow functions are _always_ anonymous, they cannot be named. If we want to refer to them later they must be assigned into a variable.
 
-### Implicit Return
+#### Implicit Return
 
 When our arrow function's body only contains a single expression, we can write it on one line and omit the `return` keyword and the braces. The function will implicitly return the expression the arrow is pointing to.
 
