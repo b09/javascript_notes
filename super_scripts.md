@@ -702,10 +702,10 @@ cards.js
 
 ```js
 const Card = function (options) {
-this.name = options.name;
-this.intelligence = options.intelligence;
-this.strength = options.strength;
-this.agility = options.agility;
+  this.name = options.name;
+  this.intelligence = options.intelligence;
+  this.strength = options.strength;
+  this.agility = options.agility;
 };
 
 module.exports = Card;
@@ -713,7 +713,7 @@ module.exports = Card;
 
 <details>
 <summary>
-  cards_spec.js
+cards_spec.js
 </summary>
 
 ```js
@@ -767,55 +767,55 @@ game.js
 
 ```js
 const Game = function (cards, players) {
-this.deck = cards;
-this.players = players;
-this.winner = null;
+  this.deck = cards;
+  this.players = players;
+  this.winner = null;
 };
 
 Game.prototype.dealCard = function (card) {
-this.players[0].addCard(card);
+  this.players[0].addCard(card);
 };
 
 Game.prototype.switchPlayers = function () {
-const player = this.players.shift();
-this.players.push(player);
+  const player = this.players.shift();
+  this.players.push(player);
 };
 
 Game.prototype.dealDeck = function () {
-for (const card of this.deck) {
-this.players[0].addCard(card);
-this.switchPlayers();
-}
+  for (const card of this.deck) {
+    this.players[0].addCard(card);
+    this.switchPlayers();
+  }
 };
 
 Game.prototype.playCards = function () {
-for (const player of this.players) {
-player.playCard();
-}
+  for (const player of this.players) {
+    player.playCard();
+  }
 };
 
 Game.prototype.calculateWinnerOfTurn = function () {
-const card1 = this.players[0].currentCard;
-const card2 = this.players[1].currentCard;
-const category = this.players[0].currentCategory;
-if (card2[category] > card1[category]) this.switchPlayers();
+  const card1 = this.players[0].currentCard;
+  const card2 = this.players[1].currentCard;
+  const category = this.players[0].currentCategory;
+  if (card2[category] > card1[category]) this.switchPlayers();
 };
 
 Game.prototype.giveCardsToWinner = function () {
-const card1 = this.players[0].currentCard;
-const card2 = this.players[1].currentCard;
-this.players[0].receiveCards([card1, card2]);
+  const card1 = this.players[0].currentCard;
+  const card2 = this.players[1].currentCard;
+  this.players[0].receiveCards([card1, card2]);
 };
 
 Game.prototype.checkForWinner = function () {
-if (this.players[0].handEmpty()) this.winner = this.players[1];
-if (this.players[1].handEmpty()) this.winner = this.players[0];
+  if (this.players[0].handEmpty()) this.winner = this.players[1];
+  if (this.players[1].handEmpty()) this.winner = this.players[0];
 };
 
 Game.prototype.playTurn = function () {
-this.calculateWinnerOfTurn();
-this.giveCardsToWinner();
-this.checkForWinner();
+  this.calculateWinnerOfTurn();
+  this.giveCardsToWinner();
+  this.checkForWinner();
 };
 
 module.exports = Game;
@@ -996,34 +996,34 @@ player.js
 
 ```js
 const Player = function (name) {
-this.name = name;
-this.hand = [];
-this.currentCard = null;
-this.currentCategory = null;
+  this.name = name;
+  this.hand = [];
+  this.currentCard = null;
+  this.currentCategory = null;
 };
 
 Player.prototype.countCards = function () {
-return this.hand.length;
+  return this.hand.length;
 };
 
 Player.prototype.addCard = function (card) {
-this.hand.push(card);
+  this.hand.push(card);
 };
 
 Player.prototype.handEmpty = function () {
-return this.hand.length === 0;
+  return this.hand.length === 0;
 };
 
 Player.prototype.playCard = function () {
-this.currentCard = this.hand.pop();
+  this.currentCard = this.hand.pop();
 };
 
 Player.prototype.selectCategory = function (category) {
-this.currentCategory = category;
+  this.currentCategory = category;
 };
 
 Player.prototype.receiveCards = function (cards) {
-this.hand = this.hand.concat(cards);
+  this.hand = this.hand.concat(cards);
 };
 
 module.exports = Player;
@@ -1126,84 +1126,73 @@ describe('Player', function () {
 
 
 <details>
-  <summary>
-    Traveller - Hw Callbacks Enumeration
-  </summary>
-  <br />
-    <details>
-      <summary>
-        cards.js
-      </summary>
-        <details>
-          <summary>
-            cards_spec.js
-          </summary>
-        </details>
-        <br />
-    </details>
-    <details>
-      <summary>
-        game.js
-      </summary>
-      <details>
-        <summary>
-          game_spec.js
-        </summary>
-      </details>
-      <br />
-    </details>
-    <details>
-      <summary>
-      player.js
-      </summary>
-        <details>
-          <summary>
-          player_spec.js
-          </summary>
-        </details>
-        <br />
-    </details>
-    <br />
+<summary>
+Traveller - Hw Callbacks Enumeration
+</summary>
+<br />
+<details>
+<summary>
+journey.js
+</summary>
+<details>
+<summary>
+journey_spec.js
+</summary>
+</details>
+<br />
+</details>
+<details>
+<summary>
+traveller.js
+</summary>
+<details>
+<summary>
+traveller_spec.js
+</summary>
+</details>
+<br />
+</details>
+<br />
 </details>
 
 
 <details>
-  <summary>
-    Films - Lab Callbacks Enumeration
-  </summary>
-  <br />
-    <details>
-      <summary>
-        cards.js
-      </summary>
-        <details>
-          <summary>
-            cards_spec.js
-          </summary>
-        </details>
-        <br />
-    </details>
-    <details>
-      <summary>
-        game.js
-      </summary>
-      <details>
-        <summary>
-          game_spec.js
-        </summary>
-      </details>
-      <br />
-    </details>
-    <details>
-      <summary>
-      player.js
-      </summary>
-        <details>
-          <summary>
-          player_spec.js
-          </summary>
-        </details>
-        <br />
-    </details>
-    <br />
+<summary>
+Films - Lab Callbacks Enumeration
+</summary>
+<br />
+<details>
+<summary>
+cards.js
+</summary>
+<details>
+<summary>
+cards_spec.js
+</summary>
+</details>
+<br />
+</details>
+<details>
+<summary>
+game.js
+</summary>
+<details>
+<summary>
+game_spec.js
+</summary>
+</details>
+<br />
+</details>
+<details>
+<summary>
+player.js
+</summary>
+<details>
+<summary>
+player_spec.js
+</summary>
+</details>
+<br />
+</details>
+<br />
 </details>
