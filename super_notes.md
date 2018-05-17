@@ -606,6 +606,14 @@ for (var i = sports.length - 1; i >= 0; i--) {
 Objects
 </summary>
 
+### Objects
+
+<details>
+<summary>
+Basics
+</summary>
+
+
 Javascript's objects store data in key-value pairs. We can create one with the object literal notation, `{}`.
 
 ```js
@@ -614,10 +622,10 @@ console.log(movie);
 // -> {}
 ```
 
-Our object is currently empty, it has no key-value pairs in it. We can add key-value pairs to our object literal as we define it. A key separated from its associated value by a colon (`:`), and each key-value pair is separated from the next by a comma (`,`). As _all_ keys are `string`s, we don't need to wrap them in quotes. (`'` / `"`)
+We can add key-value pairs, a key separated from its associated value by a colon (`:`), and each key-value pair is separated from the next by a comma (`,`). As _all_ keys are `string`s, we don't need to wrap them in quotes. (`'` / `"`)
 
 ```js
-var movie = { // UPDATED
+var movie = {
   title: 'It\'s a Wonderful Life',
   year: 1946,
   language: 'Spanish'
@@ -638,7 +646,7 @@ We can access a value by using the dot notation (`.`).
 var title = movie.title;
 console.log(title);
 
-// -> It's a Wonderful Life
+-> `It's a Wonderful Life`
 ```
 
 Let's add an array of some of the cast to our movie. We can add new properties using the same dot notation. This time assigning _to_ the property rather than _from_ it.
@@ -647,65 +655,63 @@ Let's add an array of some of the cast to our movie. We can add new properties u
 movie.cast = ['James Stewart', 'Donna Reed'];
 console.log(movie);
 
-// -> {
-// ->   title: 'It\'s a Wonderful Life',
-// ->   year: 1946,
-// ->   language: 'French',
-// ->   cast: ['James Stewart', 'Donna Reed'],
-// -> }
+-> {
+->   title: 'It\'s a Wonderful Life',
+->   year: 1946,
+->   language: 'French',
+->   cast: ['James Stewart', 'Donna Reed'],
+-> }
 ```
 
-This looks exactly the same when modifying an existing property. Let's change the language to `'English'`.
+Let's change the language to `'English'`.
 
 ```js
 movie.language = 'English';
 console.log(movie);
 
-// -> {
-// ->   title: 'It\'s a Wonderful Life',
-// ->   year: 1946,
-// ->   language: 'English',
-// ->   cast: ['James Stewart', 'Donna Reed'],
-// -> }
+-> {
+->   title: 'It\'s a Wonderful Life',
+->   year: 1946,
+->   language: 'English',
+->   cast: ['James Stewart', 'Donna Reed'],
+-> }
 ```
 
-As an alternative to dot notation (`.`) we can use square bracket notation (`[]`). We do this providing a string, the property name,  between square brackets.
+As an alternative to dot notation (`.`) we can use square bracket notation (`[]`).
 
 ```js
 movie['language'] = 'French';
 console.log(movie);
 
-// -> {
-// ->   title: 'It\'s a Wonderful Life',
-// ->   year: 1946,
-// ->   language: 'French',
-// ->   cast: ['James Stewart', 'Donna Reed']
-// -> }
+-> {
+->   title: 'It\'s a Wonderful Life',
+->   year: 1946,
+->   language: 'French',
+->   cast: ['James Stewart', 'Donna Reed']
+-> }
 ```
 
-This is a bit more typing than the dot notation, but is necessary in some cases. Dot notation won't work when using a property name that contains special characters such a hyphens (`-`) or colons (`:`) etc.
+Bit more typing but is necessary in some cases. Dot notation won't work when using a property name that contains special characters such a hyphens (`-`) or colons (`:`) etc.
 
 ```js
 movie.subtitle-language = 'German';
 
-// -> ReferenceError: Invalid left-hand side in assignment
+-> ReferenceError: Invalid left-hand side in assignment
 ```
 
 ```js
 movie['subtitle-language'] = 'German'; // UPDATED
 console.log(movie);
 
-// -> {
-// ->   title: 'It\'s a Wonderful Life',
-// ->   year: 1946,
-// ->   language: 'French',
-// ->   cast: ['James Stewart', 'Donna Reed'],
-// ->   subtitle-language: 'German',
-// ->   ratings: { critic: 94, audience: 95 }
-// -> }
+-> {
+->   title: 'It\'s a Wonderful Life',
+->   year: 1946,
+->   language: 'French',
+->   cast: ['James Stewart', 'Donna Reed'],
+->   subtitle-language: 'German',
+->   ratings: { critic: 94, audience: 95 }
+-> }
 ```
-
-However, most of the time we'll use camelCase instead of kebab-case. You may need to use the square bracket notation when dealing with JavaScript objects from an outside data source that uses special characters in their property names.
 
 Another use case for square bracket notation is when you need to dynamically access properties using a variable. This allows us to write DRY, reusable code.
 
@@ -714,17 +720,23 @@ var propertyToAccess = 'subtitle-language'; // NEW
 movie[propertyToAccess] = 'German'; // UPDATED
 console.log(movie);
 
-// -> {
-// ->   title: 'It\'s a Wonderful Life',
-// ->   year: 1946,
-// ->   language: 'French',
-// ->   cast: ['James Stewart', 'Donna Reed'],
-// ->   subtitle-language: 'German',
-// ->   ratings: { critic: 94, audience: 95 }
-// -> }
+-> {
+->   title: 'It\'s a Wonderful Life',
+->   year: 1946,
+->   language: 'French',
+->   cast: ['James Stewart', 'Donna Reed'],
+->   subtitle-language: 'German',
+->   ratings: { critic: 94, audience: 95 }
+-> }
 ```
+</details>
+<details>
+<summary>
+Nested Objects
+</summary>
 
-### Nested Objects
+
+#### Nested Objects
 
 Our movie object now our `rating`, which we keep modifying, and also a `critic-rating`. We could structure this information better by storing it in another object. We've seen that the values of our object's properties can be strings, numbers, even arrays, and they can be regular JavaScript objects as well.
 
@@ -735,35 +747,40 @@ movie.ratings = {
 };
 console.log(movie);
 
-// -> {
-// ->   title: 'It\'s a Wonderful Life',
-// ->   year: 1946,
-// ->   language: 'French',
-// ->   cast: ['James Stewart', 'Donna Reed'],
-// ->   subtitle-language: 'German',
-// ->   ratings: { critic: 94, audience: 95 }
-// -> }
+-> {
+->   title: 'It\'s a Wonderful Life',
+->   year: 1946,
+->   language: 'French',
+->   cast: ['James Stewart', 'Donna Reed'],
+->   subtitle-language: 'German',
+->   ratings: { critic: 94, audience: 95 }
+-> }
 ```
+</details>
+<details>
+<summary>
+Iterating Over Objects
+</summary>
 
-### Iterating Over Objects
+#### Iterating Over Objects
 
-As with arrays, a common task with a collection of data if iterating through all the pieces of data within it, one at a time. We can do this with the `for...in` statement. `for...in` gives us each key in the object in turn. We can then use the key to access the value.
+A common task with a collection of data is iterating. We can do this with the `for...in` which gives us each key in the object in turn. We can then use the key to access the value.
 
 ```js
 for (var key in movie) {
   var value = movie[key];
   console.log(`The ${key} is ${value}`);
 
-  // -> The title is It's a Wonderful life
-  // -> The year is 1946
-  // -> The language is French
-  // -> The cast is James Stewart,Donna Reed
-  // -> The subtitle-language is German
-  // -> The ratings is [object Object]
+  -> `The title is It's a Wonderful life`
+  -> The year is 1946
+  -> The language is French
+  -> The cast is James Stewart,Donna Reed
+  -> The subtitle-language is German
+  -> The ratings is [object Object]
 }
 ```
 
-We could also achieve this same functionality with a plain `for` loop. If we had an array of the object's keys, we could iterate through that array. Lucky for us, JavaScript has an `Object.keys` function that does just that.
+We could also do this with a `for` loop. If we had an array of the object's keys, we could iterate through that array. JavaScript has an `Object.keys` function that does that.
 
 ```js
 var keys = Object.keys(movie);
@@ -773,17 +790,17 @@ for (var i = 0; i < keys.length; i++) {
   var value = movie[key];
   console.log(`The ${key} is ${value}`);
 
-  // -> The title is It's a Wonderful life
-  // -> The year is 1946
-  // -> The language is French
-  // -> The cast is James Stewart, Donna Reed
-  // -> The subtitle-language is German
-  // -> The ratings is [object Object]
+  -> `The title is It's a Wonderful life`
+  -> The year is 1946
+  -> The language is French
+  -> The cast is James Stewart, Donna Reed
+  -> The subtitle-language is German
+  -> The ratings is [object Object]
 }
 ```
 </details>
 </details>
-
+</details>
 
 # Variable Scope
 <details>
