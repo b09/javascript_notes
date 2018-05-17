@@ -1,4 +1,4 @@
-# JavaScript Fundamentals
+## JavaScript Fundamentals
 
 
 <details>
@@ -309,7 +309,7 @@ Similarly, if the first expression in an `||` statement is true, JavaScript does
 
 </details>
 
-# Functions
+## Functions
 <details>
 <details>
 <summary>
@@ -446,7 +446,7 @@ console.log('multiply 2 by 5:', multiply(2, 5));
 <br>
 </details>
 
-# Loops, Arrays & Objects
+## Loops, Arrays & Objects
 
 In JavaScript, _all_ objects inherently store their data in a key-value pair structure. So these are simply called objects.
 <details>
@@ -801,7 +801,7 @@ for (var i = 0; i < keys.length; i++) {
 </details>
 </details>
 
-# Variable Scope
+## Variable Scope
 
 
 <details>
@@ -1011,7 +1011,7 @@ console.log(result);
 Polluting the global scope in this way is bad practice. We always want to use a key word when declaring a variable.
 </details>
 
-# Constructor Functions & Prototype Objects
+## Constructor Functions & Prototype Objects
 <details>
 <details>
 <summary>
@@ -1450,7 +1450,7 @@ shaggy.feedPet('Scooby Snack');
 </details>
 
 
-# Test-Driven Development Using Assert and Mocha
+## Test-Driven Development Using Assert and Mocha
 
 <details>
 <summary>
@@ -1468,10 +1468,8 @@ Node ships with the `assert` module out of the box, but if we want to use it the
 const assert = require('assert');
 ```
 
-Now we're ready to start writing some basic tests.
-
-
-Now that we have access to the `assert` module, we can use any of the methods that come with it. We can use the `equal()` method to check if two values are the same, just like you might have done when unit testing in other languages.
+Now we're ready to start writing tests.
+With the `assert` module, we can use any of its methods. The `equal()` method checks if two values are the same.
 
 ```js
 assert.equal(true, true);
@@ -1483,7 +1481,7 @@ We can then run our tests in the same way that we would run any other .js file.
 node play.js
 ```
 
-Notice that we don't get any feedback at all. Node will only tell us if our tests are failing. Let's break our test and see what happens.
+We don't get feedback. Node only tells us if our tests fail. Let's break our test.
 
 ```js
 assert.equal(true, false);
@@ -1497,9 +1495,9 @@ node play.js
 
 >Note: Assert will only show us one failing test at a time. Comment out any failing tests before moving on
 
-This is better than nothing but it isn't very descriptive or expressive.
+Better than nothing but not very descriptive.
 
-Another potential issue that we could encounter when using  `equal()` is that, as we can see from the above AssertionError, it uses JavaScript's abstract equality operator (`==`).
+Another potential issue that we could encounter when using  `equal()` is that it uses JavaScript's abstract equality operator (`==`).
 
 If the two parameters are of different types then JavaScript will first try to find a common type for them before determining whether or not they are equal.
 
@@ -1515,11 +1513,11 @@ Just like using the abstract equality operator (`==`) elsewhere in our code this
 assert.equal([], ![]);
 ```
 
-We should be as specific as possible when testing therefore avoid using `equal()`.
+We should be as specific as possible therefore avoid using `equal()`.
 
 #### `assert.strictEqual()`
 
-Assert gives us another method, `strictEqual()`, which uses JavaScripts strict equality operator (`===`). As a general rule of thumb we should use that instead of `equal()` so that we can be certain that our tests are passing or failing for the right reasons.
+Another method, `strictEqual()`, uses JavaScripts strict equality operator (`===`), which should be used instead of `equal()` so that we can be certain that our tests are passing or failing for the right reasons.
 
 The following test will fail.
 
@@ -1535,7 +1533,7 @@ node play.js
 
 The two values are not strictly the same so this is typically the desired behaviour of our tests.
 
-There is one more thing that we need to know when writing our assertions with Assert: when comparing objects using `equal()` or `strictEqual()` JavaScript will check if they are the same object.
+Another point to remember is when comparing objects using `equal()` or `strictEqual()` JavaScript will check if they are the same object.
 
 The following test will fail as a result of this.
 
@@ -1555,7 +1553,7 @@ assert.equal(firstArray, secondArray);
 
 #### `assert.deepEqual()` and `assert.deepStrictEqual()`
 
-Assert gives us another set of methods; `deepEqual()`  and `deepStrictEqual()`. These methods look at the values contained within the object and use those to determine if the objects are equal, rather than checking if the object are the same object.
+The methods `deepEqual()` and `deepStrictEqual()` look at the values contained within the object and use those to determine if the objects are equal, rather than checking if the object are the same object.
 
 The following test will pass because even though the first and second parameters are not the same array they contain values which are equal.
 
@@ -1591,9 +1589,7 @@ Mocha
 ### Mocha
 
 
-Now that we've seen how some of the methods that we can get from Assert work, let's create a model, employing TDD, and look at how we can use Mocha to better organise and run our tests.
-
-Before we do, it's worth mentioning that Mocha supports a number of different syntaxes. The type we're going to use is _Behaviour Driven Development_, or BDD.
+Mocha supports a number of different syntaxes. The type we're going to use is _Behaviour Driven Development_, or BDD.
 
 BDD is an extension of TDD which attempts to focus on the user, and the product. Tests written in a BDD style will follow the format "It should...", and they should tie in closely to the user stories that you or your UX colleagues should have written.
 
@@ -2041,8 +2037,7 @@ Taxi.prototype.removeAllPassengers = function () {
 </details>
 
 
-# Callback Functions & Enumeration
-<details>
+## Callback Functions & Enumeration
 
 <details>
 <summary>
@@ -2296,4 +2291,302 @@ ourForEach(numbers, (number) => {
 });
 ```
 </details>
-</details>
+
+## Introduction to Context and `this`
+
+
+### Introduction
+
+We have used the `this` keyword in constructor functions to assign properties to the instance of the object. We have also used it to access an object's properties inside its methods. In both cases `this` refers to the object and allows us to access its properties and methods from inside itself.
+
+In JavaScript, however, `this` inside a function body doesn't always refer to the object where the function is defined. Sometimes it refers to the object that it is being executed by. This is determined by the function type being used, which means we can choose the context `this` refers to. This makes JavsScript very flexible.
+
+### Function Types and Context
+
+#### Arrow Function Expressions
+
+**An arrow function expression (`=>`) has definition context.**
+
+`this` always refers to the context in which the function defined. Its context doesn't change.
+
+In the following example, `talk` is an arrow function and so retains its definition context. Therefore it does not have the `person`'s context when being executed on `person` and `this.name` is undefined.
+
+```js
+const person = {name: 'Betty'};
+
+const talk = () => {
+  console.log(`Hi, I'm ${this.name}`);
+}
+
+person.talk = talk;
+
+person.talk();
+```
+
+#### `function` Expressions
+
+**A `function` expression has execution context.**
+
+`this` refers to the context in which the function is executed, which means it's context can change.
+
+In the following example the object, `person`, is defined and then a function, `talk`, is defined using the `function` keyword. When `talk` is executed `this.name` is undefined because `talk` does not have `person`'s context.
+
+```js
+const person = {name: 'Betty'};
+
+const talk = function () {
+  console.log(`Hi, I'm ${this.name}`);
+}
+
+talk();
+// -> Hi, I'm undefined
+```
+![`talk` is executed and its `this.name` is undefined](./images/context1.png)
+
+*`talk` is executed and its `this.name` is undefined*
+
+But we can change `talk`'s context. By assigning `talk` to a property on `person`, it is now executed on `person` (`person.talk()`). As a `function` express takes the execution context, `talk` now has the `person`'s context and has access to the `person`'s properties.
+
+```js
+const person = {name: 'Betty'};
+
+const talk = function () {
+  console.log(`Hi, I'm ${this.name}`);
+}
+
+person.talk = talk;
+
+person.talk();
+// -> Hi, I'm Betty
+```
+
+![`talk` is now executed by `person` (`person.talk()`)](./images/context2.png)
+
+*`talk` is now executed by `person` (`person.talk()`) so its `this.name` has the value `Betty`*
+
+### Context in Prototype Methods
+
+Let's look at how this affects context when defining methods on an object's prototype.
+
+```sh
+atom code/teacher_start.js
+```
+
+A `Teacher` has an array of objects, `this.students`. It also has a method called `createStudentNameList` that returns an array of formatted names. `createStudentNameList` is defined with the `function` keyword and so has the context of the object it is executed by: `Teacher`.
+
+```js
+Teacher.prototype.createStudentNameList = function () {
+  return this.students.map((student) => {
+    return `${student.firstName.toUpperCase()} ${student.lastName.toUpperCase()}`;
+  })
+}
+```
+
+The `this` keyword in `createStudentNameList` refers to the instance of `Teacher` and is used to access its `students` property. If we log `this` in `createStudentNameList` the output is the `Teacher` object.
+
+```js
+Teacher.prototype.createStudentNameList = function () {
+  console.log(this);
+  // --> Teacher { students: [ ... ] }
+
+  // ...
+}
+```
+
+Just like in the `talk` function example, if we were to use an arrow function to define the prototype methods, the `this` keyword would no longer refer to the instance of `Teacher` within our method.
+
+```js
+Teacher.prototype.createStudentNameList = () => {
+  console.log(this);
+  // --> {}
+
+  // ...
+}
+```
+
+For this reason we don't use arrow function expressions when adding methods to an object's prototype.
+
+### Context in Callbacks
+
+Knowing the context of different function types enables us to decide which function type to use when defining callbacks.
+
+At the moment we are not concerned about the context of the callback passed to `map` because we don't use the `this` keyword inside it. However, let's say we want to abstract the logic that formats the name in `createStudentNameList` into a separate function, `getStudentPrettyName`.
+
+
+```sh
+atom code/teacher_end.js
+```
+
+```js
+Teacher.prototype.createStudentNameList = function () {
+  return this.students.map((student) => {
+    this.getStudentPrettyName(student);
+  });
+}
+
+Teacher.prototype.getStudentPrettyName = function (student) {
+  return `${student.firstName.toUpperCase()} ${student.lastName.toUpperCase()}`;
+}
+```
+
+We want the callback that we pass to `map` to have the context of the `Teacher` object, so that we can access the teacher's `getStudentPrettyName` inside it. As we have defined the callback using an arrow function, it retains its definition context, which is the `Teacher` object. When we call `this.getStudentPrettyName` it will look for the method on the `Teacher` prototype.
+
+If we were to use a `function` expression to define the callback, `this` would refer to its execution context.
+
+```js
+Teacher.prototype.createStudentNameList = function() {
+  return this.students.map(function(student) {
+    this.getStudentPrettyName(student)
+  });
+}
+```
+
+So now when we call `teacher.createStudentNameList()` we get a TypeError. The error tells us that, as `this` doesn't refer to the `Teacher` object, it can't find the method `getStudentPrettyName`.
+
+```js
+const teacher = new Teacher();
+teacher.createStudentNameList()
+// -> `TypeError: this.getStudentPrettyName is not a function`
+```
+
+#### Why is This Useful?
+
+In this case we would use an arrow function expression to define the callback, but there may be other occasions when we want to make use of the execution context. JavaScript allows us to do either, using the different types of functions.
+
+### Conclusion
+
+In JavaScript, context (accessed by the `this` keyword) refers to an object. Inside a function body, which object it refers to depends on the type of function being used.
+
+This makes JavaScript a highly flexible language, but we need to use the appropriate function type based on the context that we want a function to have.
+
+
+## Closures
+
+### Learning Objectives
+
+- Understand what closures are in JavaScript
+- Be able to use closures to encapsulate data
+
+### Closures  
+
+Closures are an interesting concept in JavaScript that don't exist in any of the other languages that we've learned so far.
+
+If we define a function within another function, the inner function will have access to local variables defined within the enclosing function. A closure occurs when we export the inner function (using the `return` keyword) from its original context within the outer function and the exported function remembers the variables that it had access to.
+
+We can use this to allow a function to access and modify variables, but prevent them from being exposed to the outside world. We're going to write a function that increments a counter, but keeps the counter hidden away, safe from modification.
+
+Let's create a working directory and a file to work in...
+
+```bash
+// Terminal
+
+mkdir closures
+cd closures
+touch closures.js
+```
+
+Now let's create a method and define a local variable called `counter` that has an initial value of 0 inside it...
+
+```js
+// closures.js
+
+var setupAddFunction = function () {
+    var counter = 0;
+}
+```
+
+We have a variable called `counter` with a value of 0 that is available to us within the `setupAddFunction` function. Based on our existing knowledge of scope in JavaScript, we know that if we were to define another function within `setupAddFunction` the local variable `counter` would also be available to that function. Let's see that in action...
+
+```js
+var setupAddFunction = function () {
+    var counter = 0;
+
+    return function () { // NEW
+        counter++;
+        console.log(counter);
+    }
+}
+```
+
+We're returning a function from `setupAddFunction`, so let's call it, stuff its return value into a variable called `add` and take a look at the value of `add` in Terminal. This is the function that we actually want to use.
+
+```js
+var add = setupAddFunction();
+console.log('The value of add is:', add);
+```
+
+When we log out the value of `add`, we can see that it doesn't contain the definition off `counter`, but it will still be able to reference it. Functions remember the scope that they were created in and are able to refer back to it later. This allows us to hide variables away in functions so that they can't be modified from the outside.
+
+```js
+add();
+add();
+add();
+```
+
+The `add` function remembers the value of `counter` between runs and is able to modify it without exposing it to the outside world. It's encapsulated in its own little world where nobody can get at it or modify its value. Perfect.
+
+Let's look at how we could make this code a little bit more dynamic by adding a parameter to our `setupAddFunction`...
+
+```js
+var setupAddFunction = function (modifier) { // UPDATED
+    var counter = 0;
+
+    return function () {
+        counter += modifier; // UPDATED
+        console.log(counter);
+    }
+}
+
+var addFive = setupAddFunction(5); // UPDATED
+
+addFive();
+addFive();
+addFive();
+```
+
+Parameters are just like local variables inside a function, so our exported inner function has access to this too. Now we could create multiple `add` functions with their own modifiers!
+
+```js
+var addTen = setupAddFunction(10);
+
+addTen();
+addTen();
+addTen();
+
+```
+
+#### Task:
+
+Closures are a nice way to encapsulate data. Let's create an encapsulated array of messages, allowing the user to add new messages, but not allowing them to modify the array in any other way.
+
+Using the following start point...
+
+```js
+var addMessage = setupConversation();
+
+addMessage("I've got something very important to tell you that must never be forgotten");
+addMessage("Oh yeah?");
+addMessage("Oh, no. Wait... It's fine.");
+```
+
+- Create a `setupConversation` function that contains an array local variable within it, which will hold our messages.
+- Have `setupConversation` return a function that allows us to add a new message to the array.
+- Make your exported function also iterate over the array and `console.log()` each message after the new message has been added.
+
+#### Solution:
+
+```js
+var setupConversation = function () {
+	var conversation = [];
+
+	return function (newMessage) {
+		conversation.push(newMessage);
+
+		conversation.forEach(function (message) {
+			console.log(message);
+		});
+
+		console.log("\n");
+	}
+}
+```
