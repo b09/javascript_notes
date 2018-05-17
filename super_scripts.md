@@ -439,6 +439,7 @@ Example: `{ 'carnivore': 5, 'herbivore': 2, 'omnivore': 1 }`
 
 Remember to use the appropriate `assert` method for the data types you are comparing in your tests.
 
+<br />
 </details>
 <details>
 <summary>
@@ -1278,6 +1279,54 @@ Traveller - Hw Callbacks Enumeration
 <br />
 <details>
 <summary>
+Traveller - README
+</summary>
+
+#### Learning Objectives
+- Be able to pass functions to higher-order functions
+- Be able to use built-in Array enumeration methods
+
+### Brief
+
+You have been given a project with two models, Traveller and Journey, and their corresponding test files.
+
+A Journey has:
+
+- a start location
+- an end location
+- a mode of transport
+- a distance in miles
+
+A Traveller has:
+
+- an array of Journeys
+
+You should write the code to make the Traveller tests pass, without modifying the spec files. You should use JavaScript's built-in enumerator methods, only using `forEach` if you can't find a way to use one of the other more appropriate methods.
+
+#### MVP
+
+Traveller:
+
+- should have a collection of journeys
+- should be able to get the journeys start locations
+- should be able to get the journeys end locations
+- should be able to get a list of the modes of transport
+- should be able to get journeys by transport
+- should be able to get journeys over a certain distance
+
+#### Extensions
+
+Traveller:
+
+- should be able to calculate total distance travelled
+- should be able to get a unique list of modes of transport
+
+Note: Remember to remove the `x` from `xit()` on the pending tests to run them.
+
+<br />
+</details>
+<details>
+<summary>
 journey.js
 </summary>
 
@@ -1500,6 +1549,62 @@ Films - Lab Callbacks Enumeration
 <br />
 <details>
 <summary>
+Films - README
+</summary>
+
+#### Learning Objectives
+
+- Be able to pass functions to higher-order functions
+- Be able to use built-in Array enumeration methods
+
+### Brief
+
+You have been given a project with two models, `Cinema` and `Film`, and their corresponding test files.
+
+A Film has:
+
+- a title
+- a genre
+- a year
+- a length
+
+A Cinema has:
+
+- an array of `Film`s
+
+You should write the code to make the Cinema tests pass. You should use JavaScript's built-in enumerator methods, only using `forEach` if you can't find a way to use one of the other more appropriate methods.
+
+#### MVP
+
+Cinema:
+
+- should have a collection of films
+- should be able to get a list of film titles
+- should be able to find a film by title
+- should be able to filter films by genre
+- should be able to check whether there are some films from a particular year
+- should be able to check whether all films are over a particular length
+- should be able to calculate total running time of all films
+
+#### Extensions
+
+Add a another test, `'Cinema should be able to filter films by year'`.
+
+We already have a method that filters films by genre, the functionality of which is very similar. We don't want two separate methods as that wouldn't be DRY. Your task is get the final test to pass by to writing a new method called `filmsByProperty`, which takes two arguments:
+
+1. the name of the property
+2. the value being search for
+
+Once the final test is passing, modify the test `'Cinema should be able to filter films by genre'` to use the new `filmsByProperty` method.
+
+#### Consideration
+
+If you use reduce, remember that you will need to pass in a default accumulator as the second argument.
+
+<br />
+</details>
+<details>
+<summary>
 film.js
 </summary>
 
@@ -1703,6 +1808,46 @@ module.exports = Cinema;
 (Ana/Iso/Pan)gram - Lab Enumeration
 </summary>
 <br />
+<details>
+<summary>
+(Ana/Iso/Pan)gram - README
+</summary>
+
+#### Learning Objectives
+
+- Be able to pass functions to higher-order functions
+- Be able to use built-in Array enumeration methods
+
+### Brief
+
+You have been given four projects, each containing a coding problem. You should write the code to make the tests pass, without modifying the spec files. You should use JavaScript's built-in enumerator methods where appropriate.
+
+You should attempt to make your code as clean as possible. You don't have to do all the work in the function that's being called in the test. Don't be afraid to attach little helper functions to the provided prototype.
+
+### UPPERCASER
+
+`map` an array of strings to a new array containing uppercase versions of each string.
+
+### Pangram Finder
+
+A pangram is a sentence or phrase which contains every letter of the alphabet. "The quick brown fox jumps over the lazy dog." is probably the most notable pangram in English.
+
+Given a sentence or phrase you should be able to determine whether or not `every` letter of the alphabet is included in it.
+
+### Isogram Finder
+
+An isogram is a word, phrase or sentence that does not contain any repeated letters. "Orange" is an isogram but "apple" is not.
+
+Given a word, phrase or sentence you should be able to determine whether or not it is an isogram. That is, you should be able to determine whether `some` letters are repeated.
+
+### Extension: Anagram Finder
+
+An anagram is a word formed by rearranging the letters of another word. Listen is an anagram of silent, for example.
+
+Given a word and an array of other words you should be able to `filter` the array, leaving only the anagrams of the word in question in the array.
+
+<br />
+</details>
 <details>
 <summary>
 anagram_finder.js
