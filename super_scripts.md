@@ -389,7 +389,7 @@ Jurassic Park - TDD
 <details>
 <summary>
 dinasaur.js
-</summary
+</summary>
 
 ```js
 const Dinosaur = function (species, diet, guestsAttractedPerDay) {
@@ -438,9 +438,9 @@ describe('Dinosaur', function() {
 });
 ```
 </details>
+<br />
+<br />
 </details>
-<br />
-<br />
 <details>
 <summary>
 park.js
