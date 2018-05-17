@@ -1134,10 +1134,60 @@ Traveller - Hw Callbacks Enumeration
 <summary>
 journey.js
 </summary>
+
+```js
+const Journey = function(startLocation, endLocation, transport, distance) {
+  this.startLocation = startLocation;
+  this.endLocation = endLocation;
+  this.transport = transport;
+  this.distance = distance;
+};
+
+module.exports = Journey;
+
+```
+
 <details>
 <summary>
 journey_spec.js
 </summary>
+
+```js
+const assert = require('assert');
+const Journey = require('../models/journey.js');
+
+describe('Journey', function() {
+
+  let journey1;
+
+  beforeEach(function() {
+    journey1 = new Journey('linlithgow', 'stirling', 'train', 30);
+  });
+
+  it('should have a start location', function() {
+    const actual = journey1.startLocation;
+    assert.strictEqual(actual, 'linlithgow');
+  });
+
+  it('should have a end location', function() {
+    const actual = journey1.endLocation;
+    assert.strictEqual(actual, 'stirling');
+  });
+
+  it('should have a mode of transport', function() {
+    const actual = journey1.transport;
+    assert.strictEqual(actual, 'train');
+  });
+
+  it('should have a distance', function() {
+    const actual = journey1.distance;
+    assert.strictEqual(actual, 30);
+  });
+
+});
+
+```
+
 </details>
 <br />
 </details>
@@ -1145,10 +1195,151 @@ journey_spec.js
 <summary>
 traveller.js
 </summary>
+
+```js
+const Traveller = function(journeys) {
+  this.journeys = journeys;
+};
+
+Traveller.prototype.getJourneyStartLocations = function() {
+  return this.journeys.map((journey) => {
+    return journey.startLocation;
+  });
+};
+
+Traveller.prototype.getJourneyEndLocations = function () {
+  return this.journeys.map((journey) => {
+    return journey.endLocation;
+  });
+};
+
+Traveller.prototype.getModesOfTransport = function () {
+  return this.journeys.map((journey) => {
+    return journey.transport
+  });
+};
+
+Traveller.prototype.getJourneysByTransport = function (transport) {
+  return this.journeys.filter((journey) => {
+    return journey.transport === transport;
+  });
+};
+
+Traveller.prototype.getJourneysByMinDistance = function (minDistance) {
+  return this.journeys.filter((journey) => {
+    return journey.distance > minDistance;
+  });
+};
+
+Traveller.prototype.calculateTotalDistanceTravelled = function () {
+  return this.journeys.reduce((total, journey) => {
+    return total + journey.distance;
+  }, 0);
+};
+
+Traveller.prototype.getUniqueModesOfTransport = function () {
+  return this.getModesOfTransport().filter((transport, index, array) => {
+    return array.indexOf(transport) === index;
+  });
+};
+
+
+module.exports = Traveller;
+
+```
+
 <details>
 <summary>
 traveller_spec.js
 </summary>
+
+```js
+const assert = require('assert');
+const Journey = require('../models/journey.js');
+const Traveller = require('../models/traveller.js');
+
+describe('Traveller', function() {
+
+  let journey1
+  let journey2
+  let journey3
+  let journey4
+  let journey5
+  let journeys;
+  let traveller;
+
+  beforeEach(function() {
+    journey1 = new Journey('linlithgow', 'stirling', 'train', 30);
+    journey2 = new Journey('paris', 'frankfurt', 'train', 400);
+    journey3 = new Journey('sydney', 'new york', 'aeroplane', 10000);
+    journey4 = new Journey('london', 'rome', 'car', 1200);
+    journey5 = new Journey('lancaster', 'isle of man', 'ferry', 80);
+    journeys = [journey1, journey2, journey3, journey4, journey5];
+    traveller = new Traveller(journeys);
+  });
+
+  it('should have a collection of journeys', function() {
+    const actual = traveller.journeys;
+    assert.deepStrictEqual(actual, journeys)
+  });
+
+  it('should be able to get the journeys start locations', function() {
+    const actual = [
+      journey1.startLocation,
+      journey2.startLocation,
+      journey3.startLocation,
+      journey4.startLocation,
+      journey5.startLocation
+    ];
+    assert.deepStrictEqual(actual, traveller.getJourneyStartLocations());
+  });
+
+  it('should be able to get the journeys end locations', function() {
+    const actual = [
+      journey1.endLocation,
+      journey2.endLocation,
+      journey3.endLocation,
+      journey4.endLocation,
+      journey5.endLocation
+    ];
+    assert.deepStrictEqual(actual, traveller.getJourneyEndLocations());
+  });
+
+  it('should be able to get a list of the modes of transport', function() {
+    const actual = [ 'train', 'train', 'aeroplane', 'car', 'ferry' ];
+    assert.deepStrictEqual(actual, traveller.getModesOfTransport());
+  });
+
+  it('should be able to get journeys by transport', function() {
+    const actual = [
+      journey1,
+      journey2
+    ];
+    assert.deepStrictEqual(actual, traveller.getJourneysByTransport('train'));
+  });
+
+  it('should be able to get journeys over a certain distance', function() {
+    const actual = [
+      journey3,
+      journey4
+    ];
+    assert.deepStrictEqual(actual, traveller.getJourneysByMinDistance(1000))
+  });
+
+  it('should be able to calculate total distance travelled', function() {
+    const actual = 11710;
+    assert.deepStrictEqual(actual, traveller.calculateTotalDistanceTravelled())
+  });
+
+  it('should be able to get a unique list of the modes of transport', function() {
+    const actual = [ 'train', 'aeroplane', 'car', 'ferry' ];
+    assert.deepStrictEqual(actual, traveller.getUniqueModesOfTransport());
+  });
+
+});
+
+```
+
 </details>
 <br />
 </details>
