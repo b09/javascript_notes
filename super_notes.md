@@ -2296,7 +2296,6 @@ ourForEach(numbers, (number) => {
 ## Introduction to Context and `this`
 
 <details>
-<details>
 <summary>
 Introduction
 </summary>
@@ -2474,7 +2473,7 @@ teacher.createStudentNameList()
 
 In this case we would use an arrow function expression to define the callback, but there may be other occasions when we want to make use of the execution context. JavaScript allows us to do either, using the different types of functions.
 </details>
-</details>
+
 
 ## Closures
 
@@ -2482,6 +2481,7 @@ In this case we would use an arrow function expression to define the callback, b
 <summary>
 Closures
 </summary>
+
 ### Closures  
 
 Closures are an interesting concept in JavaScript that don't exist in any of the other languages that we've learned so far.
