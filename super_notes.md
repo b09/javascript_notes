@@ -2135,28 +2135,15 @@ Our code will be better and more maintainable as a result of unit testing.
 
 # Callback Functions & Enumeration
 <details>
-### Learning Objectives
-- Understand the implications of functions being first-class objects
-- Be able to declare anonymous functions
-- Be able to declare arrow functions and use implicit return
-- Be able to interrogate documentation
-- Be able to pass functions to higher-order functions
-- Be able to use built-in Array enumeration methods
-- Be able to write a higher-order function
 
 ## Introduction
 
-In this lesson we are going to look at the key language features of JavaScript, higher-order functions and callbacks.
-
 A higher order function accepts or returns another function. A callback is a function that is passed to a function as an argument.
-
-Using higher-order functions and callbacks allow us to write more dynamic code and form the foundations of the event-driven programming that we will be doing for the browser later in the course.
-
 Today we are going to be using some of JavaScript's built in higher-order functions that handle iterating over arrays; the enumeration methods.
 
 ## Higher-order Functions and Callbacks
 
-We have seen that in JavaScript, functions are first class objects. This means they can be stored in variables and data structures; and passed as arguments to other functions.
+In JavaScript, functions are first class objects, they can be stored in variables and data structures; and passed as arguments to other functions.
 
 A higher order function is a function that takes a function as an argument or returns a function.
 
@@ -2197,22 +2184,6 @@ numbers.forEach((number) => {
 > Instructor note: Compare the `forEach` with an equivalent enumeration method from another language
 
 ### Using the MDN docs
-
-Let's look at the documentation for the `forEach` method on the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
-
-In the documentation, any arguments in square brackets are optional.
-
-> Instructor note: Ask the class...
-
-What additional useful argument will `forEach` pass to our callback if we make a parameter for it?
-
-<details>
-<summary>Answers:</summary>
-The element's index
-</details>
-<br>
-
-Let's see how we would modify the message to make use of the element's index.
 
 ```js
 // ...
