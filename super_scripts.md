@@ -386,8 +386,10 @@ Jurassic Park - TDD
 </summary>
 <br />
 <br />
-
+<details>
+<summary>
 dinasaur.js
+</summary
 
 ```js
 const Dinosaur = function (species, diet, guestsAttractedPerDay) {
@@ -436,10 +438,14 @@ describe('Dinosaur', function() {
 });
 ```
 </details>
+</details>
 <br />
 <br />
-
+<details>
+<summary>
 park.js
+</summary>
+
 ```js
 const Park = function (name, ticketPrice) {
   this.name = name;
@@ -683,5 +689,6 @@ describe('Park', function() {
 ```
 <br />
 <br />
+</details>
 </details>
 </details>
