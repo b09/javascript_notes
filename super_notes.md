@@ -2123,16 +2123,15 @@ Which Mocha function can we use to group similar tests?
 # Callback Functions & Enumeration
 <details>
 
-<details>
-<summary>
+
 ## Introduction
-</summary>
+<details>
 
 A higher order function accepts or returns another function. A callback is a function that is passed to a function as an argument.
 JavaScript's built in higher-order functions that handle iterating over arrays; the enumeration methods.
 </details>
 ## Higher-order Functions and Callbacks
-
+<details>
 In JavaScript, functions are first class objects, they can be stored in variables and data structures; and passed as arguments to other functions.
 
 A higher order function is a function that takes a function as an argument or returns a function.
@@ -2140,7 +2139,7 @@ A higher order function is a function that takes a function as an argument or re
 A callback is a function that is passed to another function as an argument.
 
 Before we start writing our own higher-order functions, let's look at using some that are built in JavaScript methods.
-
+</details>
 ## Enumeration Methods
 
 We know we can iterate over an array using a `for of` loop, but there are a number of enumeration methods on the Array prototype that enable us to do the same and some offer us extra functionality. These enumeration methods are higher-order functions; they take in a callback which they invoke for each element of the array.
