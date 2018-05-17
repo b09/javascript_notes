@@ -1354,34 +1354,195 @@ Films - Lab Callbacks Enumeration
 <br />
 <details>
 <summary>
-cards.js
+film.js
 </summary>
+
+```js
+const Film = function (title, genre, year, length) {
+  this.title = title;
+  this.genre = genre;
+  this.year = year;
+  this.length = length;
+};
+
+module.exports = Film;
+
+```
+
 <details>
 <summary>
-cards_spec.js
+film_spec.js
 </summary>
+
+```js
+const assert = require('assert');
+const Film = require('../models/film.js');
+
+describe('Film', function () {
+
+  let moonlight;
+
+  beforeEach(function () {
+    moonlight = new Film('Moonlight', 'drama', 2016, 111);
+  });
+
+  it('should have a title', function () {
+    const actual = moonlight.title;
+    assert.strictEqual(actual, 'Moonlight');
+  });
+
+  it('should have a genre', function () {
+    const actual = moonlight.genre;
+    assert.strictEqual(actual, 'drama');
+  });
+
+  it('should have a year', function () {
+    const actual = moonlight.year;
+    assert.strictEqual(actual, 2016);
+  });
+
+  it('should have a length', function () {
+    const actual = moonlight.length;
+    assert.strictEqual(actual, 111);
+  });
+
+});
+
+```
+
 </details>
 <br />
 </details>
 <details>
 <summary>
-game.js
+cinema.js
 </summary>
+
+```js
+const assert = require('assert');
+const Film = require('../models/film.js');
+
+describe('Film', function () {
+
+  let moonlight;
+
+  beforeEach(function () {
+    moonlight = new Film('Moonlight', 'drama', 2016, 111);
+  });
+
+  it('should have a title', function () {
+    const actual = moonlight.title;
+    assert.strictEqual(actual, 'Moonlight');
+  });
+
+  it('should have a genre', function () {
+    const actual = moonlight.genre;
+    assert.strictEqual(actual, 'drama');
+  });
+
+  it('should have a year', function () {
+    const actual = moonlight.year;
+    assert.strictEqual(actual, 2016);
+  });
+
+  it('should have a length', function () {
+    const actual = moonlight.length;
+    assert.strictEqual(actual, 111);
+  });
+
+});
+
+```
+
 <details>
 <summary>
-game_spec.js
+cinema_spec.js
 </summary>
-</details>
-<br />
-</details>
-<details>
-<summary>
-player.js
-</summary>
-<details>
-<summary>
-player_spec.js
-</summary>
+
+```js
+const assert = require('assert');
+const Cinema = require('../models/cinema.js');
+const Film = require('../models/film.js');
+
+describe('Cinema', function () {
+
+  let moonlight;
+  let bladeRunner;
+  let dunkirk;
+  let blackPanther;
+  let trainspotting;
+  let films;
+  let cinema;
+
+  beforeEach(function () {
+    moonlight = new Film('Moonlight', 'drama', 2016, 111);
+    bladeRunner = new Film('Blade Runner 2049', 'sci-fi', 2017, 164);
+    dunkirk = new Film('Dunkirk', 'history', 2017, 96);
+    blackPanther = new Film('Black Panther', 'action', 2018, 134);
+    trainspotting = new Film('T2 Trainspotting', 'drama', 2017, 117);
+
+    films = [moonlight, bladeRunner, dunkirk, blackPanther, trainspotting];
+    cinema = new Cinema(films);
+  });
+
+  it('should have a collection of films', function () {
+    const actual = cinema.films;
+    assert.deepStrictEqual(actual, films);
+  });
+
+  it('should be able to get a list of film titles', function () {
+    const actual = cinema.filmTitles();
+    const expected = ['Moonlight', 'Blade Runner 2049', 'Dunkirk', 'Black Panther', 'T2 Trainspotting'];
+    assert.deepStrictEqual(actual, expected);
+  });
+
+  it('should be able to find a film by title', function () {
+    const actual = cinema.filmByTitle('Dunkirk');
+    assert.deepStrictEqual(actual, dunkirk);
+  });
+
+  it('should be able to filter films by genre', function () {
+    const actual = cinema.filmsByGenre('drama');
+    // Extension:
+    // const actual = cinema.filmsByProperty('genre', `drama`);
+    const expected = [moonlight, trainspotting];
+    assert.deepStrictEqual(actual, expected);
+  });
+
+  it('should be able to check whether there are some films from a particular year', function () {
+    const actual = cinema.hasFilmsFromYear(2018);
+    assert.strictEqual(actual, true);
+  });
+
+  it('should be able to check whether there are no films from a particular year', function () {
+    const actual = cinema.hasFilmsFromYear(2000);
+    assert.strictEqual(actual, false);
+  });
+
+  it('should be able to check whether all films are over a particular length', function () {
+    const actual = cinema.areAllFilmsOfMinLength(60);
+    assert.strictEqual(actual, true);
+  });
+
+  it('should be able to calculate total running time of all films', function () {
+    const actual = cinema.totalRunningTime();
+    assert.strictEqual(actual, 622);
+  });
+
+  //  Extension:
+
+  // it('should be able to filter films by year', function () {
+  //   const actual = cinema.filmsByProperty('year', 2017);
+  //   const expected = [bladeRunner, dunkirk, trainspotting];
+  //   assert.deepStrictEqual(actual, expected);
+  // });
+
+});
+
+module.exports = Cinema;
+
+```
+
 </details>
 <br />
 </details>
