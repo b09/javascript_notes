@@ -704,6 +704,7 @@ describe('Park', function() {
             cards_spec.js
           </summary>
         </details>
+        <br />
     </details>
     <details>
       <summary>
@@ -714,16 +715,18 @@ describe('Park', function() {
           game_spec.js
         </summary>
       </details>
+      <br />
     </details>
     <details>
-    <summary>
-    player.js
-    </summary>
-    <details>
-    <summary>
-    player_spec.js
-    </summary>
-    </details>
+      <summary>
+      player.js
+      </summary>
+        <details>
+          <summary>
+          player_spec.js
+          </summary>
+        </details>
+        <br />
     </details>
     <br />
 </details>
