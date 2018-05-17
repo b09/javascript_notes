@@ -808,6 +808,7 @@ for (var i = 0; i < keys.length; i++) {
 <summary>
 Function Scope with `var`
 </summary>
+
 ### Function Scope with `var`
 
 The `var` keyword declares a variable in the current function's scope, is only defined within that function, and can't be seen outside it.
@@ -1012,30 +1013,23 @@ Polluting the global scope in this way is bad practice. We always want to use a 
 
 # Constructor Functions & Prototype Objects
 <details>
-**Lesson Duration: 90 minutes**
+<details>
+<summary>
+"Classes" in JavaScript
+</summary>
 
-### Learning Objectives
-- Understand how the `new` operator works
-- Be able to create objects using constructor functions
-- Understand the benefits of attaching functions to a prototype
-- Be able to attach functions to an object's prototype
-- Be able to `require` one module into another
-
-## Intro
-
-We've learned about the basic JavaScript language features, now it's time to start putting them all together and considering how we might use them to structure an application.
-
-Classes are the building blocks that we use to construct applications in object-oriented programming, so learning how to create them in JavaScript is the next logical step.
-
-JavaScript is an object based language, but it isn't strictly object-oriented like Ruby, Java or a lot of other languages. That doesn't prevent us from applying the OO design principles that we know and love.
-
-## "Classes" in JavaScript
+### "Classes" in JavaScript
 
 Strictly speaking there is no class construct in JavaScript, although we can achieve something very similar using the constructor function pattern.
 
 Constructor functions might look and behave slightly differently to a traditional class, but they allow us to achieve the same goal: creating objects.
+</details>
+<details>
+<summary>
+Constructor Function Notation
+</summary>
 
-## Constructor Function Notation
+### Constructor Function Notation
 
 Let's imagine that we want to create a `Person` object to model Shaggy. We can use a constructor function to achieve this in the same way that we might use a class in another language:
 
@@ -1058,8 +1052,13 @@ console.log('shaggy:', shaggy);
 > The correct naming convention for constructor functions is PascalCase / UpperCamelCase.
 
 A constructor function is just like any other function. Seeing as we are not returning anything from our function, the return value of the `Person` function will be `undefined`. As a result the value of `shaggy` is `undefined`.
+</details>
+<details>
+<summary>
+The 'new' Operator
+</summary>
 
-## The `new` Operator
+### The `new` Operator
 
 If we add a `new` operator before our function call, its behaviour changes. Instead of returning `undefined`, it will return an empty `Person` object.
 
@@ -1094,8 +1093,13 @@ The `new` operator is now ignored and the value of `shaggy` is the plain object 
 This isn't what we want...
 
 The key thing to remember is that we never explicitly return anything from a constructor function because it prevents the `new` operator from working properly.
+</details>
+<details>
+<summary>
+Adding Properties to Objects
+</summary>
 
-## Adding Properties to Objects
+### Adding Properties to Objects
 
 We can give objects properties (also known as attributes) to store information about them (their state). Let's give our person a name property with a `String` value.
 
@@ -1116,7 +1120,7 @@ console.log('shaggy:', shaggy);
 
 They're the same object! `this` refers to whichever `Person` we're creating at the time.
 
-### Task: (10 minutes)
+#### Task: (10 minutes)
 
 - Add a name property with the value `'Shaggy Rogers'` to the object that is returned from our constructor
 - `console.log` only `shaggy`'s name property instead of the entire object
@@ -1153,8 +1157,13 @@ const shaggy = new Person('Shaggy Rogers'); // MODIFIED
 ```
 
 Now we can pass in a name when we create a `Person` object and as a result different people can have different names.
+</details>
+<details>
+<summary>
+Adding Methods to Objects
+</summary>
 
-## Adding Methods To Objects
+### Adding Methods To Objects
 
 Due to the fact that functions are objects that can be stored in variables in JavaScript, we can attach methods to our objects in exactly the same way that we attach properties.
 
@@ -1206,12 +1215,17 @@ Can you think of any disadvantages of storing the same method on multiple object
 - Multiple versions of the exact same function object stored in memory
 
 </details>
+</details>
+<details>
+<summary>
+Prototypes
+</summary>
 
-## Prototypes
+### Prototypes
 
 Instead of adding methods in our constructor function, we can add our methods to the constructor's prototype object.
 
-### What is a Prototype Object?
+#### What is a Prototype Object?
 
 Before we learn about prototype objects in JavaScript, let's think about what the word prototype means in English.
 
@@ -1221,7 +1235,7 @@ The Oxford English Dictionary defines a prototype as:
 
 In JavaScript a prototype object acts as a central store of information which all objects created via a particular constructor function can access.
 
-### How do we do this?
+#### How do we do this?
 
 When we create objects using a constructor function with the `new` operator, the constructor's prototype object is assigned to it. Prototype objects are just objects with key-value pairs, like any other in JavaScript.
 
@@ -1265,7 +1279,7 @@ console.log("shaggy's prototype:", Object.getPrototypeOf(shaggy));
 console.log("velma's prototype:", Object.getPrototypeOf(velma));
 ```
 
-### How does this work?
+#### How does this work?
 
 If we try to call a method on an object, JavaScript first will check if the method exists on the object itself. If it doesn't find it then it will check the object's prototype.
 
@@ -1277,11 +1291,11 @@ Therefore when we call `greet()` on `shaggy`, JavaScript will first look for tha
 
 > It is possible to create a prototypal inheritance chain but, like multiple inheritance in other languages, it is usually best to avoid it.
 
-### Why do we do this?
+#### Why do we do this?
 
 Storing methods on a prototype, instead of the objects themselves, is more memory efficient. When we do this only one copy of each method exists in memory. If we were to store a copy of every method on every object that we created, then we would be using additional memory to store multiple copies of the exact same function.
 
-### Task: (15 minutes)
+#### Task: (15 minutes)
 
 1. Create a new file - pet.js
 2. Create a Pet constructor
@@ -1314,8 +1328,13 @@ scooby.eat('Scooby Snack');
 ```
 
 </details>
+</details>
+<details>
+<summary>
+Requiring and Exporting Modules
+</summary>
 
-## Requiring and Exporting Modules
+### Requiring and Exporting Modules
 
 This is great so far. We can do just about anything that we could do with a class in another language. Now only one thing remains...
 
@@ -1383,7 +1402,7 @@ In this case we want to export our constructor functions.
 
 We can think of `require` as a function that looks at whichever file we tell it to and gives us back the value of `module.exports` for that file.
 
-### Task: (15 minutes)
+#### Task: (15 minutes)
 
 - Assign a pet property in the `Person` constructor via a parameter
 - Add a `feedPet` method to `Person.prototype` which:
@@ -1427,51 +1446,7 @@ shaggy.feedPet('Scooby Snack');
 ```
 
 </details>
-
-## Recap
-
-> Instructor note: Ask the class...
-
-Step by step: what happens when we invoke a function using the `new` operator?
-
-<details>
-<summary>Answer:</summary>
-
-- An object is created within the constructor
-- JavaScript assigns the constructor functions prototype to that object
-- We assign properties to the object
-- The object is returned from the constructor function
-
 </details>
-
-<br>
-
-
-Which keyword can we use to refer to an object inside its constructor?
-
-<details>
-<summary>Answer:</summary>
-
-`this`
-
-</details>
-
-<br>
-
-What is the main advantage of storing methods on a prototype object?
-
-<details>
-<summary>Answer:</summary>
-
-- Memory efficiency
-
-</details>
-
-## Conclusion
-
-Now we can use constructor functions to create objects with a similar set of properties and prototype objects to store methods for them.
-
-This allows us to write much more DRY (Don't Repeat Yourself) code than if we were to manually create these objects, as well as allowing us to ensure that all of objects of a similar type have the same set of properties and behaviours.
 </details>
 
 
