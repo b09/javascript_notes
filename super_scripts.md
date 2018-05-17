@@ -385,7 +385,6 @@ Make up your own episode!
 Jurassic Park - TDD
 </summary>
 <br />
-<br />
 <details>
 <summary>
 dinasaur.js
@@ -438,7 +437,6 @@ describe('Dinosaur', function() {
 });
 ```
 </details>
-<br />
 <br />
 </details>
 <details>
@@ -687,11 +685,8 @@ describe('Park', function() {
 });
 
 ```
-<br />
-<br />
 </details>
 </details>
-<br />
 <br />
 </details>
 
@@ -699,6 +694,7 @@ describe('Park', function() {
   <summary>
     Top Trumps - TDD Lab
   </summary>
+  <br />
     <details>
       <summary>
         cards.js
@@ -729,4 +725,5 @@ describe('Park', function() {
     </summary>
     </details>
     </details>
+    <br />
 </details>
