@@ -404,8 +404,7 @@ module.exports = Dinosaur;
 <summary>
 dinasaur_spec.js
 </summary>
-<br />
-<br />
+
 
 ```js
 const assert = require('assert');
@@ -437,7 +436,8 @@ describe('Dinosaur', function() {
 });
 ```
 </details>
-
+<br />
+<br />
 park.js
 ```js
 const Park = function (name, ticketPrice) {
