@@ -2124,7 +2124,7 @@ Which Mocha function can we use to group similar tests?
 <details>
 
 
-## Introduction
+### Introduction
 
 <details>
 
@@ -2132,7 +2132,7 @@ A higher order function accepts or returns another function. A callback is a fun
 JavaScript's built in higher-order functions that handle iterating over arrays; the enumeration methods.
 </details>
 
-## Higher-order Functions and Callbacks
+### Higher-order Functions and Callbacks
 
 <details>
 In JavaScript, functions are first class objects, they can be stored in variables and data structures; and passed as arguments to other functions.
@@ -2144,11 +2144,13 @@ A callback is a function that is passed to another function as an argument.
 Before we start writing our own higher-order functions, let's look at using some that are built in JavaScript methods.
 </details>
 
-## Enumeration Methods
+### Enumeration Methods
+
+<details>
 
 We know we can iterate over an array using a `for of` loop, but there are a number of enumeration methods on the Array prototype that enable us to do the same and some offer us extra functionality. These enumeration methods are higher-order functions; they take in a callback which they invoke for each element of the array.
 
-### `forEach`
+#### `forEach`
 
 We have seen that we can loop through an array using the `for of` loop. Let's use it to log out each element of an array.
 
@@ -2176,7 +2178,7 @@ numbers.forEach((number) => {
 
 > Instructor note: Compare the `forEach` with an equivalent enumeration method from another language
 
-### Using the MDN docs
+#### Using the MDN docs
 
 ```js
 // ...
@@ -2186,7 +2188,7 @@ numbers.forEach((number, index) => {
 });
 ```
 
-### Task: (5 minutes)
+#### Task: (5 minutes)
 
 Write a function called `multiplyByTwo` that uses the `forEach` and:
 
@@ -2216,7 +2218,7 @@ console.log(multiplyByTwo(numbers))
 
 `forEach` doesn't return a value and we can't return anything from the callback that we pass to it. If we try and return from the callback, we are returning into the `forEach` and as `forEach` is implemented in a way that it doesn't do anything with the return value, for have no way of accessing that value. Instead we have to manually handle the value. In this case we have added the modified element into the previously declared empty array. In this way `forEach` is a direct replacement for a `for` loop.
 
-### Task: (10 minutes)
+#### Task: (10 minutes)
 
 Using the `forEach` enumeration method, complete the following tasks:
 
@@ -2256,14 +2258,14 @@ const sumElements = function (numbersArray) {
 </details>
 <br>
 
-### Other enumeration methods (`map`, `filter`, `reduce`)
+#### Other enumeration methods (`map`, `filter`, `reduce`)
 
 `map`, `filter` and `reduce` are three commonly used enumeration methods on the Array prototype. They are similar to `forEach`, in that they iterate over the array invoking the callback for each element, passing in the element, but they each have some extra functionality. While we can use `forEach` to achieve the same results, the benefits of using these methods where appropriate include:
 
 - cleaner, more readable and expressive code
 - inversion of control - we don't have to worry about the implementation details of how JavaScript `maps`, `filters` or `reduces`
 
-### Paired discussion (5 minutes)
+#### Paired discussion (5 minutes)
 
 <details>
 <summary>Answers:</summary>
@@ -2302,7 +2304,7 @@ const multiplyByTwo = function (numbersArray) {
 console.log(multiplyByTwo(numbers));
 ```
 
-### Task (15 minutes):
+#### Task (15 minutes):
 
 Refactor:
 
@@ -2341,7 +2343,7 @@ console.log(sumElements(numbers))
 <br>
 
 
-### How are these higher-order functions implemented?
+#### How are these higher-order functions implemented?
 
 If we were writing our own version of `forEach`, it would need to take in two arguments:
 
@@ -2363,3 +2365,4 @@ ourForEach(numbers, (number) => {
   console.log('the number is:', number);
 });
 ```
+</details>
