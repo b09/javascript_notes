@@ -1452,38 +1452,12 @@ shaggy.feedPet('Scooby Snack');
 
 # Test-Driven Development Using Assert and Mocha
 <details>
-**Duration: 120 minutes**
+<details>
+<summary>
+Writing Tests with Assert
+</summary>
+### Writing Tests with Assert
 
-## Learning Objectives
-- Be able to write basic tests using Node's Assert module
-- Be able to write unit tests using Assert in combination with Mocha
-- Be able to run test files with Mocha using an npm script
-
-## Intro
-
-We've learned the fundamentals of JavaScript and we're able to use them to write some fairly robust code, but how can we be sure that our code works?
-
-We could use `console.log()` to verify that our functions have the expected output, but then our code would be littered with redundant statements that aren't relevent to it's functionality.
-
-We could remove those `console.log()`s once we're satisfied that our code works, but then how would we test that our code still works if we were to refactor it?
-
-Unit tests to the rescue!
-
-## Assert
-
-Node ships with a basic testing module out of the box which we can use to unit test our code. This module provides us with a set of assertion methods that can be used for testing.
-
-These testing tools are quite primitive, in that they don't offer much functionality, and are usually used in tandem with a testing framework like Mocha as a result.
-
-We'll begin by taking a look at Node's Assert module on it's own so that we can get a feel for how it works before we start using it with a testing framework.
-
-## Writing Tests with Assert
-
-The first thing that we'll need to do is create a .js file to work in.
-
-```sh
-touch play.js
-```
 
 Node ships with the `assert` module out of the box, but if we want to use it then we have to `require` it.
 
@@ -1495,7 +1469,6 @@ const assert = require('assert');
 
 Now we're ready to start writing some basic tests.
 
-### `assert.equal()`
 
 Now that we have access to the `assert` module, we can use any of the methods that come with it. We can use the `equal()` method to check if two values are the same, just like you might have done when unit testing in other languages.
 
@@ -1509,7 +1482,7 @@ We can then run our tests in the same way that we would run any other .js file.
 node play.js
 ```
 
-Notice that we don't get any feedback at all. This isn't ideal. Node will only tell us if our tests are failing. Let's break our test and see what happens.
+Notice that we don't get any feedback at all. Node will only tell us if our tests are failing. Let's break our test and see what happens.
 
 ```js
 assert.equal(true, false);
@@ -1543,7 +1516,7 @@ assert.equal([], ![]);
 
 We should be as specific as possible when testing therefore avoid using `equal()`.
 
-### `assert.strictEqual()`
+#### `assert.strictEqual()`
 
 Assert gives us another method, `strictEqual()`, which uses JavaScripts strict equality operator (`===`). As a general rule of thumb we should use that instead of `equal()` so that we can be certain that our tests are passing or failing for the right reasons.
 
@@ -1579,7 +1552,7 @@ const secondArray = firstArray;
 assert.equal(firstArray, secondArray);
 ```
 
-### `assert.deepEqual()` and `assert.deepStrictEqual()`
+#### `assert.deepEqual()` and `assert.deepStrictEqual()`
 
 Assert gives us another set of methods; `deepEqual()`  and `deepStrictEqual()`. These methods look at the values contained within the object and use those to determine if the objects are equal, rather than checking if the object are the same object.
 
@@ -1608,14 +1581,14 @@ npm test
 ```
 
 Third-party assertion libraries are available if you need something more fully featured but Assert should be able to take care of all of our needs for the time being.
+</details>
+<details>
+<summary>
+Mocha
+</summary>
 
-## Mocha
+### Mocha
 
-Node's built in assert module is very basic as you can see. It gives us some methods that we can use to test our code but that's all. It doesn't even tell us if our tests are passing. If we only used `assert` to test our code then our test files could quickly become an unintelligible mess of calls to `equal()` unless we wrote our own testing framework to organise them.
-
-Mocha has some nice features that help us to organise our tests and gives us much more readable and descriptive output.
-
-## Writing Unit Tests With Mocha and Assert
 
 Now that we've seen how some of the methods that we can get from Assert work, let's create a model, employing TDD, and look at how we can use Mocha to better organise and run our tests.
 
@@ -1691,7 +1664,7 @@ const assert = require('assert');
 const Taxi = require('../taxi.js');
 ```
 
-### `describe()`
+#### `describe()`
 
 Before we write our first test let's take a look at one of the organisational functions that Mocha gives us: `describe()`.
 
@@ -1708,7 +1681,7 @@ describe('Taxi', function () {
 });
 ```
 
-### `it()`
+#### `it()`
 
 Inside of the function that we're passing to `describe()` we can use the `it()` function for each of our test cases.
 
@@ -1758,7 +1731,7 @@ describe('Taxi', function () {
 
 This _anonymous_ function will contain the setup for our test, and our `assert`.
 
-### Arrange-Act-Assert
+#### Arrange-Act-Assert
 
 As with many other testing frameworks we can use the arrange-act-assert pattern here.
 
@@ -1852,7 +1825,7 @@ npm test
 # -> 2 passing
 ```
 
-### `beforeEach()`
+#### `beforeEach()`
 
 So far, so good. There's some repetition in our test cases though. We're creating a new `Taxi` object in each test.
 
@@ -1894,7 +1867,7 @@ it('should have a model', function () {
 });
 ```
 
-### Task: 5 minutes
+#### Task: 5 minutes
 
 Add a `driver` property to our taxi. This should be a `String` containing the driver's name.
 
@@ -1925,7 +1898,7 @@ const Taxi = function (manufacturer, model, driver) { // UPDATED
 
 </details>
 
-### Nested `describe()`s
+#### Nested `describe()`s
 
 `describe()`s can be nested within each other. This can be useful for grouping similar tests. We might have several tests cases to test the various outcomes of one piece of functionality, for example.
 
@@ -1997,7 +1970,7 @@ npm test
 
 Next we're going to extend our `Taxi`, adding additional functionality for the passengers array.
 
-### Task: 20 minutes
+#### Task: 20 minutes
 
 Employing TDD, add the following methods to your taxi:
 
@@ -2062,65 +2035,6 @@ Taxi.prototype.removeAllPassengers = function () {
   this.passengers.splice(0, this.numberOfPassengers());
 }
 ```
-
-</details>
-
-## Recap
-
-> Instructor note: Ask the class...
-
-Which methods did we use from Node's Assert module?
-
-<details>
-<summary>Answers</summary>
-
-`equal()`  
-`strictEqual()`  
-`deepEqual()`  
-`deepStrictEqual()`
-
-</details>
-
-<br>
-
-What is the difference between `equal()` and `strictEqual()`?
-
-<details>
-<summary>Answer</summary>
-
-`equal()` uses the abstract equality operator (`==`) while `strictEqual()` uses the strict equality operator (`===`).
-</details>
-
-<br>
-
-What is the difference between `equal()` and `deepEqual()`?
-
-<details>
-<summary>Answer</summary>
-
-When comparing objects `equal()` expects both arguments to be references to the exact same object, whereas `deepEqual()` will check if the contents of the objects are the same.
-
-</details>
-
-<br>
-
-How can we set up an npm script to run our tests for us?
-
-<details>
-<summary>Answer</summary>
-
-Add `mocha specs` to the test script in our package.json. This tells npm to run the files in our specs directory with mocha. We can then run this script using `npm test`.
-
-</details>
-
-<br>
-
-Which Mocha function can we use to group similar tests?
-
-<details>
-<summary>Answer</summary>
-
-`describe()`
 
 </details>
 </details>
