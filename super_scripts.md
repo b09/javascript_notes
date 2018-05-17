@@ -699,6 +699,7 @@ describe('Park', function() {
       <summary>
         cards.js
       </summary>
+      
       ```js
       const Card = function (options) {
         this.name = options.name;
@@ -713,6 +714,7 @@ describe('Park', function() {
           <summary>
             cards_spec.js
           </summary>
+
           ```js
           const assert = require('assert');
           const Card = require('../card.js');
@@ -760,6 +762,7 @@ describe('Park', function() {
       <summary>
         game.js
       </summary>
+
       ```js
       const Game = function (cards, players) {
         this.deck = cards;
@@ -820,6 +823,7 @@ describe('Park', function() {
         <summary>
           game_spec.js
         </summary>
+
         ```js
         const assert = require('assert');
         const Card = require('../card.js');
@@ -985,6 +989,7 @@ describe('Park', function() {
       <summary>
       player.js
       </summary>
+
       ```js
       const Player = function (name) {
         this.name = name;
@@ -1024,6 +1029,7 @@ describe('Park', function() {
           <summary>
           player_spec.js
           </summary>
+
           ```js
           const assert = require('assert');
           const Player = require('../player.js');
