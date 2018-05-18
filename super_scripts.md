@@ -387,7 +387,7 @@ Jurassic Park - TDD
 <br />
 <details>
 <summary>
-Jurassic Park - README
+Jurassic Park - Brief
 </summary>
 
 #### Learning Objectives
@@ -753,7 +753,7 @@ Top Trumps - TDD Lab
 <br />
 <details>
 <summary>
-Top Trumps - README
+Top Trumps - Brief
 </summary>
 
 #### Learning Objectives
@@ -1279,7 +1279,7 @@ Traveller - Hw Callbacks Enumeration
 <br />
 <details>
 <summary>
-Traveller - README
+Traveller - Brief
 </summary>
 
 #### Learning Objectives
@@ -1549,7 +1549,7 @@ Films - Lab Callbacks Enumeration
 <br />
 <details>
 <summary>
-Films - README
+Films - Brief
 </summary>
 
 #### Learning Objectives
@@ -1810,7 +1810,7 @@ module.exports = Cinema;
 <br />
 <details>
 <summary>
-(Ana/Iso/Pan)gram - README
+(Ana/Iso/Pan)gram - Brief
 </summary>
 
 #### Learning Objectives
@@ -2105,12 +2105,12 @@ describe('UpperCaser', function () {
 
 <details>
 <summary>
-(Ana/Iso/Pan)gram - Lab Enumeration
+Record Store - Wkend Homework
 </summary>
 <br />
 <details>
 <summary>
-(Ana/Iso/Pan)gram - README
+Record Store - Brief
 </summary>
 
 #### Learning Objectives
