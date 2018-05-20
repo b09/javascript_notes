@@ -2203,7 +2203,14 @@ record.js
 </summary>
 
 ```js
+const Record = function (options) {
+  this.title = options.title;
+  this.artist = options.artist;
+  this.genre = options.genre;
+  this.price = options.price;
+};
 
+module.exports = Record;
 
 ```
 
@@ -2213,6 +2220,675 @@ record_spec.js
 </summary>
 
 ```js
+const Record = require('../record.js');
+const assert = require('assert');
+
+describe('Record', function () {
+  let record;
+
+  beforeEach(function () {
+    record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+  });
+
+  it('should have a title', function () {
+    assert.strictEqual(record.title, 'Their Greatest Hits 1971 - 1975');
+  });
+
+  it('should have an artist', function () {
+    assert.strictEqual(record.artist, 'Eagles');
+  });
+
+  it('should have a genre', function () {
+    assert.strictEqual(record.genre, 'rock');
+  });
+
+  it('should have a price', function () {
+    assert.strictEqual(record.price, 1000);
+  });
+});
+
+```
+
+</details>
+<br />
+</details>
+<details>
+<summary>
+record_store.js
+</summary>
+
+```js
+const RecordStore = function (name) {
+  this.name = name;
+  this.funds = 0;
+  this.stock = [];
+};
+
+RecordStore.prototype.findRecord = function (query) {
+  const foundRecords = this.stock.filter((record) => {
+    return Object.keys(query).every((attribute) => {
+      return record[attribute] === query[attribute];
+    });
+  });
+  return foundRecords;
+};
+
+RecordStore.prototype.addFunds = function (amount) {
+  this.funds += amount;
+};
+
+RecordStore.prototype.addRecordToStock = function (record) {
+  this.stock.push(record);
+};
+
+RecordStore.prototype.sell = function (record) {
+  if (!this.hasRecord(record)) return;
+  this.addFunds(record.price);
+  this.removeRecordFromStock(record);
+};
+
+RecordStore.prototype.hasRecord = function (record) {
+  return this.stock.includes(record);
+};
+
+RecordStore.prototype.removeRecordFromStock = function (record) {
+  if (!this.hasRecord(record)) return;
+  const index = this.stock.indexOf(record);
+  this.stock.splice(index, 1);
+};
+
+module.exports = RecordStore;
+
+
+```
+
+<details>
+<summary>
+record_store_spec.js
+</summary>
+
+```js
+const assert = require('assert');
+const RecordStore = require('../record_store.js');
+const Record = require('../record.js');
+
+describe('RecordStore', function () {
+  let recordStore;
+
+  beforeEach(function () {
+    recordStore = new RecordStore('HMV');
+  });
+
+  it('should have a name', function () {
+    assert.strictEqual(recordStore.name, 'HMV');
+  });
+
+  it('should start with no funds', function () {
+    assert.strictEqual(recordStore.funds, 0);
+  });
+
+  it('should be able to add funds', function () {
+    recordStore.addFunds(50000);
+    assert.strictEqual(recordStore.funds, 50000);
+  });
+
+  it('should start with an empty collection of records', function () {
+    assert.deepStrictEqual(recordStore.stock, []);
+  });
+
+  it('should be able to add a record to its stock', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordStore.addRecordToStock(record);
+    assert.deepStrictEqual(recordStore.stock, [record]);
+  });
+
+  it('should be able to report if it has a record', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordStore.addRecordToStock(record);
+    assert.strictEqual(recordStore.hasRecord(record), true);
+  });
+
+  it('should be able to report if it does not have a record', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    assert.strictEqual(recordStore.hasRecord(record), false);
+  });
+
+  it('should be able to remove a record from its stock', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordStore.addRecordToStock(record);
+    recordStore.removeRecordFromStock(record);
+    assert.deepStrictEqual(recordStore.stock, []);
+  });
+
+  it('should be able to sell a record if it has the record', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordStore.addRecordToStock(record);
+    recordStore.sell(record);
+    assert.strictEqual(recordStore.funds, 1000);
+    assert.deepStrictEqual(recordStore.stock, []);
+  });
+
+  it('should not be able to sell a record if it does not have the record', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordStore.sell(record);
+    assert.strictEqual(recordStore.funds, 0);
+  });
+
+  it('should be able to find all records which match a given genre', function () {
+    const eagles = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    const michaelJackson = new Record({
+      title: 'Thriller',
+      artist: 'Michael Jackson',
+      genre: 'pop',
+      price: 1000
+    });
+    const ledZeppelin = new Record({
+      title: 'Led Zeppelin IV',
+      artist: 'Led Zeppelin',
+      genre: 'rock',
+      price: 1000
+    });
+    recordStore.addRecordToStock(eagles);
+    recordStore.addRecordToStock(michaelJackson);
+    recordStore.addRecordToStock(ledZeppelin);
+    const actual = recordStore.findRecord({ genre: 'rock' });
+    assert.deepStrictEqual(actual, [eagles, ledZeppelin]);
+  });
+
+  it('should be able to find all records which match a given title', function () {
+    const eagles = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    const michaelJackson = new Record({
+      title: 'Thriller',
+      artist: 'Michael Jackson',
+      genre: 'pop',
+      price: 1000
+    });
+    const ledZeppelin = new Record({
+      title: 'Led Zeppelin IV',
+      artist: 'Led Zeppelin',
+      genre: 'rock',
+      price: 1000
+    });
+    recordStore.addRecordToStock(eagles);
+    recordStore.addRecordToStock(michaelJackson);
+    recordStore.addRecordToStock(ledZeppelin);
+    const actual = recordStore.findRecord({ title: 'Thriller' });
+    assert.deepStrictEqual(actual, [michaelJackson]);
+  });
+
+  it('should be able to find all records which match a given artist', function () {
+    const eagles = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    const michaelJackson = new Record({
+      title: 'Thriller',
+      artist: 'Michael Jackson',
+      genre: 'pop',
+      price: 1000
+    });
+    const ledZeppelin = new Record({
+      title: 'Led Zeppelin IV',
+      artist: 'Led Zeppelin',
+      genre: 'rock',
+      price: 1000
+    });
+    recordStore.addRecordToStock(eagles);
+    recordStore.addRecordToStock(michaelJackson);
+    recordStore.addRecordToStock(ledZeppelin);
+    const actual = recordStore.findRecord({ artist: 'Led Zeppelin' });
+    assert.deepStrictEqual(actual, [ledZeppelin]);
+  });
+
+  it('should be able to find all records which match on multiple attributes', function () {
+    const eagles = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    const michaelJackson = new Record({
+      title: 'Thriller',
+      artist: 'Michael Jackson',
+      genre: 'pop',
+      price: 1000
+    });
+    const ledZeppelin = new Record({
+      title: 'Led Zeppelin IV',
+      artist: 'Led Zeppelin',
+      genre: 'rock',
+      price: 1000
+    });
+    recordStore.addRecordToStock(eagles);
+    recordStore.addRecordToStock(michaelJackson);
+    recordStore.addRecordToStock(ledZeppelin);
+    const actual = recordStore.findRecord({
+      title: 'Thriller',
+      artist: 'Michael Jackson',
+      genre: 'pop'
+    });
+    assert.deepStrictEqual(actual, [michaelJackson]);
+  });
+});
+
+
+```
+
+</details>
+<br />
+</details>
+<details>
+<summary>
+record_collector.js
+</summary>
+
+```js
+const RecordCollector = function () {
+  this.funds = 0;
+  this.collection = [];
+};
+
+RecordCollector.prototype.buy = function (record) {
+  if (!this.hasFunds(record.price)) return;
+  this.subtractFunds(record.price);
+  this.addRecordToCollection(record);
+};
+
+RecordCollector.prototype.sell = function (record) {
+  if (!this.hasRecord(record)) return;
+  this.addFunds(record.price);
+  this.removeRecordFromCollection(record);
+};
+
+RecordCollector.prototype.hasFunds = function (amount) {
+  return this.funds >= amount;
+};
+
+RecordCollector.prototype.subtractFunds = function (amount) {
+  if (!this.hasFunds(amount)) return;
+  this.funds -= amount;
+};
+
+RecordCollector.prototype.addFunds = function (amount) {
+  this.funds += amount;
+};
+
+RecordCollector.prototype.hasRecord = function (record) {
+  return this.collection.includes(record);
+};
+
+RecordCollector.prototype.addRecordToCollection = function (record) {
+  this.collection.push(record);
+};
+
+RecordCollector.prototype.removeRecordFromCollection = function (record) {
+  if (!this.hasRecord(record)) return;
+  const index = this.collection.indexOf(record);
+  this.collection.splice(index, 1);
+};
+
+RecordCollector.prototype.sortCollection = function () {
+  const sortedCollection = this.collection.sort((next, prev) => {
+    return next.artist.localeCompare(prev.artist);
+  });
+  return sortedCollection;
+};
+
+RecordCollector.prototype.findRecordByTitle = function (title) {
+  const foundRecord = this.collection.find((record) => {
+    return record.title === title;
+  });
+  return foundRecord;
+};
+
+module.exports = RecordCollector;
+
+
+```
+
+<details>
+<summary>
+record_collector_spec.js
+</summary>
+
+```js
+const assert = require('assert');
+const RecordCollector = require('../record_collector.js');
+const Record = require('../record.js');
+
+describe('RecordCollector', function () {
+  let recordCollector;
+
+  beforeEach(function () {
+    recordCollector = new RecordCollector();
+  });
+
+  it('should start with no funds', function () {
+    assert.strictEqual(recordCollector.funds, 0);
+  });
+
+  it('should be able to add funds', function () {
+    recordCollector.addFunds(1000);
+    assert.strictEqual(recordCollector.funds, 1000);
+  });
+
+  it('should be able to report that it has more than an amount of funds', function () {
+    recordCollector.addFunds(500);
+    assert.strictEqual(recordCollector.hasFunds(1), true);
+  });
+
+  it('should be able to report that it has less than an amount of funds', function () {
+    recordCollector.addFunds(1);
+    assert.strictEqual(recordCollector.hasFunds(500), false);
+  });
+
+  it('should be able to subtract funds when it has enough funds', function () {
+    recordCollector.addFunds(1000);
+    recordCollector.subtractFunds(250);
+    assert.strictEqual(recordCollector.funds, 750);
+  });
+
+  it('should not subtract funds when it does not have enough funds', function () {
+    recordCollector.addFunds(250);
+    recordCollector.subtractFunds(500);
+    assert.strictEqual(recordCollector.funds, 250);
+  });
+
+  it('should start with an empty collection of records', function () {
+    assert.deepStrictEqual(recordCollector.collection, []);
+  });
+
+  it('should be able to add records to it\'s collection', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordCollector.addRecordToCollection(record);
+    assert.deepStrictEqual(recordCollector.collection, [record]);
+  });
+
+  it('should be able to report if it has a record', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordCollector.addRecordToCollection(record);
+    assert.strictEqual(recordCollector.hasRecord(record), true);
+  });
+
+  it('should be able to report if it does not have a record', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    assert.strictEqual(recordCollector.hasRecord(record), false);
+  });
+
+  it('should be able to find a record by title', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordCollector.addRecordToCollection(record);
+    const foundRecord = recordCollector.findRecordByTitle('Their Greatest Hits 1971 - 1975');
+    assert.deepStrictEqual(foundRecord, record);
+  });
+
+  it('should be able to remove a record from it\'s collection', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordCollector.addRecordToCollection(record);
+    recordCollector.removeRecordFromCollection(record);
+    assert.deepStrictEqual(recordCollector.collection, []);
+  });
+
+  it('should be able to buy a record if it has enough funds', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordCollector.addFunds(1500);
+    recordCollector.buy(record);
+    assert.strictEqual(recordCollector.funds, 500);
+    assert.deepStrictEqual(recordCollector.collection, [record]);
+  });
+
+  it('should not be able to buy a record if it does not have enough funds', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordCollector.addFunds(100);
+    recordCollector.buy(record);
+    assert.strictEqual(recordCollector.funds, 100);
+    assert.deepStrictEqual(recordCollector.collection, []);
+  });
+
+  it('should be able to sell a record if it has the record', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordCollector.addRecordToCollection(record);
+    recordCollector.sell(record);
+    assert.strictEqual(recordCollector.funds, 1000);
+    assert.deepStrictEqual(recordCollector.collection, []);
+  });
+
+  it('should not be able to sell a record if it does not have the record', function () {
+    const record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    recordCollector.sell(record);
+    assert.strictEqual(recordCollector.funds, 0);
+  });
+
+  it('should be able to sort its collection by artist name', function () {
+    const eagles = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    const michaelJackson = new Record({
+      title: 'Thriller',
+      artist: 'Michael Jackson',
+      genre: 'pop',
+      price: 1000
+    });
+    const ledZeppelin = new Record({
+      title: 'Led Zeppelin IV',
+      artist: 'Led Zeppelin',
+      genre: 'rock',
+      price: 1000
+    });
+    const records = [ledZeppelin, eagles, michaelJackson];
+    records.forEach(record => recordCollector.addRecordToCollection(record));
+    assert.deepStrictEqual(recordCollector.sortCollection(), [eagles, ledZeppelin, michaelJackson]);
+  });
+});
+
+
+```
+
+</details>
+<br />
+</details>
+<details>
+<summary>
+transaction.js
+</summary>
+
+```js
+const Transaction = function (buyer, seller) {
+  this.buyer = buyer;
+  this.seller = seller;
+};
+
+Transaction.prototype.exchange = function (record) {
+  if (!this.exchangeIsValid(record)) return;
+  this.seller.sell(record);
+  this.buyer.buy(record);
+};
+
+Transaction.prototype.exchangeIsValid = function (record) {
+  return this.seller.hasRecord(record) && this.buyer.hasFunds(record.price);
+};
+
+module.exports = Transaction;
+
+
+```
+
+<details>
+<summary>
+transaction_spec.js
+</summary>
+
+```js
+const assert = require('assert');
+const Transaction = require('../transaction.js');
+const RecordCollector = require('../record_collector.js');
+const RecordStore = require('../record_store.js');
+const Record = require('../record.js');
+
+describe('Transaction', function () {
+  let recordCollector;
+  let recordStore;
+  let record;
+  let transaction;
+
+  beforeEach(function () {
+    recordCollector = new RecordCollector();
+    recordStore = new RecordStore('HMV');
+    record = new Record({
+      title: 'Their Greatest Hits 1971 - 1975',
+      artist: 'Eagles',
+      genre: 'rock',
+      price: 1000
+    });
+    transaction = new Transaction(recordCollector, recordStore);
+  });
+
+  it('should have a buyer', function () {
+    assert.deepStrictEqual(transaction.buyer, recordCollector);
+  });
+
+  it('should have a seller', function () {
+    assert.deepStrictEqual(transaction.seller, recordStore);
+  });
+
+  it('should report a transaction is valid when the seller has the record and the buyer has enough funds', function () {
+    recordCollector.addFunds(5000);
+    recordStore.addRecordToStock(record);
+    const actual = transaction.exchangeIsValid(record);
+    assert.strictEqual(actual, true);
+  });
+
+  it('should report a transaction is invalid when the seller does not have the record but the buyer has enough funds', function () {
+    recordCollector.addFunds(5000);
+    const actual = transaction.exchangeIsValid(record);
+    assert.strictEqual(actual, false);
+  });
+
+  it('should report a transaction is invalid when the seller has the record but the buyer does not have enough funds', function () {
+    recordStore.addRecordToStock(record);
+    const actual = transaction.exchangeIsValid(record);
+    assert.strictEqual(actual, false);
+  });
+
+  it('should report a transaction is invalid when the seller does not have the record and the buyer does not have enough funds', function () {
+    const actual = transaction.exchangeIsValid(record);
+    assert.strictEqual(actual, false);
+  });
+
+  it('should be able handle a transaction where the seller has the record but the buyer does not have enough funds', function () {
+    recordStore.addRecordToStock(record);
+    transaction.exchange(recordCollector, recordStore, record);
+    assert.strictEqual(recordStore.funds, 0);
+    assert.strictEqual(recordCollector.funds, 0);
+    assert.deepStrictEqual(recordCollector.collection, []);
+    assert.deepStrictEqual(recordStore.stock, [record]);
+  });
+
+  it('should be able handle an exchange of a record', function () {
+    recordCollector.addFunds(5000);
+    recordStore.addRecordToStock(record);
+    transaction.exchange(record);
+    assert.strictEqual(recordStore.funds, 1000);
+    assert.strictEqual(recordCollector.funds, 4000);
+    assert.deepStrictEqual(recordCollector.collection, [record]);
+    assert.deepStrictEqual(recordStore.stock, []);
+  });
+});
 
 
 ```
