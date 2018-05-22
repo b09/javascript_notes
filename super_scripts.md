@@ -2954,4 +2954,182 @@ Once the user has submitted the form, the reading list item's details should be 
 
 </details>
 <br />
+<details>
+<summary>
+index.html
+</summary>
+
+```html
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Reading List App</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+    <script src="js/app.js"></script>
+  </head>
+  <body>
+    <h1>Add to Reading List</h1>
+    <form id="new-item-form">
+      <div id="form-wrapper">
+        <div class="form-item">
+          <label for="title" class="primary">Title</label>
+          <input type="text" id="title" required/>
+        </div>
+
+        <div class="form-item">
+          <label for="author" class="primary">Author</label>
+          <input type="text" id="author" required/>
+        </div>
+
+        <div class="form-item">
+          <label for="category" class="primary">Category</label>
+          <label for="book">Book</label>
+          <input type="radio" name="category" id="book" value="Book"/>
+
+          <label for="article">Article</label>
+          <input type="radio" name="category" id="article" value="Article"/>
+
+          <label for="blog">Blog Post</label>
+          <input type="radio" name="category" id="blog" value="Blog Post"/>
+        </div>
+
+        <div class="form-item">
+          <label for="subject" class="primary">Subject</label>
+          <select id="genre">
+            <option value="" disabled selected>Select a subject</option>
+            <option value="Technology">Technology</option>
+            <option value="Culture">Culture</option>
+            <option value="Sport">Sport</option>
+            <option value="Politics">Politics</option>
+          </select>
+        </div>
+      </div>
+      <input type="submit" value="save"/>
+    </form>
+
+    <button id="delete-all">Delete All</button>
+
+    <h1>Reading List</h1>
+    <ul id="reading-list"></ul>
+  </body>
+</html>
+
+```
+</details>
+<br />
+<details>
+<summary>
+main.css
+</summary>
+
+```css
+body {
+  font-family: Palatino;
+}
+
+#form-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.form-item {
+  margin-right: 1.8rem;
+}
+
+label.primary {
+  display: block;
+  margin: 0.4em 0;
+}
+
+label::after {
+  content: ":";
+}
+
+button, input[type="submit"] {
+  margin-top: 1rem;
+}
+
+#reading-list {
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+}
+
+.reading-list-item {
+  margin: 0.5rem 0.5rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #20437c;
+  border-radius: 5%;
+  background: #ddeaff;
+}
+
+```
+
+</details>
+<br />
+<details>
+<summary>
+index.html
+</summary>
+
+```js
+document.addEventListener('DOMContentLoaded', () => {
+  const newItemform = document.querySelector('#new-item-form');
+  newItemform.addEventListener('submit', handleNewItemFormSubmit);
+
+  const deleteAllButton = document.querySelector('#delete-all');
+  deleteAllButton.addEventListener('click', handleDeleteAllClick);
+})
+
+const handleNewItemFormSubmit = function (event) {
+  event.preventDefault();
+
+  const valuesToValidate = [event.target.title.value, event.target.author.value]
+  if (areAnyValuesEmpty(valuesToValidate)) return;
+
+  const readingListItem = createReadingListItem(event.target);
+  const readingList = document.querySelector('#reading-list');
+  readingList.appendChild(readingListItem);
+
+  event.target.reset();
+}
+
+const createReadingListItem = function (form) {
+  const readingListItem = document.createElement('li');
+  readingListItem.classList.add('reading-list-item');
+
+  const title = buildElement('h2', form.title.value);
+  readingListItem.appendChild(title);
+  const author = buildElement('h3', form.author.value);
+  readingListItem.appendChild(author);
+  const value = buildElement('p', form.category.value);
+  readingListItem.appendChild(value);
+  const genre = buildElement('p', form.genre.value);
+  readingListItem.appendChild(genre);
+
+  return readingListItem;
+}
+
+const areAnyValuesEmpty = function (values) {
+  return values.some((value) => value === '');
+}
+
+const buildElement = function (tag, value) {
+  const element = document.createElement(tag);
+  element.textContent = value;
+  return element;
+}
+
+const handleDeleteAllClick = function (event) {
+  const readingList = document.querySelector('#reading-list');
+  readingList.innerHTML = '';
+}
+
+```
+</details>
+<br />
+</details>
+<br />
 </details>
