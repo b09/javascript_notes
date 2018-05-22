@@ -2951,9 +2951,8 @@ Once the user has submitted the form, the reading list item's details should be 
 1. Add validation to prevent the user submitting the form if the Title or Author fields are left blank. This can be done by adding the `required` attribute in the form fields in the html, but should also be done in the JavaScript to prevent anyone bypassing the HTML validation by editing the form in the browser devtools.
 2. Add flexbox layout to the reading list so that items are displayed in a responsive grid. This will require researching how to add a class to a DOM element using JavaScript.
 
-
-</details>
 <br />
+</details>
 <details>
 <summary>
 index.html
@@ -3016,8 +3015,8 @@ index.html
 </html>
 
 ```
-</details>
 <br />
+</details>
 <details>
 <summary>
 main.css
@@ -3066,9 +3065,8 @@ button, input[type="submit"] {
 }
 
 ```
-
-</details>
 <br />
+</details>
 <details>
 <summary>
 index.html
