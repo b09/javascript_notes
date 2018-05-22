@@ -2621,18 +2621,6 @@ When the browser receives some HTML in response to an HTTP request, it parses th
 
 The DOM is what the browser uses to display the HTML elements of each web page. If we change the DOM - by interacting with it using JavaScript - then we can change what is displayed to the user!
 
-#### Paired discussion (5 minutes)
-
-We can use the DOM to create dynamic web applications that look and feel like native software applications, for example, Gmail and Trello.
-
-Gmail allows a user to select an email from the list, which changes its row colour and displays a number of additional menu options. Apart from listening for the user's interaction, what other operations might we need to do to create these changes to the DOM?
-
-<details>
-	<summary>Possible Answers</summary>
-- Update the CSS for the row
-- Insert new elements onto the page
-- Attach event listeners to these new elements
-</details>
 </details>
 
 <details>
@@ -2648,21 +2636,12 @@ Once those elements have been changed dynamically, we can't rely on the HTML we 
 
 Most web browsers come with a built-in DOM viewer, and it's very likely that you've used it already! We're going to take a closer look at Google Chrome's devtools.
 
-Let's open up [BBC News](http://bbc.co.uk/news) and check it out.
-
-In order to open up the devtools, we can either right click on the page and choose `Inspect`, or we can use the keyboard shortcut `⌘ + Shift + C`.
+Open up [BBC News](http://bbc.co.uk/news) and check it out.
 
 ![Devtools](./images/inspector.png)
 
 You might have thought that you were looking at some HTML here, but we're actually looking at a representation of the DOM. And because we're looking at the DOM, we can make changes to it!
 
-> Instructor note: Change one of the headlines to demonstrate that when the DOM is changed, it changes what the user sees.
-
-This is a neat party trick, but usually we'd interact with the DOM programmatically, using JavaScript.
-
-This will be our main focus for today - learning some of the ways in which we can use the DOM to change what the user sees.
-
-> Instructor note: Hand out the start point
 
 #### window and document
 
@@ -2706,9 +2685,9 @@ Advanced Dev Tools
 
 ### Advanced Devtools
 
-Before we get to know the DOM properly, we should take a little bit of time to familiarise ourselves with some of the more advanced features of the development tools that are built in to our web browser. Doing so will make life much, much easier for us!
+Before we get to know the DOM, we should take a bit of time to familiarise ourselves with some of the development tools that are in the web browser.
 
-Let's start by taking a look at the browser's `console`.
+Let's take a look at the browser's `console`.
 
 #### Task: Exploring the Console (5 minutes)
 
@@ -2724,17 +2703,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	// console.trace("This is a console.trace!");
 });
 ```
-
-> Instructor note: Ask the class:
-Why might we need these different console methods?
-
-<details>
-<summary>Possible answers:</summary>
-- `log`, `warn` and `error` allow us to express to our colleagues that what they're doing might be causing a problem - or provide them with information as the situation demands
-- `trace` allows us to see, at a glance, where information is coming from within our programme
-</details>
-
-<br>
 
 Notice that we can pass more than one argument to each function; the console will concatenate them into a single string for us, with a space in-between. This can be useful - it means we can do something like this:
 
@@ -2770,7 +2738,7 @@ While logging information can be useful, it is often preferable to be able to st
 
 #### Breakpoints
 
-We can also use our developer tools as a debugger, just as we've done in other programming languages.
+We can use our developer tools as a debugger.
 
 Let's say that we have some complex logic we want to step through:
 
@@ -2809,8 +2777,6 @@ We can use the arrows to step through our code line by line. Notice that the val
 
 #### DOM Breakpoints
 
-Soon, we're going to look at the DOM - and that means that we'll be dynamically updating the user interface from within our code.
-
 Sometimes, it can be hard to tell _what_ is modifying the DOM - especially as our programs grow in size. We can set "DOM breakpoints" to give us more information about why the DOM is changing.
 
 Let's set a DOM breakpoint by right-clicking the `<body>` tag within our devtools. Next, we're going to select "Break on..." > "Attribute Modifications".
@@ -2833,8 +2799,6 @@ When this code is about to execute, the breakpoint kicks in, allowing us to tell
 To remove a DOM breakpoint, just right-click on the same element, and remove the breakpoint you set.
 
 #### Network Tab
-
-Finally, let's look at another developer tool that can be useful when we're debugging problems - the network tab.
 
 The network tab displays information about all of the resources that our page needs to display itself. For example, we can see information about all the individual requests and responses for our images, CSS, and JavaScript files, among others.
 
@@ -2859,7 +2823,7 @@ Querying the DOM
 
 ### Querying the DOM
 
-We'll begin by learning how to access DOM elements. There are a few different ways that we can do this.
+There are a few ways that we can access DOM elements.
 
 The `document` object offers a set of methods that we can use to access any DOM element using its id, class or tag name. We can call these methods, passing them a query string, and the document will give us back an object representing the element on our page.
 
