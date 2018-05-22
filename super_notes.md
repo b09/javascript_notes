@@ -3814,7 +3814,7 @@ We've seen that we can send JavaScript files, or a module of code, to the browse
 As our JavaScript web applications get larger, however, we'll want to organise our JS code a bit better. We want to put different pieces of code in different files. We want to make re-usable modules to help us avoid repeating ourselves in our code. We might have data `models`, maybe some `helper` functions, or `views` for our UI logic components.
 
 This can get a bit messy and hard to follow. Lots of different files are all depending on one another, all required in our index.html. Module bundlers like webpack allow us to write our code in a more structured way while avoiding the problems that arise when writing larger applications.
-</detals>
+</details>
 
 <details>
 <summary>
