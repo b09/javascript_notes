@@ -3380,12 +3380,12 @@ module.exports = SolarSystem;
 ```
 <br />
 </details>
-<br />
 
 <details>
 <summary>
 src/views
 </summary>
+<br />
 
 <details>
 <summary>
