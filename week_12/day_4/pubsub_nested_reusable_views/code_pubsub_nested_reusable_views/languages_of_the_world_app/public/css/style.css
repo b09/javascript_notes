@@ -1,0 +1,63 @@
+body {
+  height: 100vh;
+  margin: 0;
+  color: #007759;
+  font-family: 'Palatino';
+  background-color: #F4E8C1;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Helvetica';
+  color: #523059;
+}
+
+header {
+  width: 100%;
+  padding: 0 1em;
+  position: fixed;
+  top: 0;
+  background-color: #fffaed;
+  border-bottom: 1px solid #523059;
+}
+
+ul#menu {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+}
+
+#menu li {
+  color: #523059;
+  padding: 0.6em;
+  margin: 0.2em;
+  border: 1px solid #A0C1B8;
+}
+
+#menu li:hover {
+  background-color: #fff6d8;
+}
+
+#continent {
+  padding: 11em 1em 0;
+  height: calc(100vh - 16em);
+}
+
+#countries {
+  height: 100%;
+  display: flex;
+  flex-flow: column wrap;
+}
+
+.country {
+  flex-grow:1;
+  width: 140px;
+  background-color: #fffaed;
+  margin: 0.3em;
+  padding: 0em 1em;
+}
+
+ul.languages {
+  list-style: inside disc;
+  padding: 0;
+}

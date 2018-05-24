@@ -3131,3 +3131,364 @@ const handleDeleteAllClick = function (event) {
 </details>
 <br />
 </details>
+
+
+<details>
+<summary>
+Planets App - Pub/Sub Lab
+</summary>
+<br />
+<details>
+<summary>
+Reading List - Brief
+</summary>
+
+## Pub/Sub Planets Lab
+
+#### Learning Objectives
+
+- Understand how to pass data between models and views using Pub/Sub
+- Be able to use the Pub/Sub pattern to build a modular front-end app
+
+### Brief
+
+Using the provided start code, your task is to create an app that allows a user to click on a planet name in the menu (already provided), to view the planet's details. Implement the Pub/Sub pattern to separate your presentation and business logic into views and models.
+
+#### MVP
+
+- Allow the user to click a planet name in the menu to view the details of the planet
+
+#### Extensions
+
+- Style the application with CSS. You can use [classList](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList) to add css class names to your elements that are created in the JavaScript to be able to select them in your CSS.
+- You might want to try styling the page with [Flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) or [CSS Grid](https://css-tricks.com/snippets/css/complete-guide-grid/)
+
+### Considerations
+
+What are the responsibilities of the views and models? What is responsible for listening for the click of the menu item? What is responsible for finding the selected planet object? What is responsible for deciding how the planet details should be rendered?
+
+### Planning
+
+Draw a diagram of your files, detailing the publishing of and subscribing to events and the flow of data through the application.
+
+
+<br />
+</details>
+
+<details>
+<summary>
+public/index.html
+</summary>
+
+```html
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Planets</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/planet_menu.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="css/planet_details.css" />
+  <script src="js/bundle.js"></script>
+</head>
+
+<body>
+  <header class="title-bar">
+    <h1 class="page-title">The Planets of Our Solar System</h1>
+  </header>
+
+  <main class="main-grid-container">
+    <nav class="planets-menu">
+      <ol>
+        <li id="Mercury" class="planet-menu-item">Mercury</li>
+        <li id="Venus" class="planet-menu-item">Venus</li>
+        <li id="Earth" class="planet-menu-item">Earth</li>
+        <li id="Mars" class="planet-menu-item">Mars</li>
+        <li id="Jupiter" class="planet-menu-item">Jupiter</li>
+        <li id="Saturn" class="planet-menu-item">Saturn</li>
+        <li id="Uranus" class="planet-menu-item">Uranus</li>
+        <li id="Neptune" class="planet-menu-item">Neptune</li>
+      </ol>
+    </nav>
+
+    <section class="planet-details">
+
+    </section>
+  </main>
+</body>
+
+</html>
+```
+
+<br />
+</details>
+
+<details>
+<summary>
+src/data/planets.js
+</summary>
+
+```js
+
+const planets = [
+  {
+    name: 'Mercury',
+    orbit: 87.969,
+    day: 58.646,
+    surfaceArea: 0.147,
+    volume: 0.056,
+    gravity: 0.38,
+    moons: 0,
+    image: 'images/mercury.jpg'
+  },
+  {
+    name: 'Venus',
+    orbit: 224.701,
+    day: -234.025,
+    surfaceArea: 0.902,
+    volume: 0.866,
+    gravity: 0.904,
+    moons: 0,
+    image: 'images/venus.jpg'
+  },
+  {
+    name: 'Earth',
+    orbit: 365.256,
+    day: 1,
+    surfaceArea: 1,
+    volume: 1,
+    gravity: 1,
+    moons: 1,
+    image: 'images/earth.jpg'
+  },
+  {
+    name: 'Mars',
+    orbit: 686.971,
+    day: 1.025,
+    surfaceArea: 0.284,
+    volume: 0.151,
+    gravity: 0.376,
+    moons: 2,
+    image: 'images/mars.jpg'
+  },
+  {
+    name: 'Jupiter',
+    orbit: 4332.59,
+    day: 0.413,
+    surfaceArea: 121.9,
+    volume: 1321,
+    gravity: 2.528,
+    moons: 69,
+    image: 'images/jupiter.jpg'
+  },
+  {
+    name: 'Saturn',
+    orbit: 10759.22,
+    day: 0.439,
+    surfaceArea: 83.703,
+    volume: 763.59,
+    gravity: 1.065,
+    moons: 62,
+    image: 'images/saturn.jpg'
+  },
+  {
+    name: 'Uranus',
+    orbit: 30688.5,
+    day: -0.718,
+    surfaceArea: 15.91,
+    volume: 63.086,
+    gravity: 0.886,
+    moons: 27,
+    image: 'images/uranus.jpg'
+  },
+  {
+    name: 'Neptune',
+    orbit: 60182,
+    day: 0.671,
+    surfaceArea: 14.98,
+    volume: 57.74,
+    gravity: 1.14,
+    moons: 14,
+    image: 'images/neptune.jpg'
+  }
+];
+
+module.exports = planets;
+```
+<br />
+</details>
+
+<details>
+<summary>
+src/helpers/pub_sub.js
+</summary>
+
+```js
+
+const PubSub = {
+  publish: function (channel, payload) {
+    const event = new CustomEvent(channel, {
+      detail: payload
+    });
+    document.dispatchEvent(event);
+  },
+
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+};
+
+module.exports = PubSub;
+```
+
+<br />
+</details>
+
+<details>
+<summary>
+src/models/solar_system.js
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+
+const SolarSystem = function(planets) {
+  this.planets = planets;
+};
+
+SolarSystem.prototype.bindEvents = function() {
+  PubSub.subscribe('PlanetsMenuView:selected', (evt) => {
+    const chosenPlanetName = evt.detail;
+    const selectedPlanetObject = this.findByName(chosenPlanetName);
+    PubSub.publish('SolarSystem:planet-ready', selectedPlanetObject);
+  });
+};
+
+SolarSystem.prototype.findByName = function(searchName) {
+  const foundPlanet = this.planets.find((currentPlanet) => {
+    return currentPlanet.name === searchName;
+  });
+  return foundPlanet;
+};
+
+module.exports = SolarSystem;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+src/views
+</summary>
+
+<details>
+<summary>
+planet_info_view.js
+</summary>
+
+```js
+const PubSub = require('../helpers/pub_sub.js');
+
+const PlanetInfoView = function(container) {
+  this.container = container;
+};
+
+PlanetInfoView.prototype.bindEvents = function() {
+  PubSub.subscribe('SolarSystem:planet-ready', (evt) => {
+    const planetObject = evt.detail;
+    this.render(planetObject);
+  });
+};
+
+PlanetInfoView.prototype.render = function(planet) {
+  this.container.innerHTML = '';
+
+  const heading = this.createHeading(planet);
+  const infoList = this.createInfoList(planet);
+  const img = this.createImage(planet);
+
+  this.container.appendChild(heading);
+  this.container.appendChild(infoList);
+  this.container.appendChild(img);
+};
+
+PlanetInfoView.prototype.createHeading = function(planet) {
+  const heading = document.createElement('h2');
+  heading.textContent = planet.name;
+  return heading;
+};
+
+PlanetInfoView.prototype.createImage = function(planet) {
+  const img = document.createElement('img');
+  img.classList.add('medium-image');
+  img.src = planet.image;
+  return img;
+};
+
+PlanetInfoView.prototype.createInfoList = function(planet) {
+  const infoList = document.createElement('ul');
+
+  const liDay = this.createLi(`Day: ${planet.day} Earth days`, infoList);
+  const liOrbit = this.createLi(`Orbit: ${planet.orbit} Earth days`, infoList);
+  const liSurfaceArea = this.createLi(
+    `Surface Area: ${planet.surfaceArea} Earths`,
+    infoList
+  );
+  const liVolume = this.createLi(`Volume: ${planet.volume} Earths`, infoList);
+  const liGravity = this.createLi(`Gravity: ${planet.gravity}g`, infoList);
+  const liMoons = this.createLi(`Moons: ${planet.moons}`, infoList);
+
+  return infoList;
+};
+
+PlanetInfoView.prototype.createLi = function(textContent, ul) {
+  const li = document.createElement('li');
+  li.textContent = textContent;
+  ul.appendChild(li);
+};
+
+module.exports = PlanetInfoView;
+```
+
+<br />
+</details>
+
+<details>
+<summary>
+planets_menu_view.js
+</summary>
+
+```js
+const PubSub = require('../helpers/pub_sub.js');
+
+const PlanetsMenuView = function(menuItems) {
+  this.menuItems = menuItems;
+};
+
+PlanetsMenuView.prototype.bindEvents = function() {
+  this.menuItems.forEach((menuItem) => {
+    menuItem.addEventListener('click', (evt) => {
+      const selectedPlanetName = evt.target.id;
+      PubSub.publish('PlanetsMenuView:selected', selectedPlanetName);
+    });
+  });
+};
+
+module.exports = PlanetsMenuView;
+
+```
+
+<br />
+</details>
+
+<br />
+</details>
+
+<br />
+</details>
