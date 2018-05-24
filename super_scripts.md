@@ -3132,7 +3132,6 @@ const handleDeleteAllClick = function (event) {
 <br />
 </details>
 
-
 <details>
 <summary>
 Planets App - Pub/Sub Lab
@@ -3140,7 +3139,7 @@ Planets App - Pub/Sub Lab
 <br />
 <details>
 <summary>
-Reading List - Brief
+Planets App - Brief
 </summary>
 
 ## Pub/Sub Planets Lab
@@ -3381,6 +3380,7 @@ module.exports = SolarSystem;
 ```
 <br />
 </details>
+<br />
 
 <details>
 <summary>
