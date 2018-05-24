@@ -3129,8 +3129,6 @@ const handleDeleteAllClick = function (event) {
 </details>
 <br />
 </details>
-<br />
-</details>
 
 <details>
 <summary>
