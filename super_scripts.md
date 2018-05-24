@@ -3176,7 +3176,7 @@ Draw a diagram of your files, detailing the publishing of and subscribing to eve
 
 <details>
 <summary>
-public/**index.html**
+public/ **index.html**
 </summary>
 
 ```html
@@ -3228,7 +3228,7 @@ public/**index.html**
 
 <details>
 <summary>
-src/data/**planets.js**
+src/data/ **planets.js**
 </summary>
 
 ```js
@@ -3323,7 +3323,7 @@ module.exports = planets;
 
 <details>
 <summary>
-src/helpers/**pub_sub.js**
+src/helpers/ **pub_sub.js**
 </summary>
 
 ```js
@@ -3349,7 +3349,7 @@ module.exports = PubSub;
 
 <details>
 <summary>
-src/models/**solar_system.js**
+src/models/ **solar_system.js**
 </summary>
 
 ```js
