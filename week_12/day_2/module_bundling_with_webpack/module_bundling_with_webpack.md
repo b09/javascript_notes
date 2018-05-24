@@ -399,4 +399,3 @@ Watches our files for changes and creates a new bundle.js file whenever we save 
 
 <br/>
 
-## Conclusion
