@@ -3705,7 +3705,185 @@ document.addEventListener('DOMContentLoaded', function(){
 ```
 <br />
 </details>
+<br />
+</details>
 
+<details>
+<summary>
+Webpack Intro App
+</summary>
 
+<details>
+<summary>
+~/public/ **index.html**
+</summary>
 
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Webpack Intro App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+
+  <script src="js/bundle.js"></script>
+
+</head>
+<body>
+  <form id="person-details-form">
+    <div class="form-item">
+      <label for="name-input">Full Name</label>
+      <input type="text" id="name-input" placeholder="Name..."/>
+    </div>
+    <div class="form-item">
+      <label for="favourite-colour-input">Favourite Colour</label>
+      <input type="text" id="favourite-colour-input" placeholder="Favourite colour..."/>
+    </div>
+    <div class="form-item">
+      <input type="submit", value="Submit">
+    </div>
+  </form>
+
+  <div class="response-display">
+    <p class="welcome text">Welcome!</p>
+    <p class="message text">Enter your details for a personalised message</p>
+  </div>
+
+</body>
+</html>
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/helpers/ **text_format.js**
+</summary>
+
+```js
+const TextFormat = {}
+
+TextFormat.capitalise = function (text) {
+  if (!text) return text;
+  const initialLetter = text[0];
+  const restOfWord = text.slice(1);
+  return initialLetter.toUpperCase() + restOfWord.toLowerCase();
+}
+
+module.exports = TextFormat;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/models
+</summary>
+
+<details>
+<summary>
+**person.js**
+</summary>
+
+```js
+const TextFormat = require('../helpers/text_format');
+
+const Person = function (name, favouriteColour) {
+  this.name = name;
+  this.favouriteColour = favouriteColour;
+}
+
+Person.prototype.formatName = function () {
+  const names = this.name.split(' ');
+  const capitalisedNames = names.map((name) => TextFormat.capitalise(name))
+  this.name = capitalisedNames.join(' ');
+}
+
+Person.prototype.formatColour = function () {
+  this.favouriteColour = TextFormat.capitalise(this.favouriteColour);
+}
+
+module.exports = Person;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**random_adjective.js**
+</summary>
+
+```js
+const RandomAdjective = function () {
+  this.adjectives = [
+    'bada',
+    'beautiful',
+    'boring',
+    'disasterous',
+    'dreary',
+    'fabulous',
+    'good',
+    'magical',
+    'top-notch',
+    'wonderful'
+  ];
+}
+
+RandomAdjective.prototype.get = function () {
+  const randomIndex = Math.floor(Math.random() * this.adjectives.length);
+  return this.adjectives[randomIndex];
+}
+
+module.exports = RandomAdjective;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/src/ **app.js**
+</summary>
+
+```js
+const Person = require('./models/person');
+const RandomAdjective = require('./models/random_adjective');
+
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('person-details-form');
+  const welcomeElement = document.querySelector('p.welcome');
+  const messageElement = document.querySelector('p.message');
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    const name = event.target['name-input'].value;
+    const colour = event.target['favourite-colour-input'].value;
+
+    const person = new Person(name, colour);
+    person.formatName();
+    person.formatColour();
+
+    const greeting = `Hey there, ${person.name}!`;
+    welcomeElement.textContent = greeting;
+
+    const randomAdjective = new RandomAdjective();
+    const adjective = randomAdjective.get();
+    const message = `${person.favouriteColour} is a ${adjective} colour, mate.`;
+    messageElement.textContent = message;
+  });
+});
+
+```
+<br />
+</details>
+
+<br />
 </details>
