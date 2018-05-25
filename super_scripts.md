@@ -3712,6 +3712,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <summary>
 Webpack Intro App
 </summary>
+<br />
 
 <details>
 <summary>
@@ -3781,8 +3782,9 @@ module.exports = TextFormat;
 
 <details>
 <summary>
-~/models
+~/src/models
 </summary>
+<br />
 
 <details>
 <summary>
