@@ -3502,8 +3502,210 @@ Top 10 Fastest Animals - Modular Front-End
 ~/public/ **index.html**
 </summary>
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="js/bundle.js"></script>
+  <title>Top 10 Fastest Animals in the World</title>
+</head>
+<body>
+  <h1>Top 10 Fastest Animals in the World</h1>
+  <div class="animal-selection">
+    <label for="animals-dropdown">Select an animal</label>
+    <select id="animals-dropdown">
+      <option disabled selected></option>
+    </select>
+  </div>
+
+  <div id="animal-info"></div>
+</body>
+</html>
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/helpers **pub_sub.js**
+</summary>
+
+```js
+const PubSub = {
+	publish: function(channel, payload){
+		const event = new CustomEvent(channel, {
+			detail: payload
+		});
+		document.dispatchEvent(event);
+	},
+
+	subscribe: function(channel, callback){
+		document.addEventListener(channel, callback);
+	}
+}
+
+module.exports = PubSub;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/models **animals.js**
+</summary>
+
+```js
+const PubSub = require('../helpers/pub_sub.js');
+
+const Animals = function(){
+  this.animals = [
+    {species: 'Peregrine Falcon', maxSpeed: 389, class: 'Flight'},
+    {species: 'Golden Eagle', maxSpeed: 320, class: 'Flight'},
+    {species: 'White-throated Needletail Swift', maxSpeed: 169, class: 'Flight'},
+    {species: 'Eurasian Hobby', maxSpeed: 160, class: 'Flight'},
+    {species: 'Frigatebird', maxSpeed: 153, class: 'Flight'},
+    {species: 'Rock Dove (Pigeon)', maxSpeed: 149, class: 'Flight'},
+    {species: 'Spur-winged Goose', maxSpeed: 140, class: 'Flight'},
+    {species: 'Black Marlin', maxSpeed: 129, class: 'Swimming'},
+    {species: 'Gyrfalcon', maxSpeed: 128, class: 'Flight'},
+    {species: 'Grey-headed Albatross', maxSpeed: 129, class: 'Flight'}
+  ];
+};
+
+Animals.prototype.bindEvents = function(){
+  PubSub.publish('Animals:all-animals-ready', this.animals);
+
+  PubSub.subscribe('SelectView:change', (evt) => {
+    const selectedIndex = evt.detail;
+    this.publishAnimalDetail(selectedIndex);
+  });
+};
+
+Animals.prototype.publishAnimalDetail = function(animalIndex){
+  const selectedAnimal = this.animals[animalIndex];
+  PubSub.publish('Animals:selected-animal-ready', selectedAnimal)
+};
+
+module.exports = Animals;
+
+```
+<br />
+</details>
+
+
+<details>
+<summary>
+~/src/views
+</summary>
+<br />
+
+<details>
+<summary>
+animal_info_view.js
+</summary>
+
+```js
+const PubSub = require('../helpers/pub_sub.js');
+
+const AnimalInfoView = function(container){
+  this.container = container;
+};
+
+AnimalInfoView.prototype.bindEvents = function(){
+  PubSub.subscribe('Animals:selected-animal-ready', (evt) => {
+    const animal = evt.detail;
+    this.render(animal);
+  });
+};
+
+AnimalInfoView.prototype.render = function(animal){
+  const infoParagraph = document.createElement('p');
+  infoParagraph.textContent = `The ${animal.species}, of class '${animal.class}', has a maximum speed of ${animal.maxSpeed} km/h.`;
+  this.container.innerHTML = '';
+  this.container.appendChild(infoParagraph);
+};
+
+module.exports = AnimalInfoView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+select_view.js
+</summary>
+
+```js
+const PubSub = require('../helpers/pub_sub.js');
+
+const SelectView = function(element){
+  this.element = element;
+};
+
+SelectView.prototype.bindEvents = function(){
+  PubSub.subscribe('Animals:all-animals-ready', (evt) => {
+    const allAnimals = evt.detail;
+    this.populate(allAnimals);
+  });
+
+  this.element.addEventListener('change', (evt) => {
+    const selectedIndex = evt.target.value;
+    PubSub.publish('SelectView:change', selectedIndex);
+  });
+};
+
+SelectView.prototype.populate = function(animalsData){
+  animalsData.forEach((animal, index) => {
+    const option = document.createElement('option');
+    option.textContent = animal.species;
+    option.value = index;
+    this.element.appendChild(option);
+  })
+}
+
+module.exports = SelectView;
+
+```
+<br />
+</details>
 
 <br />
 </details>
+
+<details>
+<summary>
+~/src/ **app.js**
+</summary>
+
+```js
+const Animals = require('./models/animals.js');
+const SelectView = require('./views/select_view.js');
+const AnimalInfoView = require('./views/animal_info_view.js');
+
+document.addEventListener('DOMContentLoaded', function(){
+  const selectElement = document.querySelector('select#animals-dropdown');
+  const animalDropdown = new SelectView(selectElement);
+  animalDropdown.bindEvents();
+
+  const infoDiv = document.querySelector('div#animal-info')
+  const animalInfoDisplay = new AnimalInfoView(infoDiv);
+  animalInfoDisplay.bindEvents();
+
+  const animalsDataSource = new Animals();
+  animalsDataSource.bindEvents();
+});
+
+```
+<br />
+</details>
+
+
 
 </details>
