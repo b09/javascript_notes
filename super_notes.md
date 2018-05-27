@@ -4390,7 +4390,7 @@ xhr.addEventListener('load', () => {
 <details>
 <summary>
 Refactoring
-<summary>
+</summary>
 
 ### Refactoring
 
