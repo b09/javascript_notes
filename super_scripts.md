@@ -3889,3 +3889,1797 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <br />
 </details>
+
+
+<details>
+<summary>
+Families of Musical Instruments - Webpack
+</summary>
+<br />
+
+<details>
+<summary>
+~/public/ **index.html**
+</summary>
+
+```html
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Families of Musical Instruments</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/bundle.js"></script>
+  </head>
+  <body>
+    <h1>Families of Musical Instruments</h1>
+    <label>Select a family: </label>
+    <select id="instrument-families">
+      <option disabled selected></option>
+    </select>
+    <div id="instrument-family"></div>
+  </body>
+</html>
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/helpers/ **pub_sub.js**
+</summary>
+
+```js
+
+const PubSub = {
+  publish: function (channel, payload) {
+    var event = new CustomEvent(channel, {
+      detail: payload
+  });
+    document.dispatchEvent(event);
+  },
+
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+};
+
+module.exports = PubSub;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/models/ **instrument_families.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+
+const InstrumentFamilies = function () {
+  this.instrumentFamilies = [
+    {
+      name: 'Brass',
+      description: 'A brass instrument is a musical instrument that produces sound by sympathetic vibration of air in a tubular resonator in sympathy with the vibration of the player\'s lips',
+      instruments: ['trumpet', 'trombone', 'horn', 'tuba', 'bugle']
+    },
+    {
+      name: 'Strings',
+      description: 'String instruments, stringed instruments, or chordophones are musical instruments that produce sound from vibrating strings when the performer plays or sounds the strings in some manner.',
+      instruments: ['violin', 'double bass', 'guitar', 'sitar', 'hurdy-gurdy']
+    },
+    {
+      name: 'Wind',
+      description: 'A wind instrument is a musical instrument that contains some type of resonator (usually a tube), in which a column of air is set into vibration by the player blowing into (or over) a mouthpiece set at or near the end of the resonator.',
+      instruments: ['flute', 'clarinet', 'bassoon', 'bagpipes', 'oboe']
+    },
+    {
+      name: 'Percussion',
+      description: 'A percussion instrument is a musical instrument that is sounded by being struck or scraped by a beater (including attached or enclosed beaters or rattles); struck, scraped or rubbed by hand; or struck against another similar instrument.',
+      instruments: ['timpani', 'snare drum', 'bass drum', 'cymbals', 'triangle', 'tambourine']
+    },
+    {
+      name: 'Keyboard',
+      description: 'A keyboard instrument is a musical instrument played using a keyboard, a row of levers which are pressed by the fingers.',
+      instruments: ['piano', 'organ', 'electronic keyboard', 'synthesizer']
+    }
+  ];
+};
+
+InstrumentFamilies.prototype.bindEvents = function () {
+  PubSub.publish('InstrumentFamilies:data-ready', this.instrumentFamilies);
+
+  PubSub.subscribe('SelectView:change', (evt) => {
+    const selectedIndex = evt.detail;
+    this.publishFamilyDetail(selectedIndex);
+  });
+};
+
+InstrumentFamilies.prototype.publishFamilyDetail = function (familyIndex) {
+  const selectedFamily = this.instrumentFamilies[familyIndex];
+  PubSub.publish('InstrumentFamilies:selected-family-ready', selectedFamily)
+};
+
+module.exports = InstrumentFamilies;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/views
+</summary>
+<br />
+
+<details>
+<summary>
+**instrument_family_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+
+const InstrumentFamilyView = function (container) {
+  this.container = container;
+};
+
+InstrumentFamilyView.prototype.bindEvents = function () {
+  PubSub.subscribe('InstrumentFamilies:selected-family-ready', (evt) => {
+    const instrumentFamily = evt.detail;
+    this.render(instrumentFamily);
+  });
+};
+
+InstrumentFamilyView.prototype.render = function (family) {
+  this.container.innerHTML = '';
+
+  const familyName = this.createElement('h2', family.name);
+  this.container.appendChild(familyName);
+
+  const familyDescription = this.createElement('p', family.description);
+  this.container.appendChild(familyDescription);
+
+  const instrumentListTitle = this.createElement('h3', 'Instruments include:');
+  this.container.appendChild(instrumentListTitle);
+
+  const instrumentList = this.createInstrumentList(family.instruments);
+  this.container.appendChild(instrumentList);
+};
+
+InstrumentFamilyView.prototype.createElement = function (elementType, text) {
+  const element = document.createElement(elementType);
+  element.textContent = text;
+  return element;
+};
+
+InstrumentFamilyView.prototype.createInstrumentList = function (instruments) {
+  const list = document.createElement('ul');
+
+  instruments.forEach((instrument) => {
+    const listItem = document.createElement('li');
+    listItem.textContent = instrument;
+    list.appendChild(listItem);
+  });
+
+  return list;
+};
+
+module.exports = InstrumentFamilyView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**select_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+
+const SelectView = function (element) {
+  this.element = element;
+};
+
+SelectView.prototype.bindEvents = function () {
+  PubSub.subscribe('InstrumentFamilies:data-ready', (evt) => {
+    const allInstrumentFamilies = evt.detail;
+    this.populate(allInstrumentFamilies);
+  });
+
+  this.element.addEventListener('change', (evt) => {
+    const selectedIndex = evt.target.value;
+    PubSub.publish('SelectView:change', selectedIndex);
+  });
+};
+
+SelectView.prototype.populate = function (instrumentFamilyData) {
+  instrumentFamilyData.forEach((familiy, index) => {
+    const option = document.createElement('option');
+    option.textContent = familiy.name;
+    option.value = index;
+    this.element.appendChild(option);
+  });
+};
+
+module.exports = SelectView;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/src/ **app.js**
+</summary>
+
+```js
+
+const InstrumentFamilies = require('./models/instrument_families.js');
+const SelectView = require('./views/select_view.js');
+const InstrumentFamilyView = require('./views/instrument_family_view.js');
+
+document.addEventListener('DOMContentLoaded', () => {
+  const selectElement = document.querySelector('select#instrument-families');
+  const familyDropdown = new SelectView(selectElement);
+  familyDropdown.bindEvents();
+
+  const familyContainer = document.querySelector('div#instrument-family');
+  const instrumentFamilyView = new InstrumentFamilyView(familyContainer);
+  instrumentFamilyView.bindEvents();
+
+  const instrumentFamilies = new InstrumentFamilies();
+  instrumentFamilies.bindEvents();
+});
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+
+
+
+
+
+<details>
+<summary>
+Beer App - Requests
+</summary>
+<br />
+
+<details>
+<summary>
+~/public/ **index.html**
+</summary>
+
+```html
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <script src="js/bundle.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <title></title>
+  </head>
+  <body>
+    <div id="beer-container"></div>
+  </body>
+</html>
+
+```
+<br />
+</details>
+
+
+<details>
+<summary>
+~/src/helpers
+</summary>
+<br />
+
+<details>
+<summary>
+**pub_sub.js**
+</summary>
+
+```js
+
+const PubSub = {
+  publish: function (channel, payload) {
+    const event = new CustomEvent(channel, {
+      detail: payload
+    });
+    document.dispatchEvent(event);
+  },
+
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+};
+
+module.exports = PubSub;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**request.js**
+</summary>
+
+```js
+
+const Request = function(url){
+  this.url = url;
+}
+
+Request.prototype.get = function(onComplete){
+
+  const xhr = new XMLHttpRequest();
+  xhr.addEventListener('load', () => {
+    if (xhr.status !== 200){
+      return;
+    }
+    const jsonString = xhr.responseText;
+    const data = JSON.parse(jsonString);
+    onComplete(data);
+  })
+  xhr.open('GET', this.url);
+  xhr.setRequestHeader('Accept', 'application/json');
+  xhr.send();
+}
+
+module.exports = Request;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/src/models/ **beer_data.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+const Request = require('../helpers/request.js')
+
+const BeerData = function () {
+  this.randomBeer = null;
+}
+
+BeerData.prototype.getData = function () {
+    const request = new Request('https://api.punkapi.com/v2/beers/random');
+    request.get((data) => {
+      this.randomBeer = data[0];
+      PubSub.publish('BeerData:beer-loaded', this.randomBeer);
+    })
+
+}
+
+module.exports = BeerData;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/views **beer_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+
+const BeerView = function (container) {
+  this.container = container;
+}
+
+BeerView.prototype.bindEvents = function () {
+  PubSub.subscribe('BeerData:beer-loaded', (evt) => {
+    this.render(evt.detail);
+  });
+}
+
+BeerView.prototype.render = function (beer) {
+  const beerName = document.createElement('p');
+  const beerDescription = document.createElement('p');
+  const beerAbv = document.createElement('p');
+  beerName.textContent = beer.name;
+  beerDescription.textContent = beer.description;
+  beerAbv.textContent = beer.abv + '%';
+  this.container.appendChild(beerName);
+  this.container.appendChild(beerDescription);
+  this.container.appendChild(beerAbv);
+}
+
+module.exports = BeerView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/ **app.js**
+</summary>
+
+```js
+
+const BeerData = require('./models/beer_data.js');
+const BeerView = require('./views/beer_view.js');
+
+document.addEventListener('DOMContentLoaded', () => {
+  const beerData = new BeerData();
+  beerData.getData();
+
+  const beerContainer = document.querySelector('#beer-container');
+  const beerView = new BeerView(beerContainer);
+  beerView.bindEvents();
+});
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+Numbers Facts - Requests
+</summary>
+<br />
+
+<details>
+<summary>
+~/public/ **index.html**
+</summary>
+
+```html
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Numbers Facts</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/bundle.js"></script>
+  </head>
+  <body>
+    <h1>Number Facts</h1>
+    <form id="number-form">
+      <label for="number">Enter a number:</label>
+      <input id="number" type="number"></input>
+      <button type="submit">Submit</button>
+    </form>
+    <section id="number-fact"></section>
+  </body>
+</html>
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/helpers
+</summary>
+<br />
+
+<details>
+<summary>
+**pub_sub.js**
+</summary>
+
+```js
+
+const PubSub = {
+  publish: function (channel, payload) {
+    const event = new CustomEvent(channel, {
+      detail: payload
+    });
+    document.dispatchEvent(event);
+  },
+
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+};
+
+module.exports = PubSub;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**request.js**
+</summary>
+
+```js
+
+const Request = function (url) {
+  this.url = url
+}
+
+Request.prototype.get = function (onComplete) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', this.url);
+  xhr.addEventListener('load', function() {
+    if(this.status !== 200){
+      return;
+    }
+    const data = JSON.parse(this.responseText);
+    onComplete(data);
+  });
+  xhr.send();
+};
+
+module.exports = Request;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+~/src/views
+</summary>
+<br />
+
+<details>
+<summary>
+**number_fact_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+
+const NumberFactView = function (element) {
+  this.element = element;
+};
+
+NumberFactView.prototype.bindEvents = function () {
+  PubSub.subscribe(`NumberFact:data-ready`, evt => {
+    this.render(evt.detail);
+  });
+};
+
+NumberFactView.prototype.render = function (fact) {
+  const numberElement = this.createElement(`number`, `Number`, fact.number);
+  const factElement = this.createElement(`fact`, `Fact`, fact.text);
+
+  this.element.appendChild(numberElement);
+  this.element.appendChild(factElement);
+};
+
+NumberFactView.prototype.createElement = function (id, label, text) {
+  const element = document.createElement('p');
+  element.id = id;
+  element.textContent = `${label}: ${text}`;
+  return element;
+};
+
+module.exports = NumberFactView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**number_form_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js')
+
+const NumberFormView = function (form) {
+  this.form = form;
+};
+
+NumberFormView.prototype.bindEvents = function () {
+  this.form.addEventListener('submit', (evt) => {
+    this.handleSubmit(evt);
+  })
+};
+
+NumberFormView.prototype.handleSubmit = function (evt) {
+  evt.preventDefault();
+  PubSub.publish('NumberFormView:submit', evt.target.number.value);
+};
+
+module.exports = NumberFormView;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/src/models **number_fact.js**
+</summary>
+
+```js
+
+const Request = require('../helpers/request.js');
+const PubSub = require('../helpers/pub_sub.js');
+
+const NumberFact = function () {
+};
+
+NumberFact.prototype.bindEvents = function () {
+  PubSub.subscribe('NumberFormView:submit', (evt) => {
+    this.handleNumberSubmit(evt.detail);
+  })
+};
+
+NumberFact.prototype.getData = function (number) {
+  const url = `http://numbersapi.com/${ number }?json`;
+  request = new Request(url);
+  request.get((data) => {
+    PubSub.publish('NumberFact:data-ready', data);
+  });
+};
+
+NumberFact.prototype.handleNumberSubmit = function (number) {
+  this.getData(number);
+};
+
+module.exports = NumberFact;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/ **app.js**
+</summary>
+
+```js
+
+const NumberFormView = require('./views/number_form_view');
+const NumberFactView = require('./views/number_fact_view.js');
+const NumberFact = require('./models/number_fact.js');
+
+document.addEventListener('DOMContentLoaded', () => {
+  const numberForm = document.querySelector('form#number-form');
+  const numberFormView = new NumberFormView(numberForm);
+  numberFormView.bindEvents();
+
+  const factContainer = document.querySelector('#number-fact');
+  const numberFactView = new NumberFactView(factContainer);
+  numberFactView.bindEvents();
+
+  const numberFact = new NumberFact();
+  numberFact.bindEvents();
+});
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+Scottish Munros - PubSub Requests
+</summary>
+<br />
+
+<details>
+<summary>
+~/public/ **index.html**
+</summary>
+
+```html
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Scottish Munros</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/bundle.js">
+    </script>
+  </head>
+  <body>
+    <h1>Scottish Munros</h1>
+    <label for="region-select">View munros by region:</label>
+    <select id="region-select">
+      <option selected disabled></select>
+    </select>
+    <div id="munro-list"></div>
+  </body>
+</html>
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/helpers
+</summary>
+<br />
+
+<details>
+<summary>
+**pub_sub.js**
+</summary>
+
+```js
+
+const PubSub = {
+  publish: function (channel, payload) {
+    const event = new CustomEvent(channel, {
+      detail: payload
+    });
+    document.dispatchEvent(event);
+  },
+
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+};
+
+module.exports = PubSub;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**request_helper.js**
+</summary>
+
+```js
+
+const RequestHelper = function (url) {
+  this.url = url
+}
+
+RequestHelper.prototype.get = function (onComplete) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', this.url);
+  xhr.addEventListener('load', function() {
+    if(this.status !== 200){
+      return;
+    }
+    const data = JSON.parse(this.responseText);
+    onComplete(data);
+  });
+  xhr.send();
+};
+
+module.exports = RequestHelper;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+~/src/models **munros.js**
+</summary>
+
+```js
+
+const RequestHelper = require('../helpers/request_helper.js');
+const PubSub = require('../helpers/pub_sub.js');
+
+const Munros = function () {
+  this.munrosData = [];
+  this.regions = [];
+}
+
+Munros.prototype.bindEvents = function () {
+  PubSub.subscribe('SelectView:change', (evt)  => {
+    const regionIndex = evt.detail;
+    this.publishMunrosByRegion(regionIndex);
+  })
+};
+
+Munros.prototype.getData = function () {
+  const requestHelper = new RequestHelper('https://munroapi.herokuapp.com/api/munros')
+  requestHelper.get((data) => {
+    PubSub.publish('Munros:munros-ready', data);
+    this.publishRegions(data);
+  });
+}
+
+Munros.prototype.publishRegions = function (data) {
+  this.munrosData = data;
+  this.regions = this.uniqueRegionList();
+  PubSub.publish('Munros:regions-ready', this.regions);
+}
+
+Munros.prototype.regionList = function () {
+  const fullList = this.munrosData.map(munro => munro.region);
+  return fullList;
+}
+
+Munros.prototype.uniqueRegionList = function () {
+  return this.regionList().filter((munro, index, array) => {
+    return array.indexOf(munro) === index;
+  });
+}
+
+Munros.prototype.countriesByRegion = function (regionIndex) {
+  const selectedRegion = this.regions[regionIndex];
+  return this.munrosData.filter((munro) => {
+    return munro.region === selectedRegion;
+  });
+};
+
+Munros.prototype.publishMunrosByRegion = function (regionIndex) {
+  const foundMunros = this.countriesByRegion(regionIndex);
+  PubSub.publish('Munros:munros-ready', foundMunros);
+};
+
+module.exports = Munros;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/views
+</summary>
+<br />
+
+<details>
+<summary>
+**munro_detail_view.js**
+</summary>
+
+```js
+
+const MunroDetailView = function () {
+
+}
+
+MunroDetailView.prototype.createMunroDetail = function (munro) {
+  const munroDetail = document.createElement('div');
+  munroDetail.classList.add('munro-detail');
+
+  const name = document.createElement('h3');
+  name.textContent = munro.name;
+  munroDetail.appendChild(name);
+
+  const detailsList = document.createElement('ul');
+  const meaning = this.createDetailListItem('Meaning', munro.meaning);
+  detailsList.appendChild(meaning);
+
+  const height = this.createDetailListItem('Height', munro.height)
+  detailsList.appendChild(height);
+
+  munroDetail.appendChild(detailsList);
+  return munroDetail;
+};
+
+MunroDetailView.prototype.createDetailListItem = function (label, property) {
+  const element = document.createElement('li');
+  element.textContent = `${label}: ${property}`;
+  return element;
+};
+
+module.exports = MunroDetailView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**munro_list_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+const MunroDetailView = require('./munro_detail_view');
+
+const MunroListView = function (container) {
+  this.container = container;
+};
+
+MunroListView.prototype.bindEvents = function () {
+  PubSub.subscribe('Munros:munros-ready', (evt) => {
+    this.clearList();
+    this.renderMunroDetailViews(evt.detail);
+  });
+};
+
+MunroListView.prototype.clearList = function () {
+  this.container.innerHTML = '';
+};
+
+MunroListView.prototype.renderMunroDetailViews = function (munros) {
+  munros.forEach((munro) => {
+    const munroItem = this.createMunroListItem(munro);
+    this.container.appendChild(munroItem);
+  });
+};
+
+MunroListView.prototype.createMunroListItem = function (munro) {
+  const munroDetailView = new MunroDetailView();
+  const munroDetail = munroDetailView.createMunroDetail(munro);
+  return munroDetail;
+};
+
+module.exports = MunroListView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**select_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub');
+
+const SelectView = function (selectElement) {
+  this.selectElement = selectElement;
+};
+
+SelectView.prototype.bindEvents = function () {
+  PubSub.subscribe('Munros:regions-ready', (evt) => {
+    this.populateSelect(evt.detail);
+  });
+
+  this.selectElement.addEventListener('change', (evt) => {
+    const selectedIndex = evt.target.value;
+    PubSub.publish('SelectView:change', selectedIndex);
+  });
+};
+
+SelectView.prototype.populateSelect = function (regions) {
+  regions.forEach((region, index) => {
+    const option = this.createRegionOption(region, index);
+    this.selectElement.appendChild(option);
+  })
+};
+
+SelectView.prototype.createRegionOption = function (region, index) {
+  const option = document.createElement('option');
+  option.textContent = region;
+  option.value = index;
+  return option;
+};
+
+module.exports = SelectView;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/src/ **app.js**
+</summary>
+
+```js
+
+const Munros = require('./models/munros.js');
+const SelectView = require('./views/select_view.js');
+const MunroListView = require('./views/munro_list_view.js');
+
+document.addEventListener('DOMContentLoaded', () => {
+  const selectElement = document.querySelector('select#region-select');
+  const selectView = new SelectView(selectElement);
+  selectView.bindEvents();
+
+  const listContainer = document.querySelector('#munro-list');
+  const munroListView = new MunroListView(listContainer);
+  munroListView.bindEvents();
+
+  const munros = new Munros;
+  munros.bindEvents();
+  munros.getData();
+})
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+Numbers Facts 2 - Fetch Promises
+</summary>
+<br />
+
+<details>
+<summary>
+~/public/ **index.html**
+</summary>
+
+```html
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Numbers Facts</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/bundle.js"></script>
+  </head>
+  <body>
+    <h1>Number Facts</h1>
+    <form id="number-form">
+      <label for="number">Enter a number:</label>
+      <input id="number" type="number"></input>
+      <button type="submit">Submit</button>
+    </form>
+    <section id="number-fact"></section>
+  </body>
+</html>
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/helpers
+</summary>
+<br />
+
+<details>
+<summary>
+**pub_sub.js**
+</summary>
+
+```js
+
+const PubSub = {
+  publish: function (channel, payload) {
+    const event = new CustomEvent(channel, {
+      detail: payload
+    });
+    document.dispatchEvent(event);
+  },
+
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+};
+
+module.exports = PubSub;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**request.js**
+</summary>
+
+```js
+
+const Request = function (url) {
+  this.url = url
+}
+
+Request.prototype.get = function () {
+  return fetch(this.url)
+    .then(res => res.json())
+};
+
+module.exports = Request;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+~/src/models/ **number_fact.js**
+</summary>
+
+```js
+
+const Request = require('../helpers/request.js');
+const PubSub = require('../helpers/pub_sub.js');
+
+const NumberFact = function () {
+};
+
+NumberFact.prototype.bindEvents = function () {
+  PubSub.subscribe('NumberFormView:submit', (evt) => {
+    this.handleNumberSubmit(evt.detail);
+  })
+};
+
+NumberFact.prototype.getData = function (number) {
+  const url = `http://numbersapi.com/${ number }?json`;
+  request = new Request(url);
+  request.get()
+    .then(data => PubSub.publish('NumberFact:data-ready', data))
+    .catch(err => console.log("Errorrrr", err))
+
+};
+
+NumberFact.prototype.handleNumberSubmit = function (number) {
+  this.getData(number);
+};
+
+module.exports = NumberFact;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/views
+</summary>
+<br />
+
+<details>
+<summary>
+**number_fact_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+
+const NumberFactView = function (element) {
+  this.element = element;
+};
+
+NumberFactView.prototype.bindEvents = function () {
+  PubSub.subscribe(`NumberFact:data-ready`, evt => {
+    this.render(evt.detail);
+  });
+};
+
+NumberFactView.prototype.render = function (fact) {
+  const numberElement = this.createElement(`number`, `Number`, fact.number);
+  const factElement = this.createElement(`fact`, `Fact`, fact.text);
+
+  this.element.appendChild(numberElement);
+  this.element.appendChild(factElement);
+};
+
+NumberFactView.prototype.createElement = function (id, label, text) {
+  const element = document.createElement('p');
+  element.id = id;
+  element.textContent = `${label}: ${text}`;
+  return element;
+};
+
+module.exports = NumberFactView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**number_form_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js')
+
+const NumberFormView = function (form) {
+  this.form = form;
+};
+
+NumberFormView.prototype.bindEvents = function () {
+  this.form.addEventListener('submit', (evt) => {
+    this.handleSubmit(evt);
+  })
+};
+
+NumberFormView.prototype.handleSubmit = function (evt) {
+  evt.preventDefault();
+  PubSub.publish('NumberFormView:submit', evt.target.number.value);
+};
+
+module.exports = NumberFormView;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/src/ **app.js**
+</summary>
+
+```js
+
+const NumberFormView = require('./views/number_form_view');
+const NumberFactView = require('./views/number_fact_view.js');
+const NumberFact = require('./models/number_fact.js');
+
+document.addEventListener('DOMContentLoaded', () => {
+  const numberForm = document.querySelector('form#number-form');
+  const numberFormView = new NumberFormView(numberForm);
+  numberFormView.bindEvents();
+
+  const factContainer = document.querySelector('#number-fact');
+  const numberFactView = new NumberFactView(factContainer);
+  numberFactView.bindEvents();
+
+  const numberFact = new NumberFact();
+  numberFact.bindEvents();
+});
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+Languages of the World App
+</summary>
+<br />
+
+<details>
+<summary>
+~/public/ **index.html**
+</summary>
+
+```html
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Languages of the World</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/bundle.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1 id="logo">Languages of the World</h1>
+      <ul id="menu"></ul>
+    </header>
+    <section id="continent"></section>
+  </body>
+</html>
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/helpers
+</summary>
+<br />
+
+<details>
+<summary>
+**pub_sub.js**
+</summary>
+
+```js
+
+const PubSub = {
+  publish: function (channel, payload) {
+    const event = new CustomEvent(channel, {
+      detail: payload
+    });
+    document.dispatchEvent(event);
+  },
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+}
+
+module.exports = PubSub;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**request_helper.js**
+</summary>
+
+```js
+
+const RequestHelper = function (url) {
+  this.url = url;
+}
+
+RequestHelper.prototype.get = function (onComplete) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', this.url);
+  xhr.addEventListener('load', function() {
+    if (this.status !== 200) {
+      return;
+    }
+
+    const data = JSON.parse(this.responseText);
+    onComplete(data);
+  });
+  xhr.send();
+};
+
+module.exports = RequestHelper;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/src/models/ **continents.js**
+</summary>
+
+```js
+
+const RequestHelper = require('../helpers/request_helper.js');
+const PubSub = require('../helpers/pub_sub.js');
+
+const Continents = function () {
+  this.continents = [];
+};
+
+Continents.prototype.bindEvents = function () {
+  PubSub.subscribe('MenuView:selected', (evt) => {
+    const selectedIndex = evt.detail;
+    PubSub.publish('Continents:continent-ready', this.continents[selectedIndex]);
+  });
+};
+
+Continents.prototype.getData = function () {
+  const requestHelper = new RequestHelper('https://restcountries.eu/rest/v2/all');
+  requestHelper.get((data) => this.handleDataReady(data));
+};
+
+Continents.prototype.handleDataReady = function (countries) {
+  const continentNames = this.getContinentNames(countries);
+  this.modelContinents(countries, continentNames);
+  PubSub.publish('Continents:continent-names-ready', continentNames);
+};
+
+Continents.prototype.getContinentNames = function (countries) {
+  return countries
+    .map(country => country.region)
+    .filter((region, index, regions) => regions.indexOf(region) === index);
+};
+
+Continents.prototype.modelContinents = function (countries, continentNames) {
+  this.continents = continentNames.map((continentName) => {
+    return {
+      name: continentName,
+      countries: this.countriesByContinent(countries, continentName)
+    };
+  });
+};
+
+Continents.prototype.countriesByContinent = function (countries, continent) {
+  return countries.filter(country => country.region === continent);
+};
+
+module.exports = Continents;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/src/views
+</summary>
+<br />
+
+<details>
+<summary>
+**continent_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+const CountryView = require('./country_view.js');
+
+const ContinentView = function (container, continent) {
+  this.container = container;
+  this.continent = continent;
+};
+
+ContinentView.prototype.bindEvents = function () {
+  PubSub.subscribe('Continents:continent-ready', (evt) => {
+    this.continent = evt.detail;
+    this.render();
+  });
+};
+
+ContinentView.prototype.render = function () {
+  this.clearContainer();
+
+  const name = this.addName();
+  this.container.appendChild(name);
+
+  const countriesContainer = this.createCountriesContainer();
+  this.renderCountries(countriesContainer);
+  this.container.appendChild(countriesContainer);
+};
+
+ContinentView.prototype.addName = function () {
+  const name = document.createElement('h2');
+  name.classList.add('continent-name');
+  name.textContent = this.continent.name;
+  return name;
+};
+
+ContinentView.prototype.createCountriesContainer = function () {
+  const countriesContainer = document.createElement('div');
+  countriesContainer.id = 'countries';
+  return countriesContainer;
+};
+
+ContinentView.prototype.renderCountries = function (container) {
+  this.continent.countries.forEach((country) => {
+    const countryView = new CountryView(container);
+    countryView.render(country);
+  });
+};
+
+ContinentView.prototype.clearContainer = function () {
+  this.container.innerHTML = '';
+};
+
+
+module.exports = ContinentView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**country_view.js**
+</summary>
+
+```js
+
+const LanguageListView = require('./language_list_view.js');
+
+const CountryView = function (continentContainer) {
+  this.continentContainer = continentContainer;
+};
+
+CountryView.prototype.render = function (country) {
+  const countryContainer = this.createCountryContainer();
+
+  const nameElement = this.createName(country);
+  countryContainer.appendChild(nameElement);
+
+  const languages = country.languages;
+  const languageListView = new LanguageListView(countryContainer);
+  languageListView.render(languages);
+
+  this.continentContainer.appendChild(countryContainer);
+};
+
+CountryView.prototype.createCountryContainer = function () {
+  const countryContainer = document.createElement('div');
+  countryContainer.classList.add('country');
+  return countryContainer;
+};
+
+CountryView.prototype.createName = function (country) {
+  const countryName = document.createElement('h4');
+  countryName.classList.add('country-name');
+  countryName.textContent = country.name;
+  return countryName;
+};
+
+module.exports = CountryView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**language_list_view.js**
+</summary>
+
+```js
+
+const LanguageListView = function (countryContainer) {
+  this.countryContainer = countryContainer;
+};
+
+LanguageListView.prototype.render = function (languages) {
+  const languageList = this.createLanguageList();
+
+  languages.forEach((language) => {
+    const languageListItem = this.createLanguageListItem(language);
+    languageList.appendChild(languageListItem);
+  })
+
+  this.countryContainer.appendChild(languageList);
+};
+
+LanguageListView.prototype.createLanguageList = function () {
+  const languageList = document.createElement('ul');
+  languageList.classList.add('languages');
+  return languageList;
+};
+
+LanguageListView.prototype.createLanguageListItem = function (language) {
+  const listItem = document.createElement('li');
+  listItem.classList.add('language')
+  listItem.textContent = language.name;
+  return listItem;
+};
+
+module.exports = LanguageListView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**menu_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+
+const MenuView = function (element) {
+  this.element = element;
+};
+
+MenuView.prototype.bindEvents = function () {
+  PubSub.subscribe('Continents:continent-names-ready', (evt) => {
+    this.render(evt.detail);
+  });
+};
+
+MenuView.prototype.render = function (continents) {
+  continents.forEach((continent, index) => {
+    const menuItem = this.createItem(continent, index);
+    this.element.appendChild(menuItem);
+  });
+};
+
+MenuView.prototype.createItem = function (continent, id) {
+  const menuItem = document.createElement('li');
+  menuItem.classList.add('menu-item');
+  menuItem.textContent = this.validateContinent(continent);
+  menuItem.id = id;
+
+  menuItem.addEventListener('click', (evt) => {
+    PubSub.publish('MenuView:selected', evt.target.id)
+  });
+
+  return menuItem;
+};
+
+MenuView.prototype.validateContinent = function (continent) {
+  return continent || 'Other';
+};
+
+module.exports = MenuView;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/src/ **app.js**
+</summary>
+
+```js
+
+const MenuView = require('./views/menu_view.js');
+const ContinentView = require('./views/continent_view.js');
+const Continents = require('./models/continents.js');
+
+document.addEventListener('DOMContentLoaded', () => {
+  const menuContainer = document.querySelector('ul#menu');
+  const menuView = new MenuView(menuContainer);
+  menuView.bindEvents();
+
+  const continentContainer = document.querySelector('#continent');
+  const continentView = new ContinentView(continentContainer);
+  continentView.bindEvents();
+
+  const continents = new Continents();
+  continents.bindEvents();
+  continents.getData();
+});
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+
+<details>
+<summary>
+Teas & Biscuits - Express Rest API
+</summary>
+<br />
+
+<details>
+<summary>
+~/client/public/ **index.html**
+</summary>
+
+```html
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/models/ **consumables.js**
+</summary>
+
+```js
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/helpers
+</summary>
+<br />
+
+<details>
+<summary>
+**pub_sub.js**
+</summary>
+
+```js
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**request.js**
+</summary>
+
+```js
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/views
+</summary>
+<br />
+
+<details>
+<summary>
+**form_view.js**
+</summary>
+
+```js
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**list_view.js**
+</summary>
+
+```js
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+~/src/ **app.js**
+</summary>
+
+```js
+
+```
+<br />
+</details>
+
+<br />
+</details>
