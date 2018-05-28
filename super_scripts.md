@@ -5592,6 +5592,42 @@ Teas & Biscuits - Express Rest API
 
 ```html
 
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/bundle.js"></script>
+  </head>
+  <body>
+    <h1>Tea & Biscuits</h1>
+
+    <form id="consumable-form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" />
+
+      <label for="brand">Brand:</label>
+      <input type="text" id="brand" />
+
+      <label for="category">Category:</label>
+      <select id="category">
+        <option selected disabled></option>
+        <option value="teas">Teas</option>
+        <option value="biscuits">Biscuits</option>
+      </select>
+
+      <input type="submit"/>
+    <form>
+
+    <h2>Teas</h2>
+    <ul id="teas-list"></ul>
+
+    <h2>Biscuits</h2>
+    <ul id="biscuits-list"></ul>
+  </body>
+</html>
+
 ```
 <br />
 </details>
@@ -5602,6 +5638,39 @@ Teas & Biscuits - Express Rest API
 </summary>
 
 ```js
+
+const Request = require('../helpers/request.js');
+const PubSub = require('../helpers/pub_sub.js');
+
+const Consumables = function (category, url) {
+  this.category = category;
+  this.url = url;
+};
+
+Consumables.prototype.bindEvents = function () {
+  PubSub.subscribe(`FormView:submit-${this.category}`, (evt) => {
+    this.postData(evt.detail);
+  });
+};
+
+Consumables.prototype.getData = function () {
+  const request = new Request(this.url);
+  request.get()
+    .then((consumables) => {
+      PubSub.publish(`Consumables:${this.category}-data-loaded`, consumables);
+    })
+    .catch(console.error);
+};
+
+Consumables.prototype.postData = function (formData) {
+  const request = new Request(this.url);
+  request.post(formData)
+    .then((consumables) => {
+      PubSub.publish(`Consumables:${this.category}-data-loaded`, consumables);
+    });
+};
+
+module.exports = Consumables;
 
 ```
 <br />
@@ -5620,6 +5689,21 @@ Teas & Biscuits - Express Rest API
 
 ```js
 
+const PubSub = {
+  publish: function (channel, payload) {
+    const event = new CustomEvent(channel, {
+      detail: payload
+    });
+    document.dispatchEvent(event);
+  },
+
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+};
+
+module.exports = PubSub;
+
 ```
 <br />
 </details>
@@ -5630,6 +5714,26 @@ Teas & Biscuits - Express Rest API
 </summary>
 
 ```js
+
+const Request = function (url) {
+  this.url = url;
+};
+
+Request.prototype.get = function () {
+  return fetch(this.url)
+    .then((response) => response.json());
+};
+
+Request.prototype.post = function (payload) {
+  return fetch(this.url, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(response => response.json());
+};
+
+module.exports = Request;
 
 ```
 <br />
@@ -5651,6 +5755,34 @@ Teas & Biscuits - Express Rest API
 
 ```js
 
+const PubSub = require('../helpers/pub_sub.js');
+const Request = require('../helpers/request.js');
+
+const FormView = function (formElement) {
+  this.formElement = formElement;
+};
+
+FormView.prototype.bindEvents = function () {
+  this.formElement.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const data = this.createData(evt.target);
+    const category = evt.target.category.value;
+    PubSub.publish(`FormView:submit-${category}`, data);
+    evt.target.reset();
+  });
+};
+
+FormView.prototype.createData = function (form) {
+  return {
+    consumable: {
+      name: form.name.value,
+      brand: form.brand.value
+    }
+  };
+};
+
+module.exports = FormView;
+
 ```
 <br />
 </details>
@@ -5662,6 +5794,40 @@ Teas & Biscuits - Express Rest API
 
 ```js
 
+const PubSub = require('../helpers/pub_sub.js');
+
+const ListView = function (category, listElement) {
+  this.category = category;
+  this.listElement = listElement;
+};
+
+ListView.prototype.bindEvents = function () {
+  PubSub.subscribe(`Consumables:${this.category}-data-loaded`, (evt) => {
+    this.render(evt.detail);
+  });
+};
+
+ListView.prototype.render = function (consumableData) {
+  this.clearList();
+  consumableData.forEach((item, index) => {
+    const listItem = this.createListItem(item);
+    this.listElement.appendChild(listItem);
+  });
+};
+
+ListView.prototype.clearList = function () {
+  this.listElement.innerHTML = '';
+};
+
+ListView.prototype.createListItem = function (item) {
+  const listItem = document.createElement('li');
+  const textContent = `${item.name}, ${item.brand}`;
+  listItem.textContent = textContent;
+  return listItem;
+};
+
+module.exports = ListView;
+
 ```
 <br />
 </details>
@@ -5672,14 +5838,200 @@ Teas & Biscuits - Express Rest API
 
 <details>
 <summary>
-~/src/ **app.js**
+~/client/src/ **app.js**
 </summary>
 
 ```js
 
+const Consumables = require('./models/consumables.js');
+const ListView = require('./views/list_view');
+const FormView = require('./views/form_view');
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  const formElement = document.querySelector('form#consumable-form');
+  const formView = new FormView(formElement);
+  formView.bindEvents();
+
+  const teasListElement = document.querySelector('ul#teas-list');
+  const teasListView = new ListView('teas', teasListElement);
+  teasListView.bindEvents();
+
+  const biscuitsListElement = document.querySelector('ul#biscuits-list');
+  const biscuitsListView = new ListView('biscuits', biscuitsListElement);
+  biscuitsListView.bindEvents();
+
+  const apiUrl = 'http://localhost:3000/api';
+
+  const teas = new Consumables('teas', `${apiUrl}/teas`);
+  teas.bindEvents();
+  teas.getData();
+
+  const biscuits = new Consumables('biscuits', `${apiUrl}/biscuits`);
+  biscuits.bindEvents();
+  biscuits.getData();
+
+});
+
 ```
 <br />
 </details>
+
+<details>
+<summary>
+~/server
+</summary>
+<br />
+
+<details>
+<summary>
+**server.js**
+</summary>
+
+```js
+
+const express = require('express');
+const app = express();
+const path = require('path');
+const bodyParser = require('body-parser');
+const indexRouter = require('./routers/index_router.js');
+
+const publicPath = path.join(__dirname, '../client/public');
+app.use(express.static(publicPath));
+
+app.use(bodyParser.json());
+app.use(indexRouter);
+
+app.listen(3000, function () {
+  console.log(`App running on port ${ this.address().port }`);
+});
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/routers/ **biscuits_router.js**
+</summary>
+
+```js
+
+const express = require('express');
+const router = express.Router();
+
+const biscuits = [
+  { name: "Digestives", brand: "McVitie's" },
+  { name: "Hobnobs", brand: "McVitie's" },
+  { name: "Shortbreads", brand: "Walkers" },
+  { name: "Jammy Dodgers", brand: "Burton's" },
+  { name: "Custard Creams", brand: "Crawford's" }
+];
+
+router.get('/', (req, res) => {
+  res.json(biscuits);
+});
+
+router.get('/:id', (req, res) => {
+  res.json(biscuits[req.params.id]);
+});
+
+router.post('/', (req, res) => {
+  biscuits.push(req.body.consumable);
+  res.json(biscuits);
+});
+
+router.put('/:id', (req, res) => {
+  biscuits[req.params.id] = req.body.consumable;
+  res.json(biscuits);
+});
+
+router.delete('/:id', (req, res) => {
+  biscuits.splice(req.params.id, 1);
+  res.json(biscuits);
+});
+
+module.exports = router;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/routers/ **index_router.js**
+</summary>
+
+```js
+
+const express = require('express');
+const router = express.Router();
+const teasRouter = require('./teas_router.js');
+const biscuitsRouter = require('./biscuits_router.js');
+
+router.use('/api/teas', teasRouter);
+router.use('/api/biscuits', biscuitsRouter);
+
+router.get('/', (req, res) => {
+  res.sendFile('index.html');
+});
+
+module.exports = router;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/routers/ **teas_router.js**
+</summary>
+
+```js
+
+const express = require('express');
+const router = express.Router();
+
+const teas = [
+  { name: "Early Grey", brand: "Twinings" },
+  { name: "Irish Breakfast", brand: "Barry's Tea" },
+  { name: "Lemon and Ginger", brand: "Lipton" },
+  { name: "Rooibos", brand: "Tick Tock" },
+  { name: "Green", brand: "Clipper" }
+];
+
+router.get('/', (req, res) => {
+  res.json(teas);
+});
+
+router.get('/:id', (req, res) => {
+  res.json(teas[req.params.id]);
+});
+
+router.post('/', (req, res) => {
+  teas.push(req.body.consumable);
+  res.json(teas);
+});
+
+router.put('/:id', (req, res) => {
+  teas[req.params.id] = req.body.consumable;
+  res.json(teas);
+});
+
+router.delete('/:id', (req, res) => {
+  teas.splice(req.params.id, 1);
+  res.json(teas);
+});
+
+module.exports = router;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
 
 <br />
 </details>
