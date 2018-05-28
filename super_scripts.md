@@ -6035,3 +6035,577 @@ module.exports = router;
 
 <br />
 </details>
+
+
+
+
+<details>
+<summary>
+Games Hub - FullStack App
+</summary>
+<br />
+
+<details>
+<summary>
+~/client/public/ **index.html**
+</summary>
+
+```html
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Games</title>
+    <script src="/js/bundle.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Skranji|Source+Serif+Pro" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <h1>Games Hub</h1>
+    <h3>Add a Game</h3>
+    <form id="games-form">
+
+        <label for="name">Name:</label>
+        <input type="text" id="name"/>
+
+        <label for="playingTime">Playing Time:</label>
+        <input type="number" id="playingTime"/>
+
+        <label for="minNumPlayers">Min Players:</label>
+        <input type="number" id="minNumPlayers"/>
+
+        <label for="maxNumPlayers">Max Players:</label>
+        <input type="number" id="maxNumPlayers"/>
+
+      <input type="submit" value="Save" id="save"/>
+    </form>
+
+    <h2>Games</h2>
+    <div id="games"></div>
+  </body>
+</html>
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/models/ **games.js**
+</summary>
+
+```js
+
+const Request = require('../helpers/request.js');
+const PubSub = require('../helpers/pub_sub.js');
+
+const Games = function (url) {
+  this.url = url;
+};
+
+Games.prototype.bindEvents = function () {
+  PubSub.subscribe('GameView:game-delete-clicked', (evt) => {
+    this.deleteGame(evt.detail);
+  });
+
+  PubSub.subscribe('GameView:game-submitted', (evt) => {
+    this.postGame(evt.detail);
+  })
+};
+
+Games.prototype.getData = function () {
+  const request = new Request(this.url);
+  request.get()
+    .then((games) => {
+      PubSub.publish('Games:data-loaded', games);
+    })
+    .catch(console.error);
+};
+
+Games.prototype.postGame = function (game) {
+  const request = new Request(this.url);
+  request.post(game)
+    .then((games) => {
+      PubSub.publish('Games:data-loaded', games);
+    })
+    .catch(console.error);
+};
+
+Games.prototype.deleteGame = function (gameId) {
+  const request = new Request(this.url);
+  request.delete(gameId)
+    .then((games) => {
+      PubSub.publish('Games:data-loaded', games);
+    })
+    .catch(console.error);
+};
+
+module.exports = Games;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/helpers
+</summary>
+<br />
+
+<details>
+<summary>
+**pub_sub.js**
+</summary>
+
+```js
+
+const PubSub = {
+  publish: function (channel, payload) {
+    const event = new CustomEvent(channel, {
+      detail: payload
+    });
+    document.dispatchEvent(event);
+  },
+
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+};
+
+module.exports = PubSub;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**request.js**
+</summary>
+
+```js
+
+const Request = function (url) {
+  this.url = url;
+};
+
+Request.prototype.get = function () {
+  return fetch(this.url)
+    .then((response) => response.json());
+};
+
+Request.prototype.post = function (payload) {
+  return fetch(this.url, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(response => response.json());
+};
+
+module.exports = Request;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/views
+</summary>
+<br />
+
+<details>
+<summary>
+**game_form_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js')
+
+const GameFormView = function (form) {
+  this.form = form;
+};
+
+GameFormView.prototype.bindEvents = function () {
+  this.form.addEventListener('submit', (evt) => {
+    this.handleSubmit(evt);
+  });
+};
+
+GameFormView.prototype.handleSubmit = function (evt) {
+  evt.preventDefault();
+  const newGame = this.createGame(evt.target);
+  PubSub.publish('GameView:game-submitted', newGame);
+};
+
+GameFormView.prototype.createGame = function (form) {
+  const newGame = {
+    game: {
+      name: form.name.value,
+      playingTime: form.playingTime.value,
+      players: {
+        min: form.minNumPlayers.value,
+        max: form.maxNumPlayers.value
+      }
+    }
+  };
+
+  return newGame;
+};
+
+module.exports = GameFormView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**game_view.js**
+</summary>
+
+```js
+const PubSub = require('../helpers/pub_sub.js');
+
+const GameView = function (container) {
+  this.container = container;
+};
+
+GameView.prototype.render = function (game) {
+  const gameContainer = document.createElement('div');
+  gameContainer.id = 'game';
+
+  const name = this.createHeading(game.name);
+  gameContainer.appendChild(name);
+
+  const playingTimeText = `Playing Time: ${game.playingTime} minutes`;
+  const playingTime = this.createDetail(playingTimeText);
+  gameContainer.appendChild(playingTime);
+
+  const playersText = `Players: ${game.players.min} - ${game.players.max}`;
+  const players = this.createDetail(playersText);
+  gameContainer.appendChild(players);
+
+  const deleteButton = this.createDeleteButton(game._id);
+  gameContainer.appendChild(deleteButton);
+
+  this.container.appendChild(gameContainer);
+};
+
+GameView.prototype.createHeading = function (textContent) {
+  const heading = document.createElement('h3');
+  heading.textContent = textContent;
+  return heading;
+};
+
+GameView.prototype.createDetail = function (textContent) {
+  const detail = document.createElement('p');
+  detail.textContent = textContent;
+  return detail;
+};
+
+GameView.prototype.createDeleteButton = function (gameId) {
+  const button = document.createElement('button');
+  button.classList.add('delete-btn');
+  button.value = gameId;
+
+  button.addEventListener('click', (evt) => {
+    PubSub.publish('GameView:game-delete-clicked', evt.target.value);
+  });
+
+  return button;
+};
+
+module.exports = GameView;
+
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**games_grid_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+const GameView = require('./game_view.js');
+
+const GamesView = function (container) {
+  this.container = container;
+};
+
+GamesView.prototype.bindEvents = function () {
+  PubSub.subscribe('Games:data-loaded', (evt) => {
+    this.render(evt.detail);
+  });
+};
+
+GamesView.prototype.render = function (games) {
+  this.container.innerHTML = '';
+  const gameView = new GameView(this.container);
+  games.forEach((game) => gameView.render(game));
+};
+
+module.exports = GamesView;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+~/client/src/ **app.js**
+</summary>
+
+```js
+
+const GameFormView = require('./views/game_form_view.js')
+const GameGridView = require('./views/games_grid_view.js');
+const Games = require('./models/games.js');
+
+document.addEventListener('DOMContentLoaded', () => {
+  const gamesForm = document.querySelector('form#games-form');
+  const gamesFormView = new GameFormView(gamesForm);
+  gamesFormView.bindEvents();
+
+  const gamesContainer = document.querySelector('div#games');
+  const gamesGridView = new GameGridView(gamesContainer);
+  gamesGridView.bindEvents();
+
+  const gamesUrl = 'http://localhost:3000/api/games';
+  const games = new Games(gamesUrl);
+  games.bindEvents();
+  games.getData();
+});
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/server
+</summary>
+<br />
+
+<details>
+<summary>
+**server.js**
+</summary>
+
+```js
+
+const express = require('express');
+const app = express();
+const path = require('path');
+const parser = require('body-parser');
+const indexRouter = require('./routers/index_router.js');
+
+const publicPath = path.join(__dirname, '../client/public');
+app.use(express.static(publicPath));
+
+app.use(parser.json());
+app.use(indexRouter);
+
+app.listen(3000, function () {
+  console.log(`Listening on port ${ this.address().port }`);
+});
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/routers/ **games_router.js**
+</summary>
+
+```js
+
+const express = require('express');
+const router = express.Router();
+const ObjectID = require('mongodb').ObjectID;
+
+const gamesRouter = function (gamesCollection) {
+
+  router.get('/', (req, res) => {
+    gamesCollection
+      .find()
+      .toArray()
+      .then((docs) => res.json(docs))
+      .catch((err) => {
+        console.error(err);
+        res.status(500);
+        res.json({ status: 500, error: err });
+      });
+  });
+
+  router.get('/:id', (req, res) => {
+    const id = req.params.id;
+    gamesCollection
+      .find({ _id: ObjectID(id) })
+      .toArray()
+      .then((docs) => res.json(docs))
+      .catch((err) => {
+        console.error(err);
+        res.status(500);
+        res.json({ status: 500, error: err });
+      });
+  });
+
+  router.post('/', (req, res) => {
+    const newGame = req.body.game;
+    gamesCollection
+      .insertOne(newGame)
+      .then(() => {
+        gamesCollection
+          .find()
+          .toArray()
+          .then((docs) => res.json(docs));
+      });
+  });
+
+  router.delete('/:id', (req, res) => {
+    const id = req.params.id;
+    gamesCollection
+      .deleteOne({ _id: ObjectID(id) })
+      .then(() => {
+        gamesCollection
+          .find()
+          .toArray()
+          .then((docs) => res.json(docs));
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500);
+        res.json({ status: 500, error: err });
+      });
+  });
+
+  router.put('/:id', (req, res) => {
+    const id = req.params.id;
+    const updatedGame = req.body.game;
+    gamesCollection
+      .updateOne(
+        { _id: ObjectID(id) },
+        { $set: updatedGame }
+      )
+      .then(() => {
+        gamesCollection
+        .find()
+        .toArray()
+        .then((docs) => res.json(docs));
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500);
+        res.json({ status: 500, error: err });
+      });
+  });
+
+  return router;
+
+};
+
+module.exports = gamesRouter;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/routers/ **index_router.js**
+</summary>
+
+```js
+
+const express = require('express');
+const router = express.Router();
+const MongoClient = require('mongodb').MongoClient;
+const gamesRouter = require('./games_router.js');
+
+MongoClient.connect('mongodb://localhost:27017', (err, client) => {
+  if (err) {
+    console.error(err);
+  }
+
+  const db = client.db('games_hub');
+  const gamesCollection = db.collection('games');
+  router.use('/api/games', gamesRouter(gamesCollection));
+});
+
+module.exports = router;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/db/ **seeds.js**
+</summary>
+
+```js
+
+use games_hub;
+db.dropDatabase();
+
+db.games.insertMany([
+  {
+    name: "Love Letter",
+    playingTime: 20,
+    players: {
+      min: 2,
+      max: 4
+    }
+  },
+  {
+    name: "Catan",
+    playingTime: 90,
+    players: {
+      min: 3,
+      max: 4
+    }
+  },
+  {
+    name: "Exploding Kittens",
+    playingTime: 15,
+    players: {
+      min: 2,
+      max: 5
+    }
+  },
+  {
+    name: "Resistance",
+    playingTime: 30,
+    players: {
+      min: 5,
+      max: 10
+    }
+  }
+]);
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<br />
+</details>
