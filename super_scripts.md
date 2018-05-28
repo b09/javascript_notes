@@ -2904,6 +2904,17 @@ describe('Transaction', function () {
 Reading List App - Events Homework
 </summary>
 <br />
+
+<details>
+<summary>
+Gif
+</summary
+
+<img src = "https://media.giphy.com/media/EcB6bY0qsRFwjZaxuC/giphy.gif"></img>
+<br />
+</details>
+
+
 <details>
 <summary>
 Reading List - Brief
@@ -5885,7 +5896,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <details>
 <summary>
-**server.js**
+/ **server.js**
 </summary>
 
 ```js
@@ -6403,7 +6414,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <details>
 <summary>
-**server.js**
+/ **server.js**
 </summary>
 
 ```js
