@@ -2908,10 +2908,10 @@ Reading List App - Events Homework
 <details>
 <summary>
 Gif
-</summary
+</summary>
+<br />
 
 <img src = "https://media.giphy.com/media/EcB6bY0qsRFwjZaxuC/giphy.gif"></img>
-<br />
 </details>
 
 
