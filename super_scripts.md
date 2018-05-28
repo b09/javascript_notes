@@ -3146,6 +3146,16 @@ const handleDeleteAllClick = function (event) {
 Planets App - Pub/Sub Lab
 </summary>
 <br />
+
+<details>
+<summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/88jz8Naot3hfOtJMZp/giphy.gif"></img>
+</details>
+
 <details>
 <summary>
 Planets App - Brief
