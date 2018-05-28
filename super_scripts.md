@@ -3520,6 +3520,15 @@ Top 10 Fastest Animals - Modular Front-End
 
 <details>
 <summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/1AjUYWCqbLj369R8fj/giphy.gif"></img>
+</details>
+
+<details>
+<summary>
 ~/public/ **index.html**
 </summary>
 
@@ -3737,6 +3746,15 @@ Webpack Intro App
 
 <details>
 <summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/3d76PXcDI0y2hCR9Zk/giphy.gif"></img>
+</details>
+
+<details>
+<summary>
 ~/public/ **index.html**
 </summary>
 
@@ -3917,6 +3935,15 @@ document.addEventListener('DOMContentLoaded', function () {
 Families of Musical Instruments - Webpack
 </summary>
 <br />
+
+<details>
+<summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/8L0yoWw4j9Ce12oYRL/giphy.gif"></img>
+</details>
 
 <details>
 <summary>
@@ -4186,6 +4213,15 @@ Beer App - Requests
 
 <details>
 <summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/1ffOB0TipEznEP1y3t/giphy.gif"></img>
+</details>
+
+<details>
+<summary>
 ~/public/ **index.html**
 </summary>
 
@@ -4375,6 +4411,15 @@ document.addEventListener('DOMContentLoaded', () => {
 Numbers Facts - Requests
 </summary>
 <br />
+
+<details>
+<summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/mBl6FlJjzToizwrFfF/giphy.gif"></img>
+</details>
 
 <details>
 <summary>
@@ -4625,6 +4670,15 @@ document.addEventListener('DOMContentLoaded', () => {
 Scottish Munros - PubSub Requests
 </summary>
 <br />
+
+<details>
+<summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/5n9Bwapm9ltcVWqkIe/giphy.gif"></img>
+</details>
 
 <details>
 <summary>
@@ -4967,6 +5021,15 @@ Numbers Facts 2 - Fetch Promises
 
 <details>
 <summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/ulUXF3vsLBGp78nY1A/giphy.gif"></img>
+</details>
+
+<details>
+<summary>
 ~/public/ **index.html**
 </summary>
 
@@ -5207,6 +5270,15 @@ document.addEventListener('DOMContentLoaded', () => {
 Languages of the World App
 </summary>
 <br />
+
+<details>
+<summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/DQaTJNrUYMfBuYqcHc/giphy.gif"></img>
+</details>
 
 <details>
 <summary>
@@ -5605,6 +5677,15 @@ document.addEventListener('DOMContentLoaded', () => {
 Teas & Biscuits - Express Rest API
 </summary>
 <br />
+
+<details>
+<summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/14e4D5R9m1qZVvUNXm/giphy.gif"></img>
+</details>
 
 <details>
 <summary>
@@ -6065,6 +6146,15 @@ module.exports = router;
 Games Hub - FullStack App
 </summary>
 <br />
+
+<details>
+<summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/nlJHrBrHpvqkS1zNdy/giphy.gif"></img>
+</details>
 
 <details>
 <summary>
