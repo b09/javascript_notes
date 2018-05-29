@@ -1,6 +1,6 @@
-# Games Hub
+# Bird Sightings
 
-Games Hub is a full stack JavaScript application with an Express server and MongoDB database.
+Bird Sightings is a full stack JavaScript application with an Express server and MongoDB database.
 
 ## Getting Started
 
@@ -40,4 +40,4 @@ npm run server:dev
 
 ### Using
 
-The application is running on port 3000 so visit http://localhost:3000/.
+The application is running on port 300 so visit http://localhost:3000.

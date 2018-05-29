@@ -40,4 +40,4 @@ npm run server:dev
 
 ### Using
 
-The application is running on port 3000 so visit http://localhost:3000/.
+The application is running on port 300 so visit http://localhost:3000/.
