@@ -6719,6 +6719,598 @@ db.games.insertMany([
 <br />
 </details>
 
+<br />
+</details>
+
+
+
+
+<details>
+<summary>
+Bird Sightings - Lab
+</summary>
+<br />
+
+<details>
+<summary>
+DB Setup - README
+</summary>
+
+## Bird Sightings
+
+Bird Sightings is a full stack JavaScript application with an Express server and MongoDB database.
+
+### Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development purposes.
+
+#### Installing
+
+Install dependencies:
+
+```
+npm install
+```
+
+Run a mongoDB server:
+
+```
+mongod
+```
+
+Seed the database:
+
+```
+mongo < server/db/seeds.js
+```
+
+Run webpack:
+
+```
+npm run build
+```
+
+Run express:
+
+```
+npm run server:dev
+```
+
+#### Using
+
+The application is running on port 300 so visit http://localhost:3000.
+
+</details>
+
+<details>
+<summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/3mJwz6uZDQqzhwaj5N/giphy.gif"></img>
+</details>
+
+<details>
+<summary>
+~/client/public/ **index.html**
+</summary>
+
+```html
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Bird Sightings</title>
+    <script src="/js/bundle.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Cinzel|EB+Garamond" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <h1>Bird Sightings</h1>
+    <div class="wrapper">
+      <div>
+        <h2>Add a Sighting</h2>
+        <form id="sightings-form">
+          <div>
+            <label for="species">Species:</label>
+            <input type="text" id="species"/>
+          </div>
+          <div>
+            <label for="location">Location:</label>
+            <input type="text" id="location"/>
+          </div>
+          <div>
+            <label for="date">Date:</label>
+            <input type="date" id="date"/>
+          </div>
+
+          <input type="submit" value="Save" id="save"/>
+        </form>
+      </div>
+      <div>
+        <h2>Sightings</h2>
+        <div id="sightings"></div>
+      </div>
+    </div>
+  </body>
+</html>
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/models/ **sightings.js**
+</summary>
+
+```js
+
+const Request = require('../helpers/request.js');
+const PubSub = require('../helpers/pub_sub.js');
+
+const Sightings = function (url) {
+  this.url = url;
+};
+
+Sightings.prototype.bindEvents = function () {
+  PubSub.subscribe('SightingView:sighting-delete-clicked', (evt) => {
+    this.deleteSighting(evt.detail);
+  });
+
+  PubSub.subscribe('SightingView:sighting-submitted', (evt) => {
+    this.postSighting(evt.detail);
+  })
+};
+
+Sightings.prototype.getData = function () {
+  const request = new Request(this.url);
+  request.get()
+    .then((sightings) => {
+      PubSub.publish('Sightings:data-loaded', sightings);
+    })
+    .catch(console.error);
+};
+
+Sightings.prototype.postSighting = function (sighting) {
+  const request = new Request(this.url);
+  request.post(sighting)
+    .then((sightings) => {
+      PubSub.publish('Sightings:data-loaded', sightings);
+    })
+    .catch(console.error);
+};
+
+Sightings.prototype.deleteSighting = function (sightingId) {
+  const request = new Request(this.url);
+  request.delete(sightingId)
+    .then((sightings) => {
+      PubSub.publish('Sightings:data-loaded', sightings);
+    })
+    .catch(console.error);
+};
+
+module.exports = Sightings;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/helpers
+</summary>
+<br />
+
+<details>
+<summary>
+**pub_sub.js**
+</summary>
+
+```js
+
+const PubSub = {
+  publish: function (channel, payload) {
+    const event = new CustomEvent(channel, {
+      detail: payload
+    });
+    document.dispatchEvent(event);
+  },
+
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+};
+
+module.exports = PubSub;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**request.js**
+</summary>
+
+```js
+
+const Request = function (url) {
+  this.url = url;
+};
+
+Request.prototype.get = function () {
+  return fetch(this.url)
+    .then((response) => response.json());
+};
+
+Request.prototype.post = function (payload) {
+  return fetch(this.url, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(response => response.json());
+};
+
+module.exports = Request;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/views
+</summary>
+<br />
+
+<details>
+<summary>
+**sighting_form_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js')
+
+const SightingFormView = function (form) {
+  this.form = form;
+};
+
+SightingFormView.prototype.bindEvents = function () {
+  this.form.addEventListener('submit', (evt) => {
+    this.handleSubmit(evt);
+  });
+};
+
+SightingFormView.prototype.handleSubmit = function (evt) {
+  evt.preventDefault();
+  const newSighting = this.createSighting(evt.target);
+  PubSub.publish('SightingView:sighting-submitted', newSighting);
+  evt.target.reset();
+};
+
+SightingFormView.prototype.createSighting = function (form) {
+  const newSighting = {
+    sighting: {
+      species: form.species.value,
+      location: form.location.value,
+      date: form.location.date
+    }
+  };
+
+  return newSighting;
+};
+
+module.exports = SightingFormView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**sighting_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+
+const SightingView = function (container) {
+  this.container = container;
+};
+
+SightingView.prototype.render = function (sighting) {
+  const sightingContainer = document.createElement('div');
+  sightingContainer.id = 'sighting';
+
+  const species = this.createHeading(sighting.species);
+  sightingContainer.appendChild(species);
+
+  const location = this.createDetail('Location', sighting.species);
+  sightingContainer.appendChild(location);
+
+  const date = this.createDetail('Date', sighting.date);
+  sightingContainer.appendChild(date);
+
+  const deleteButton = this.createDeleteButton(sighting._id);
+  sightingContainer.appendChild(deleteButton);
+
+  this.container.appendChild(sightingContainer);
+};
+
+SightingView.prototype.createHeading = function (textContent) {
+  const heading = document.createElement('h3');
+  heading.textContent = textContent;
+  return heading;
+};
+
+SightingView.prototype.createDetail = function (label, text) {
+  const detail = document.createElement('p');
+  detail.textContent = `${label}: ${text}`;
+  return detail;
+};
+
+SightingView.prototype.createDeleteButton = function (sightingId) {
+  const button = document.createElement('button');
+  button.classList.add('delete-btn');
+  button.value = sightingId;
+
+  button.addEventListener('click', (evt) => {
+    PubSub.publish('SightingView:sighting-delete-clicked', evt.target.value);
+  });
+
+  return button;
+};
+
+module.exports = SightingView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**sighting_grid_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+const SightingView = require('./sighting_view.js');
+
+const SightingsGridView = function (container) {
+  this.container = container;
+};
+
+SightingsGridView.prototype.bindEvents = function () {
+  PubSub.subscribe('Sightings:data-loaded', (evt) => {
+    this.render(evt.detail);
+  });
+};
+
+SightingsGridView.prototype.render = function (sightings) {
+  this.container.innerHTML = '';
+  const sightingView = new SightingView(this.container);
+  sightings.forEach((sighting) => sightingView.render(sighting));
+};
+
+module.exports = SightingsGridView;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+~/client/src/ **app.js**
+</summary>
+
+```js
+
+const SightingFormView = require('./views/sighting_form_view.js')
+const SightingGridView = require('./views/sightings_grid_view.js');
+const Sightings = require('./models/sightings.js');
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sightingsForm = document.querySelector('form#sightings-form');
+  const sightingsFormView = new SightingFormView(sightingsForm);
+  sightingsFormView.bindEvents();
+
+  const sightingsContainer = document.querySelector('div#sightings');
+  const sightingsGridView = new SightingGridView(sightingsContainer);
+  sightingsGridView.bindEvents();
+
+  const sightingsUrl = 'http://localhost:3000/api/sightings';
+  const sightings = new Sightings(sightingsUrl);
+  sightings.bindEvents();
+  sightings.getData();
+});
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/server
+</summary>
+<br />
+
+<details>
+<summary>
+**server.js**
+</summary>
+
+```js
+
+const express = require('express');
+const app = express();
+const path = require('path');
+const parser = require('body-parser');
+const indexRouter = require('./routers/index_router.js');
+
+const publicPath = path.join(__dirname, '../client/public');
+app.use(express.static(publicPath));
+
+app.use(parser.json());
+app.use(indexRouter);
+
+app.listen(3000, function () {
+  console.log(`Listening on port ${ this.address().port }`);
+});
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/routers/ **sightings_router.js**
+</summary>
+
+```js
+
+const express = require('express');
+const router = express.Router();
+const ObjectID = require('mongodb').ObjectID;
+
+const sightingsRouter = function (sightingsCollection) {
+
+  router.get('/', (req, res) => {
+    sightingsCollection
+      .find()
+      .toArray()
+      .then((docs) => res.json(docs))
+  });
+
+  router.get('/:id', (req, res) => {
+    const id = req.params.id;
+    sightingsCollection
+      .findOne({ _id: ObjectID(id) })
+      .then((docs) => res.json(docs));
+  });
+
+  router.post('/', (req, res) => {
+    const newSighting = req.body.sighting;
+    sightingsCollection
+      .insertOne(newSighting)
+      .then(() => {
+        sightingsCollection
+          .find()
+          .toArray()
+          .then((docs) => res.json(docs));
+      });
+  });
+
+  router.delete('/:id', (req, res) => {
+    const id = req.params.id;
+    sightingsCollection
+      .deleteOne({ _id: ObjectID(id) })
+      .then(() => {
+        sightingsCollection
+          .find()
+          .toArray()
+          .then((docs) => res.json(docs));
+      });
+  });
+
+  router.put('/:id', (req, res) => {
+    const id = req.params.id;
+    const updatedSighting = req.body.sighting;
+    sightingsCollection
+      .updateOne(
+        { _id: ObjectID(id) },
+        { $set: updatedSighting }
+      )
+      .then(() => {
+        sightingsCollection
+        .find()
+        .toArray()
+        .then((docs) => res.json(docs));
+      });
+  });
+
+  return router;
+
+};
+
+module.exports = sightingsRouter;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/routers/ **index_router.js**
+</summary>
+
+```js
+
+const express = require('express');
+const router = express.Router();
+const MongoClient = require('mongodb').MongoClient;
+const sightingsRouter = require('./sightings_router.js');
+
+MongoClient.connect('mongodb://localhost:27017', (err, client) => {
+  const db = client.db('birds');
+  const sightingsCollection = db.collection('sightings');
+  router.use('/api/sightings', sightingsRouter(sightingsCollection));
+});
+
+module.exports = router;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/db/ **seeds.js**
+</summary>
+
+```js
+
+use birds;
+db.dropDatabase();
+
+db.sightings.insertMany([
+  {
+    species: "Yellow Wagtail",
+    location: "Sutherland",
+    date: "2017-06-01"
+  },
+  {
+    species: "Red Kite",
+    location: "Knockshinnoch",
+    date: "2017-01-22"
+  },
+  {
+    species: "Little Egret",
+    location: "Seamill",
+    date: "2018-08-15"
+  }
+]);
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
 
 <br />
 </details>
