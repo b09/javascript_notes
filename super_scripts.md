@@ -5277,7 +5277,7 @@ Gif
 </summary>
 <br />
 
-<img src = "https://gph.is/2IYa9Zr"></img>
+<img src = "https://media.giphy.com/media/BZiawH2nozxknoFGTR/giphy.gif"></img>
 
 <!-- <img src = "https://media.giphy.com/media/DQaTJNrUYMfBuYqcHc/giphy.gif"></img> -->
 </details>
