@@ -7314,3 +7314,606 @@ db.sightings.insertMany([
 
 <br />
 </details>
+
+
+
+
+<details>
+<summary>
+Bucket List - Full Stack App
+</summary>
+<br />
+
+<details>
+<summary>
+Brief
+</summary>
+
+# Full-stack Lab - Countries Bucket List
+
+### Learning Objectives
+
+- Be able to create a full-stack app
+- Practice building a server with a MongoDB for persistence
+- Understand the relationship between a client, server and database
+
+## Brief
+
+You need some new photos of you in exotic locations to get some more Instagram love. You've decided to create a bucket list app to keep track and manage all the places you want to visit.
+
+### MVP
+
+- The bucket list is a list of country names
+- The bucket list is persisted in a MongoDB on the server
+- Access to the list is obtained via RESTful requests from the client
+- User can select from a limited list of hard-coded countries to add a new item in their bucket list
+- User should be able to see the current items on the list
+- User should be able to delete an item
+
+### Extensions
+
+- Changed the hard-coded list of countries to be populated from the Countries API via a request on the client
+- User should be able to save all of the data (name, population etc etc) for a particular country in their bucket list
+- User should be able to see more detailed information in the UI about the countries in their bucket list
+- Any other features you think would be cool in the app
+
+## Considerations
+
+- Test your code often. We value working software, even if it is not feature-complete.
+- Avoid writing too much code before verifying it works! Try and fix bugs one at a time.
+
+## Planning
+
+- You could -
+  - make a list of your dependencies, and at what points you'll need them
+  - draw some diagrams
+  - look at previous solutions
+  - decide on what parts of the app you'll tackle when
+
+## Selected Inspiration
+
+- "UML is programming. The rest is just typing". Pawel, 2018
+
+
+
+</details>
+
+<details>
+<summary>
+Gif
+</summary>
+<br />
+
+<img src = "https://media.giphy.com/media/BZiawH2nozxknoFGTR/giphy.gif"></img>
+</details>
+
+
+<details>
+<summary>
+~/client/public/ **index.html**
+</summary>
+
+```html
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Bucket List</title>
+    <script src="/js/bundle.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Skranji|Source+Serif+Pro" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <section class="main">
+      <h1>Where Do You Want To Go?</h1>
+
+      <div>
+        <select id="countries-select" name="countries_select">
+          <option selected disabled>Select</option>
+        </select>
+      </div>
+
+      <div>
+        <ul id="country-details"></ul>
+      </div>
+
+      <div id="bucket-list-container">
+        <h2>Your Bucket List</h2>
+        <ul id="bucket-list"></ul>
+      </div>
+
+    </section>
+  </body>
+</html>
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/models/ **countries.js**
+</summary>
+
+```js
+
+const Request = require('../helpers/request.js');
+const PubSub = require('../helpers/pub_sub.js');
+
+const Countries = function (countriesUrl, bucketListUrl) {
+  this.countriesUrl  = countriesUrl;
+  this.bucketListUrl = bucketListUrl;
+  this.countries     = [];
+};
+
+Countries.prototype.bindEvents = function () {
+  // What do we want to do
+  PubSub.subscribe("SelectView:country-selected", (evt) => {
+    this.publishChange(evt.detail);
+  });
+
+  PubSub.subscribe("CountryContainerView:add-to-list", (evt) => {
+    this.saveCountry(evt.detail);
+  });
+
+  PubSub.subscribe("BucketListView:remove-from-list", (evt) => {
+    this.deleteCountry(evt.detail);
+  });
+}
+
+Countries.prototype.getCountries = function () {
+  const request = new Request(this.countriesUrl);
+  request.get()
+    .then((countries) => {
+      this.countries = countries;
+      PubSub.publish('Countries:data-loaded', countries);
+    })
+    .catch(console.error);
+};
+
+Countries.prototype.getBucketList = function () {
+  const request = new Request(this.bucketListUrl);
+  request.get()
+    .then((countries) => {
+      this.countries = countries;
+      PubSub.publish('Countries:bucket-list-data-loaded', countries);
+    })
+    .catch(console.error);
+};
+
+Countries.prototype.saveCountry = function (country) {
+  const request = new Request(this.bucketListUrl);
+  request.post(country)
+    .then((bucketList) => {
+      PubSub.publish('Countries:bucket-list-data-loaded', bucketList);
+    })
+    .catch(console.error);
+};
+
+Countries.prototype.deleteCountry = function (country) {
+  const request = new Request(this.bucketListUrl);
+  request.delete(country._id)
+  .then((bucketList) => {
+    PubSub.publish('Countries:bucket-list-data-loaded', bucketList);
+  })
+  .catch(console.error);
+};
+
+Countries.prototype.publishChange = function (index) {
+  const country = this.countries[index];
+  PubSub.publish("Countries:country-changed", country);
+};
+
+module.exports = Countries;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/helpers
+</summary>
+<br />
+
+<details>
+<summary>
+**pub_sub.js**
+</summary>
+
+```js
+
+const PubSub = {
+  publish: function (channel, payload) {
+    const event = new CustomEvent(channel, {
+      detail: payload
+    });
+    document.dispatchEvent(event);
+  },
+
+  subscribe: function (channel, callback) {
+    document.addEventListener(channel, callback);
+  }
+};
+
+module.exports = PubSub;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**request.js**
+</summary>
+
+```js
+
+const Request = function (url) {
+  this.url = url;
+};
+
+Request.prototype.get = function () {
+  return fetch(this.url)
+    .then((response) => response.json());
+};
+
+Request.prototype.post = function (payload) {
+  return fetch(this.url, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(response => response.json());
+};
+
+module.exports = Request;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<details>
+<summary>
+~/client/src/views
+</summary>
+<br />
+
+<details>
+<summary>
+**bucket_list_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+const CountryDetailView = require('./country_detail_view.js');
+
+const BucketListView = function(container){
+  this.container = container;
+}
+
+BucketListView.prototype.bindEvents = function () {
+  PubSub.subscribe('Countries:bucket-list-data-loaded',  (evt) => {
+    this.render(evt.detail);
+  });
+};
+
+BucketListView.prototype.render = function (bucketList) {
+  // clear innerHTML
+  this.container.innerHTML = "";
+  let countryDetailView;
+
+  bucketList.forEach((country) => {
+
+    const handleClick = (evt) => {
+      PubSub.publish("BucketListView:remove-from-list", country);
+    }
+
+    countryDetailView = new CountryDetailView(this.container, country, handleClick);
+    countryDetailView.render();
+  })
+};
+
+module.exports = BucketListView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**country_container_view.js**
+</summary>
+
+```js
+
+const PubSub            = require('../helpers/pub_sub.js');
+const CountryDetailView = require('./country_detail_view.js');
+
+const CountryContainerView = function(container){
+  this.container = container;
+}
+
+CountryContainerView.prototype.bindEvents = function () {
+  PubSub.subscribe("Countries:country-changed", (evt) => {
+    this.render(evt.detail);
+  });
+};
+
+CountryContainerView.prototype.render = function (country) {
+  // clear innerHTML
+  this.container.innerHTML = "";
+  let countryDetailView;
+
+  const handleClick = (evt) => {
+    PubSub.publish("CountryContainerView:add-to-list", country);
+  }
+
+  countryDetailView = new CountryDetailView(this.container, country, handleClick);
+  countryDetailView.render();
+};
+
+module.exports = CountryContainerView;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**country_detail_view.js**
+</summary>
+
+```js
+const CountryDetailView = function(container, country, handleClick){
+  this.container   = container;
+  this.country     = country;
+  this.handleClick = handleClick;
+}
+
+CountryDetailView.prototype.render = function () {
+  const listElement    = document.createElement('li');
+  const figureElement  = document.createElement('figure');
+  const captionElement = document.createElement('figcaption');
+  const flagElement    = document.createElement('img');
+
+  captionElement.textContent = this.country.name;
+  flagElement.src = this.country.flag;
+  flagElement.classList.add('country-flag');
+
+  flagElement.addEventListener('click', this.handleClick);
+
+  figureElement.appendChild(flagElement);
+  figureElement.appendChild(captionElement);
+  listElement.appendChild(figureElement);
+  this.container.prepend(listElement);
+};
+
+
+module.exports = CountryDetailView;
+
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+**select_view.js**
+</summary>
+
+```js
+
+const PubSub = require('../helpers/pub_sub.js');
+
+const SelectView = function (container) {
+  this.container = container;
+};
+
+SelectView.prototype.bindEvents = function () {
+
+  PubSub.subscribe("Countries:data-loaded", (evt) => {
+    this.render(evt.detail);
+  });
+
+  this.container.addEventListener('change', (evt) => {
+    PubSub.publish("SelectView:country-selected", evt.target.value);
+  });
+
+};
+
+SelectView.prototype.render = function (data) {
+  data.forEach( (country, index) => {
+    this.container.appendChild(this.createOption(country, index));
+  });
+};
+
+SelectView.prototype.createOption = function (country, index) {
+  const opt = document.createElement('option');
+  opt.value = index;
+  opt.textContent = country.name;
+  return opt;
+};
+
+module.exports = SelectView;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+
+<details>
+<summary>
+~/client/src/ **app.js**
+</summary>
+
+```js
+
+const Countries            = require('./models/countries.js');
+const SelectView           = require('./views/select_view.js');
+const CountryContainerView = require('./views/country_container_view.js');
+const BucketListView       = require('./views/bucket_list_view.js');
+
+document.addEventListener('DOMContentLoaded', () => {
+  const select     = document.querySelector('#countries-select');
+  const selectView = new SelectView(select);
+  selectView.bindEvents();
+
+  const detailContainer      = document.querySelector('#country-details');
+  const countryContainerView = new CountryContainerView(detailContainer);
+  countryContainerView.bindEvents();
+
+  const bucketListContainer = document.querySelector('#bucket-list');
+  const bucketListView      = new BucketListView(bucketListContainer);
+  bucketListView.bindEvents();
+
+  const countriesUrl  = 'https://restcountries.eu/rest/v2/all';
+  const bucketListUrl = 'http://localhost:3000/api/bucket-list-items';
+  const countries     = new Countries(countriesUrl, bucketListUrl);
+  countries.bindEvents();
+  countries.getCountries();
+  countries.getBucketList();
+});
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+~/server
+</summary>
+<br />
+
+<details>
+<summary>
+**server.js**
+</summary>
+
+```js
+
+const express = require('express');
+const app = express();
+const path = require('path');
+const parser = require('body-parser');
+const indexRouter = require('./routers/index_router.js');
+
+const publicPath = path.join(__dirname, '../client/public');
+app.use(express.static(publicPath));
+
+app.use(parser.json());
+app.use(indexRouter);
+
+app.listen(3000, function () {
+  console.log(`The magic is happening on port ${ this.address().port }`);
+});
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/routers/ **bucket_list_router.js**
+</summary>
+
+```js
+
+const express = require('express');
+const router = express.Router();
+const ObjectID = require('mongodb').ObjectID;
+
+const bucketListRouter = function (bucketListCollection) {
+
+  router.get('/', (req, res) => {
+    bucketListCollection
+      .find()
+      .toArray()
+      .then((docs) => res.json(docs))
+      .catch((err) => {
+        console.error(err);
+        res.status(500);
+        res.json({ status: 500, error: err });
+      });
+  });
+
+  router.post('/', (req, res) => {
+    const newCountry = req.body;
+    bucketListCollection
+      .insertOne(newCountry)
+      .then(() => {
+        bucketListCollection
+          .find()
+          .toArray()
+          .then((docs) => res.json(docs));
+      });
+  });
+
+  router.delete('/:id', (req, res) => {
+    const id = req.params.id;
+    bucketListCollection
+      .deleteOne({ _id: ObjectID(id) })
+      .then(() => {
+        bucketListCollection
+          .find()
+          .toArray()
+          .then((docs) => res.json(docs));
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500);
+        res.json({ status: 500, error: err });
+      });
+  });
+
+  return router;
+
+};
+
+module.exports = bucketListRouter;
+
+```
+<br />
+</details>
+
+<details>
+<summary>
+/routers/ **index_router.js**
+</summary>
+
+```js
+
+const express = require('express');
+const router = express.Router();
+const MongoClient = require('mongodb').MongoClient;
+const bucketListRouter = require('./bucket_list_router.js');
+
+MongoClient.connect('mongodb://localhost:27017', (err, client) => {
+  if (err) {
+    console.error(err);
+  }
+
+  const db = client.db('bucket_list');
+  const bucketListCollection = db.collection('bucketListItems');
+  router.use('/api/bucket-list-items', bucketListRouter(bucketListCollection));
+});
+
+module.exports = router;
+
+```
+<br />
+</details>
+
+<br />
+</details>
+
+<br />
+</details>
