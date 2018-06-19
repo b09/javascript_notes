@@ -5026,7 +5026,14 @@ After commenting out this code you should notice that you're still able to use t
 
 </details>
 
-## Intro To Mongo
+## MongoDB
+
+<details>
+<summary>
+Details
+</summary>
+
+### Intro To Mongo
 
 <details>
 <summary>
@@ -5610,6 +5617,7 @@ We have now completed the update route.
 
 We have now created a RESTful JSON API for our games resource, with data being persisted in a MongoDB database. We have tested all of the routes in Insomnia Rest Client to ensure they work and because the client application has already be implemented to consume these routes, if you visit http://localhost:3000/ you should have a fully functional application.
 
+</details>
 </details>
 
 ## React
