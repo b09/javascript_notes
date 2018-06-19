@@ -1,0 +1,30 @@
+body {
+  margin: 40px;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+#grid {
+  display: grid;
+  align-items: stretch;
+  grid-template-columns: 15vw 15vw 15vw;
+  grid-template-rows: 15vw 15vw 15vw;
+  grid-gap: 0.5vw;
+  background-color: #fff;
+  color: #444;
+}
+
+.square {
+  user-select: none;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  background-color: lightgrey;
+  font-size: 8vw;
+}
+
+.play-again-button {
+  font-size: 3vw;
+}
+
