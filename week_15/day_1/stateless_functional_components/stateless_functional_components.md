@@ -1,16 +1,16 @@
-# Stateless Components
+## Stateless Components
 
-## Learning objectives
+### Learning objectives
 - understand what a stateless react component is and why we might use one
 - learn the syntax for writing a stateless component
 
 > If the React countries app is taught as the previous lesson, then keep the app open as one of the components will be refactored later.
 
-## What is a stateless component?
+### What is a stateless component?
 
 If a React component does not need to have its own internal state and is only rendering data passed down to it through props, there is an alternative syntax that we can use for creating it. This type of component is called a stateless component or stateless function.
 
-## Why would we use one?
+### Why would we use one?
 
 There are a few reasons why we might use a stateless component. Firstly they usually take fewer lines of code to write so are both quicker to create and easier to read. Win!
 
@@ -20,7 +20,7 @@ Finally, the React developers are aiming to make stateless components more effic
 
 > Can link to article on benefits in resources section below.
 
-## How do you write one? (syntax)
+### How do you write one? (syntax)
 
 Instead of using the React.createClass() method to make our component, we can use a simple JavaScript function. This takes in one argument, which is the props that are being passed into it.
 
@@ -41,7 +41,7 @@ const MyComponent = (props) => {
 
 Any extra functionality we need, like event listeners or functions to compute the props before displaying them, you just include above the return like in any other function.
 
-## Code
+### Code
 
 Going back to our React comments app, both the Comment and the CommentList components are stateless components. They have no state, therefore we can rewrite it as a stateless component i.e.:
 
@@ -78,7 +78,7 @@ const CommentList = (props) => {
 }
 ```
 
-## Resources
+### Resources
 
 Documentation:
 
