@@ -5612,8 +5612,14 @@ We have now created a RESTful JSON API for our games resource, with data being p
 
 </details>
 
-## Intro to React
+##React
 
+<details>
+<summary>
+Details
+</summary>
+
+### Intro To React
 <details>
 <summary>
 Frameworks
@@ -5778,7 +5784,7 @@ The ReactDOM object handles rendering to the DOM. React itself is not coupled to
 If we check out or browser now - our first Hello World React app!
 </details>
 
-## create-react-app
+### create-react-app
 
 <details>
 <summary>
@@ -5893,5 +5899,7 @@ rm src/logo.svg
 ```
 
 At this point, we can start to build up our app, importing our components into `App.js` as needed, and filling it out with JSX.
+
+</details>
 
 </details>
