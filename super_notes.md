@@ -5612,7 +5612,7 @@ We have now created a RESTful JSON API for our games resource, with data being p
 
 </details>
 
-##React
+## React
 
 <details>
 <summary>
