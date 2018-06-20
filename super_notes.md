@@ -6837,4 +6837,1126 @@ https://facebook.github.io/react/docs/component-specs.html
 
 </details>
 
+
+### Adding a From to a React Component
+<details>
+<summary>
+Adding new Comments
+</summary>
+
+### Adding new Comments
+
+We are displaying the comments nicely. Now we would like to be able to add comments. Let's create a form component:
+
+```bash
+touch src/components/CommentForm.jsx
+```
+
+Let's create a form with author and text fields:
+
+```js
+// src/components/CommentForm
+import React, { Component }  from 'react'
+
+class CommentForm extends Component {
+    render() {
+       return (
+         <form className="commentForm">
+           <input
+             type="text"
+             placeholder="Your name"
+           />
+           <input
+             type="text"
+             placeholder="Say something..."
+           />
+           <input type="submit" value="Post" />
+         </form>
+       )
+     }
+}
+
+export default CommentForm
+
+```
+
+And let's tell our CommentBox to render the form
+
+```js
+// src/containers/CommentsBox.jsx
+
+render() {
+   return (
+    <div className="comment-box">
+      <h2>Add a Comment</h2> \\NEW
+      <CommentForm /> \\NEW
+      <h2>Comments</h2>
+      <CommentList data={this.state.data} />
+    </div>
+  )
+}
+
+```
+
+</details>
+
+<details>
+<summary>
+Making the form interactive
+</summary>
+
+### Making the form interactive
+
+The form component should have state that reflects the current values. This is called a Controlled Component.
+[link to React Controlled Components](https://facebook.github.io/react/docs/forms.html)
+So let's set that up in the constructor.
+
+```js
+// src/components/CommentForm.jsx
+
+constructor(props) {
+    super(props)
+    this.state = {
+      author: '',
+      text: ''
+    }
+}
+
+```
+
+We can now set up the form to use those state values for what it is showing.
+
+```js
+// src/components/CommentForm
+
+         <form className="commentForm">
+           <input
+             type="text"
+             placeholder="Your name"
+             value={this.state.author} // NEW
+           />
+           <input
+             type="text"
+             placeholder="Say something..."
+             value={this.state.text} // NEW
+           />
+           <input type="submit" value="Post" />
+         </form>
+
+
+export default CommentForm
+
+```
+
+So if we refresh our browser, when we type in the fields the values don't change. This is because they are always displaying the state, which isn't being updated. Let's now update the state as the user types.
+
+```js
+// src/components/CommentForm.jsx
+
+handleAuthorChange(event) {
+  this.setState({author: event.target.value})
+}
+
+handleTextChange(event) {
+  this.setState({text: event.target.value})
+}
+
+render() {
+   return (
+     <form className="commentForm">
+       <input
+         type="text"
+         placeholder="Your name"
+         value={this.state.author}
+         onChange={this.handleAuthorChange} \\NEW
+       />
+       <input
+         type="text"
+         placeholder="Say something..."
+         value={this.state.text}
+         onChange={this.handleTextChange} \\NEW
+       />
+       <input type="submit" value="Post" />
+     </form>
+   )
+ }
+
+```
+
+If we now check that in out browser, we should see an error. That's because the handle change functions have the wrong context. So let's bind them to fix this.
+
+```js
+// src/components/CommentForm.jsx
+
+constructor(props) {
+    super(props)
+    this.handleAuthorChange = this.handleAuthorChange.bind(this) //NEW
+    this.handleTextChange = this.handleTextChange.bind(this) //NEW
+    this.state = {
+      author: '',
+      text: ''
+    }
+}
+
+```
+
+Ok, now we want to write a function that is called then the submit button it clicked. It's going to have two responsiblities:
+
+1. To update the list of comments with the new comment
+2. To reset the input fields
+
+```js
+// src/components/CommentForm.jsx
+
+handleSubmit(event) {
+  event.preventDefault()
+  var author = this.state.author.trim()
+  var text = this.state.text.trim()
+  if (!text || !author) {
+    return
+  }
+  // TODO: update the list of comments
+  this.setState({author: '', text: ''})
+}
+
+render() {
+  return (
+    <form className="commentForm" onSubmit={this.handleSubmit}>
+    // ...
+  )
+}
+```
+
+And let's bind the handle submit in the constructor.
+
+```js
+// src/components/CommentForm.jsx
+
+constructor(props) {
+    super(props)
+    this.handleAuthorChange = this.handleAuthorChange.bind(this)
+    this.handleTextChange = this.handleTextChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    // ...
+}
+```
+</details>
+
+<details>
+<summary>
+Adding & Updating the Comment List
+</summary>
+
+### Updating the Comment List
+
+When a user submits a comment, a new comment should be added to our list of our comments.
+
+The state of our application should change and thus the whole page should re-render. It is here we will start to see the benefits of the one-way flow design.
+
+#### Adding comment
+
+The comment box controls the state of our application, the array of comments. When the form adds a comment it will need to notify the CommentBox that new comment is added.
+
+To do this we can make CommentBox pass a function to add a comment to the Form. The CommentForm can then use this function to update the state of the box.
+
+Let's first write the function to add the comment.
+
+Every time a component resets it's state and the state has changed, it will re-render itself and all the child components.
+
+As our CommentBox is at the top of the chain this will cause a cascade re-rendering our whole display. One way flow.
+
+This is efficient due to Virtual DOM.
+
+```js
+// src/containers/CommmentBox
+
+handleCommentSubmit(comment) {
+  comment.id = Date.now()//comments need an id, just going to use a date for now
+  var newComments = this.state.data.concat([comment])
+  this.setState({data: newComments})
+}
+
+render() {
+  return (
+    <div className="commentBox">
+      <h1>Comments</h1>
+      <CommentForm onCommentSubmit={this.handleCommentSubmit} /> \\ UPDATED
+      <CommentList data={this.state.data} />
+    </div>
+  )
+}
+
+```
+
+And don't forget to bind it.
+
+```js
+// src/containers/CommmentBox
+
+constructor(props) {
+  super(props)
+  this.handleCommentSubmit = this.handleCommentSubmit.bind(this)
+  // ...
+}
+```
+
+
+Now we want the CommentForm to call this function when a comment is submitted.
+
+```js
+// src/components/CommentForm
+
+handleSubmit(event) {
+  event.preventDefault()
+  var author = this.state.author.trim()
+  var text = this.state.text.trim()
+  if (!text || !author) {
+    return
+  }
+  this.props.onCommentSubmit({author: author, text: text})
+  this.setState({author: '', text: ''})
+}
+```
+
+Fantastic we have our application dynamically updating using the React one way flow.
+</details>
+
+### React Countries - HTTP requests to fetch data inside a React component
+
+<details>
+<summary>
+Intro & Design
+</summary>
+
+### Intro
+
+You all wrote awesome applications using the countries RESTful API in vanilla JS. In this lesson we are going to use React to make a HTTP request to the same API. As we saw with the Comments app, by setting the received data on our state, we trigger a re-render of our application, which we can use to populate our UI. Here we will see how React's component lifecycle methods can help us perform HTTP requests. We will also be using stateless functional components where possible.
+
+### Design
+
+We are going to build an app that makes a request to the countries API, populates a drop-down select with the names of the countries, and allows the user to select a country and see more details about the selected country. Let's think about which components we might need to make this, and what state and props each would require.
+
+> Discuss design and get to a structure that looks something this.
+
+- CountryContainer: state: countries, currentCountry
+- CountrySelect: props - countries, handleChange
+- CountryDetail: props - country
+</details>
+
+<details>
+<summary>
+Implementation
+</summary>
+
+### Implementation
+
+Let's start by creating a React project with Create React App:
+
+```bash
+create-react-app countries
+```
+
+> Instructor note: Hand out the `src` folder from `countries_api_start` and get students to drop it into their own React app. Then ask the class...
+
+1. What containers/components do we already have in the start code?
+2. What props and state does each they have?
+
+<details>
+<summary>Answers:</summary>
+1. `CountryContainer`, `CountrySelect`, `CountryDetail`
+2. None of the components or containers have props or state
+</details>
+
+<br>
+
+Let's look at our `CountryContainer`, which will be our main parent component. This should control the state of our application. Let's set up the initial state of the Container so that it has an empty list of countries and a focus country which will start as null.
+
+```js
+// CountryContainer.js
+  constructor(props){
+    super(props);
+    this.state = { // CHANGED
+      countries: [],
+      currentCountry: null
+    };
+  }
+```
+
+We have rendered this in our `App` top-level component.
+
+Go to React Dev tools in the console to see the state of the components.
+</details>
+
+<details>
+<summary>
+Getting Countries from API
+</summary>
+
+### Getting Countries from API
+
+We're going to use one of the lifecycle methods to perform our HTTP request to the API, `componentDidMount`. This method will be triggered when the component has successfully been rendered into the DOM. The React documentation recommends that this is the right place to do HTTP requests.
+
+> [Task]: Make a request to the REST Countries API and pass them to the component's state when loaded.
+
+```js
+//CountryContainer.js
+
+ componentDidMount(){
+    const url = 'https://restcountries.eu/rest/v2/all';
+    fetch(url)
+      .then(res => res.json())
+      .then(countriesData => this.setState({countries: countriesData}))
+      .catch(error => console.log("Error:", error))
+  }
+```
+
+> Task (2 minutes): Use React Dev tools to check that `countries` and`currentCountry` have been added to the state of `CountriesContainer`
+
+Again we can check dev tools and see that the state has changed!
+</details>
+
+<details>
+<summary>
+Intro & Design
+</summary>
+
+
+</details>
+
+<details>
+<summary>
+Creating a Select and Handling a Select onChange()
+</summary>
+
+### Creating a select
+
+Now we can start adding to our other components. Let's have a look at our countries select dropdown - currently there is no information in it.
+
+Inspecting the `CountrySelector` component with the React Dev tools, we can see that it doesn't have any props.  What properties would we like this to have? The list of countries we just stored in our state. Let's set that as a prop on it.
+
+```js
+// CountryContainer.js
+
+render(){
+  return(
+    <div>
+      <h2>Country Container</h2>
+      <CountrySelector
+        countries={this.state.countries} />
+      <CountryDetail />
+    </div>
+  );
+}
+```
+
+The `CountrySelector` component now has access to the array of countries, so let's set it up to use that data to populate the `select` with `option` elements displaying the countries' names.
+
+> Ask the class: How might we populate the select with an option for each country?
+
+<details>
+<summary>Answer:</summary>
+
+We can create a new array of populated option tags by calling `map` on the array of country objects we passed in through props.
+
+</details>
+
+<br />
+
+```js
+//CountrySelector.js
+
+const CountrySelector = (props) => {
+  const options = props.countries.map((country, index) => {
+    return <option value={index} key={index}>{country.name}</option>
+  })
+
+  return (
+    <select name="country-selector" id="country-selector">
+      <option disabled selected>Choose a country...</option>
+      { options }
+    </select>
+  )
+};
+```
+
+### Handling Select `onChange()`
+
+We'll write a function within our stateless component to handle a change in the `<select>` box. For now, all it will do is log the value. Then we add an `onChange` attribute to the `select`:
+
+```js
+// CountrySelector.js
+
+const CountrySelector = (props) => {
+  // ...
+
+  function handleChange(event) {
+    console.log(event.target.value);
+  }
+
+  return (
+    <select name="country-selector" id="country-selector" onChange={handleChange}>
+      // ...
+  )
+};
+```
+
+</details>
+
+<details>
+<summary>
+Passing the callback via props
+</summary>
+
+### Passing the callback via props
+
+Now we have access to the index of the selected country in the countries array. But we only have access to this index in the `CountriesSelect` component. We want to have access to it at the top level, in the `CountryContainer`, so that we can use it to set the state of the current country, and cause a re-render of the `CountryDetail`. Let's do this with a function that is defined in the `CountryContainer` and passed as a prop to the `CountrySelector`. The function is going to take in the index and set it on the `CountryContainer`'s state.
+
+```js
+// CountryContainer.js
+
+handleCountrySelected(index) {
+  const selectedCountry = this.state.countries[index];
+  this.setState({currentCountry: selectedCountry})
+}
+```
+
+REMEMBER to bind it in the `CountryContainer` `constructor` method:
+
+```js
+// CountryContainer.js
+constructor(props){
+  // ...
+  this.handleCountrySelected = this.handleCountrySelected.bind(this);
+}
+```
+
+...and pass that function to `CountrySelector` as a prop:
+
+```js
+render(){
+  return (
+    {/* ... */}
+    <CountrySelector
+      countries={this.state.countries}
+      onCountrySelected={this.handleCountrySelected}/>
+    {/* ... */}
+  );
+}
+```
+
+Back in our `CountrySelector` component, we can pass the value of the `select` into this function as the `index`:
+
+```js
+// CountrySelector.js
+
+function handleChange(event) {
+  props.onCountrySelected(event.target.value);
+}
+```
+
+We can now use the React dev tools to check that the state in the `CountryContainer` is updating with the current country.
+</details>
+
+<details>
+<summary>
+Country Detail Display
+</summary>
+
+### CountryDetail Display
+
+Now that we have a selector that is updating the selected country, the final piece in the puzzle is our detailed display.
+
+When the user selects a country, we want the details of the selected country to be displayed. The `CountryDetail` component is going to be responsible for this.
+
+So how are we going to do render these details? Now that we have a selector that is updating the `currentCountry` in `CountryContainer`'s state, we can pass this down to `CountryDetail` as a prop.
+
+```js
+// CountryContainer.js
+
+<CountryDetail country={ this.state.currentCountry } />
+```
+
+Now we have access to the currently selected `country` in the `CountryDetail` component, we can get it to render its various properties.
+
+```js
+// CountryDetail.js
+
+const CountryDetail = (props) => {
+  return (
+    <h3>{props.country.name}</h3>
+  );
+}
+```
+
+The first time the CountryDetail component is rendered, the HTTP request won't have been made yet and no country will have been selected by the user, so `props.country` will be `undefined`. If we ask an `undefined` object for the property `name`, we will get an error in the browser. To avoid this, we will put in a guard to return out of the function and not render anything if `props.country` is falsy.
+
+```js
+// CountryDetail.js
+
+const CountryDetail = (props) => {
+  if (!props.country) return null; // UPDATED
+  return (
+    <h3>{props.country.name}</h3>
+  );
+}
+```
+
+</details>
+
+### React Router
+
+<details>
+<summary>
+Intro & Setup
+</summary>
+
+### Introduction
+Traditional server rendered applications work by entering the URL into the browser address bar, making a new request for each page. This means that the information being displayed and the URL are kept in sync. Single-Page Applications make the requests asynchronously, therefore the URL gets out of sync with the UI.
+
+This makes navigation difficult. Browser navigation buttons don't work, and we can't direct users directly to specific pages of the app. React has a router module which will help us out with this. It allows us to create a Single-Page application where the UI and URL will be kept in sync so we can use the Browser Navigation features.
+
+Let's first look at an application without React Router and all the problems we mentioned in action.
+
+#### Setup
+
+Let's set up an application.
+
+ > Instructor note: Hand out the router start point
+
+ > Instructor note: Ask the class...
+
+Run the start point and check that the links work; that clicking on them renders different the appropriate component.
+
+This is a simple application where the `Main` component is responsible for storing in its state the current page that is being displayed and for rendering the appropriate view when this changes.
+</details>
+
+<details>
+<summary>
+Adding Router
+</summary>
+
+## Adding Router
+  So the application is functional, but the url does not match what the UI is showing. And if we leave or refresh the page we will always go to home page regardless where we were. Enter the need for a router.
+
+```
+  npm install react-router-dom
+```
+
+Let's set up the `Main` component to work as router. We will import our other components so we can later pass them in our routes. We will also import `BrowserRouter` (which we rename `Router` for convenience) from the `react-router-dom` library.
+
+```js
+// /src/components/Main.js
+import React, { Component } from "react";
+import About from "./About";
+import Home from "./Home";
+import Pricing from "./Pricing";
+import { BrowserRouter as Router } from "react-router-dom"; //NEW
+```
+
+And we use this `Router` component in our `render` method:
+
+```js
+// /src/components/Main.js
+render() {
+  return (
+    <Router>
+
+    </Router>
+  );
+}
+```
+
+`Router` will keep track of our navigation through a site. This means now when we refresh it will remember where we were and we can use our browser navigation buttons to go back and forth through our browsing history.
+
+Now we are going to define our routes inside our `Router`. We have to wrap them in a `React.Fragment` because `BrowserRouter` only expects one element. Each `Route` takes two attributes, a path and a component to render on that path.
+
+```js
+// /src/components/Main.js
+import { BrowserRouter as Router, Route } from "react-router-dom"; // UPDATED
+
+class Main extends Component {
+
+  // AS BEFORE
+
+  render() {
+    return (
+      <Router>
+        <React.Fragment>
+          <Route exact path="/" component={Home} />
+          <Route path="/about" component={About} />
+          <Route path="/pricing" component={Pricing} />
+        </React.Fragment>
+      </Router>
+    );
+  }
+
+}
+```
+
+We set up an an ***exact*** path to render the Home component. This will render the Home component on http://localhost:3000/ only. The other paths will load their relevant components.
+
+Now we can delete all the methods that were being used to keep track of and render the appropriate component, as Router is now doing all that for us. Let's delete:
+
+* The methods whose names start with `goto...`
+* The bindings for these methods in `constructor`
+* The `pageComponent` method
+* Actually, the whole constructor!
+
+</details>
+
+<details>
+<summary>
+Navigation
+</summary>
+
+### Navigation
+
+We can now check the routes we created by visiting them in our browser:
+
+* http://localhost:3000/
+* http://localhost:3000/about
+* http://localhost:3000/pricing
+
+But typing addresses into the browser is no good. Our app needs a navbar!
+
+```bash
+touch src/components/Navbar.js
+```
+
+```js
+// /src/components/Main.jsx
+import Navbar from "./Navbar";
+
+<Router>
+  <React.Fragment>
+    // NEW
+    <Navbar />
+    {/* Routes as before */}
+  </React.Fragment>
+</Router>
+```
+
+Our `Navbar` is going to be a stateless functional component, and we're going to make an unordered list of links. In HTML, we would use `a` tags for links, with `href` attributes that point to a URL. React Router has a built-in `Link` component, which has a `to` attribute to point to its routes. This makes for some really cute code:
+
+```js
+// /src/components/Navbar.jsx
+import React from "react";
+import { Link } from "react-router-dom";
+
+const Navbar = () => (
+  <ul>
+    <li>
+      <Link to="/">Home</Link>
+    </li>
+    <li>
+      <Link to="/about">About</Link>
+    </li>
+    <li>
+      <Link to="/pricing">Pricing</Link>
+    </li>
+  </ul>
+);
+
+export default Navbar;
+```
+
+We can see as we navigate through the site, and the URL changes. So our browser's back button works as we'd expect, and we can bookmark pages in our app.
+</details>
+
+<details>
+<summary>
+Passing down Props
+</summary>
+
+### Passing down props
+
+Loading our components in this way is ideal, we just pass the component to a `Route` and React Router knows what to do. It knows how to render it, and when. This is without a doubt React Router's preferred way of linking URL paths with components.
+
+But there is a problem. With this syntax, there is no way of passing props to a component that we have set up a route for. Most of the time, this is fine; our routes point to top-level components, which act like separate pages and don't need to take in props. But sometimes we _do_ need to pass props down, and luckily React Router has a very nice syntax for this.
+
+Let's say we wanted to pass some actual pricing data to our `Pricing` page component. Maybe in the real world this data might come from our server, but for now we'll just hard-code it in our `Main` component's state:
+
+```js
+// /src/components/Main.js
+class Main extends Component {
+  constructor(props) { // NEW
+    super(props);
+    this.state = {
+      pricing: [
+        {level: "Hobby", cost: 0},
+        {level: "Startup", cost: 10},
+        {level: "Enterprise", cost: 100}
+      ]
+    };
+  }
+
+  render() {
+    // AS BEFORE
+  }
+}
+```
+
+Right now we're passing our `Pricing` component into a `Route` through the `Route`'s `component` property. This is fine for most React Router routes, but there's no way to pass props into `Pricing` now. Instead, we have to tell the `Route` _exactly_ what to render here, through its `render` prop:
+
+```js
+class Main extends Component {
+  render() {
+    return (
+      <Router>
+        <React.Fragment>
+          // ... AS BEFORE
+          <Route   // UPDATED HERE
+            path="/pricing"
+            render={() => <Pricing prices={this.state.pricing} />}
+          />
+        </React.Fragment>
+      </Router>
+    );
+  }
+}
+```
+
+We can check this out in React dev tools and see that when the `Pricing` component mounts at http://localhost:3000/pricing it gets passed an array of 3 prices as props.
+
+We can make use of these props to render a price list:
+
+```js
+// /src/components/Pricing.js
+
+const Pricing = ({prices}) => { // UPDATED
+
+  const listItems = prices.map((price, index) => { // NEW
+    return <li key={index}>{price.level}: £{price.cost} per month</li>
+  })
+
+  return (
+    <div>
+      <h4>Pricing</h4>
+      <ul>
+        { listItems } // UPDATED
+      </ul>
+    </div>
+  )
+};
+```
+</details>
+
+### Introduction to Sockets
+
+<details>
+<summary>
+What is a Socket.io
+</summary>
+
+#### Introduction
+
+Let's think about a situation where we would want to build something like an online chatroom.
+
+How could we go about building something like this, using the techniques we know already?
+
+> Give the class a chance to discuss how they might go about this. Lead them towards...
+
+ We could push new messages to a server, and maybe use MongoDB to store them. Then, we could use a technique called _polling_ to repeatedly ask the server for information at predefined intervals.
+
+ Although this wouldn't work too badly, there are some disadvantages to such an approach:
+
+- If chat messages were sent _more_ frequently than our poll period, there would be a delay before they saw the most recent messages. They might not even be responding to the latest messages. Oh no!
+- If chat messages are sent _less_ frequently than our poll period, we are sending more requests than we need to, using more bandwidth, and putting the server under more strain.
+
+There is a different solution to this problem of real-time updates: we're going to look at a library called socket.io.
+
+#### What is socket.io?
+
+The socket.io website tells us that it allows "real-time bidirectional event-based communication." But what does that mean?
+
+Basically, it means that our client and server can have a two-way conversation, easily passing information back and forth. You can think of it like a telephone call, where one person speaks and the other responds.
+
+By contrast, when we use polling, it's more like sending a letter to someone. You fire off a request, (maybe) get a response, then the connection is closed.
+
+In this context, our server is going to be powered by Express, and our client is going to be powered by `create-react-app`; a web app.
+
+We could just as easily connect to our server using an Android or iOS app with socket.io - it has clients for those platforms too.
+
+Socket.io is a really powerful library that allows us to build all sorts of real-time applications, from chatrooms, to games, and much, much more.
+
+Let's take a look at how we can use socket.io to build a chatroom.
+
+> Hand out the start_point, and ask the students to set it up and spend five minutes looking over the code.
+</details>
+
+<details>
+<summary>
+Strategy & Server Setup
+</summary>
+
+#### Our strategy
+
+Notice that in our ChatContainer component, we have an array of messages inside the state object. When a new message is pushed onto that array, the child components re-render, showing the new message on the page.
+
+When we submit a message, we want to pass it up to our server instead. Then, the server is going to broadcast this message to all connected clients, which will push this message onto their own individual states. This will trigger the same re-rendering we saw before.
+
+It's important to note that communication in socket.io is _event based_. This means that our clients will be firing an event (which we'll call 'chat') and our server will be listening out for this event.
+
+#### Server set up
+
+Firstly, we need to configure our server. Let's install the server's dependencies, and install socket.io while we're at it.
+
+```bash
+cd server
+npm install
+npm install --save socket.io
+```
+
+And let's open up our server-side code:
+
+```bash
+atom .
+```
+
+Let's take a look at our server.js file. It should look pretty familiar, but there are a couple of points to note.
+
+Firstly, you'll see that server.js is listening on port 3001, rather than the more usual 3000. This is so that we can run our server and create-react-app at the same time. (create-react-app likes to sit on port 3000 too!)
+
+We're also using something that might look a little bit unfamiliar:
+
+```js
+// allows cross origin resource sharing
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Credentials", true);
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+```
+
+This snippet of code just ensures that we can connect to our server from port 3000, which will be our create-react-app.
+
+</details>
+
+<details>
+<summary>
+Listening for connections
+</summary>
+#### Listening for connections
+
+Next, we want to listen out for any incoming socket connections in our server.js file.
+
+We're going to bring in socket.io to work with:
+
+```js
+// server.js
+var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http); // ADDED
+```
+
+Next, we're going to listen out for any incoming socket connections:
+
+```js
+// server.js
+
+// Underneath the CORS stuff:
+io.on('connection', socket => {
+
+});
+```
+
+So when server.js hears an incoming connection coming in, it's going to do whatever is in the anonymous function that we've written.
+
+Next, let's listen out for a particular event happening, and we'll call it 'chat'.
+
+```js
+// server.js
+
+io.on('connection', socket => {
+  // ADDED
+  socket.on('chat', message => {
+    io.sockets.emit('chat', message);
+  });
+});
+```
+
+So when the server receives a 'chat' event, with a message, it's going to broadcast that message to all connected clients by calling `io.sockets.emit`.
+
+For the two arguments in this function call, we're going to label the outgoing event as 'chat' again, and we're going to broadcast the same message to all clients that we received.
+
+That's all we need to do in the server file.
+
+
+</details>
+
+<details>
+<summary>
+Client
+</summary>
+
+#### Client
+
+In our client, we need to do a bit of initial setup.
+
+```bash
+# open a new terminal tab
+cd ../client
+npm install
+npm install --save socket.io
+```
+
+Now we need to tackle two things in our client code:
+
+- Instead of pushing each new message onto our own state array, we need to push it up to the server
+- We need to listen for any new messages coming in, and handle them appropriately
+
+First of all, let's give ourselves the socket library to work with in the client.
+
+```js
+// client/containers/ChatContainer.jsx
+
+import React from 'react';
+import ChatForm from '../components/ChatForm';
+import Message from '../components/Message';
+import io from 'socket.io-client'; // ADDED
+```
+
+Notice that we're importing the socket.io _client_ here.
+
+Next, we need a socket instance variable to work with. We're going to use this to send and receive to and from the server. (Notice that we need to pass in the URL of our server.)
+
+```js
+// client/containers/ChatContainer.jsx
+
+this.state = {
+  messages: [],
+  name: null,
+  msg: null
+};
+
+// ADDED
+this.socket = io("http://localhost:3001");
+```
+
+We're going to handle sending requests up to the server next. Instead of pushing messages onto our own array, we're going to push them up to the server:
+
+> Make sure you delete `this.addMessage(newMessage)` from the following function
+
+```js
+// client/containers/ChatContainer.jsx
+
+submitForm(event) {
+  event.preventDefault();
+
+  // Make sure we have a name & message before proceeding
+  if (this.state.name && this.state.msg) {
+    // construct a new message
+    const newMessage = { author: this.state.name, text: this.state.msg };
+
+    // CHANGED
+    this.socket.emit('chat', newMessage);
+  }
+}
+```
+
+So once we've created a new message object, we're just passing it up to the server using the socket instance variable that we created earlier. Notice that we're tagging it as 'chat' - this is the event that the server is listening out for.
+
+Finally, we need our component to listen out for any messages being sent to it.
+
+```js
+// client/containers/ChatContainer.jsx, in constructor()
+
+this.socket = io('http://localhost:3001');
+this.socket.on('chat', this.addMessage.bind(this)); // ADDED
+```
+
+We might need to restart our client and server here, but at this point, everything should be working!
+
+Open two browser windows pointing at http://localhost:3000 and test it out! You should see that chat messages sent on one client appear on the other.
+
+#### A step further
+
+> Note that the Edinburgh network doesn't currently allow connections to other machines, so this section of the codealong won't work. However, you can demo the app at [Heroku](https://blooming-chamber-44519.herokuapp.com/). It might take a minute or two to fire up when it's first loaded.
+
+Find your IP address by running the following command:
+
+```bash
+# terminal
+
+ipconfig getifaddr en0
+```
+
+Test it out by asking all the students to go to http://{YOUR_IP_ADDRESS}:3000/ in their web browsers and typing a few messages.
+</details>
+
+### Navigating other Frameworks throughout Career
+
+<details>
+<summary>
+Other Frameworks
+</summary>
+
+## Other Frameworks Lab
+
+We've been learning React this week and building applications from scratch. Counters and comments and banks.
+
+This is cool but in your first job, it's more likely that you'll be given a task that involves an existing codebase which will probably be using some kind of framework or library.
+
+The aim of this lab is to take an existing app and make alterations to it.
+
+- Go to www.todomvc.com
+- Choose 2 of the implementations (One could be React)
+- Clone the repo onto your computer
+- Add the string 'done!' to the task title when the task is marked as completed
+- Add an edit button next to the delete 'x'
+
+- If you get that finished quickly, add another feature of your own invention.
+
+### How does this help my Career?
+
+#### Dealing With an alien codebase in an unfamiliar Framework.
+
+In your first job - in fact throughout your career - you'll come across code written in with libraries or frameworks that are unfamiliar to you.
+
+You'll probably have no idea what's going on.
+
+This can be frustrating. The old Imposter demon might come to call.
+
+Let's see how we can knock him out cold.
+
+#### A Plan of Attack
+
+We need a plan of attack. Ultimately we really want to gain as much context as we can.
+
+1. Identify what library(ies) or framework the application is using. Go and check out the docs. Read the getting started.
+2. You're just gaining the big picture. At this point you just want to know where stuff is at.
+3. Your boss has probably given you q task to do. You don't have time to become an expert in this framework. But you do need to know where in the code you need to look, in order to complete the task.
+4. What does the framework call Models View and Controllers (they all use different words) and where is it at in the code?
+
+#### Going Deeper
+
+1. Run the application
+2. Explore the file structure
+3. Sometimes breaking the app intentionally can reveal a lot. Get it to throw an error and see what it says.
+4. See what JS files are being loaded
+5. See what libraries are being loaded
+
+You're trying to infer what does what in the app. Where is the View stuff happening? Where is the Model? Where's the controller that binds the two together.
+
+Remember, we're just trying to get a basic overview and understanding of how an application is structured so that we can implement a new feature or make changes to existing code.
+
+We're not trying to learn a framework 100% before we can contribute as a developer. That would be unrealistic and take way too much time.
+
+So the skill we're trying to learn is spotting ***patterns*** and recognising familiar and common ways these frameworks work.
+
+### Be Like Tofu
+
+Huh? When you get dropped into a new codebase, be like tofu. Absorb the flavours of how the code is structured and written.
+
+Be consistent with what already exists when you're adding or changing stuff. Even if there IS (or you think there is) a better way to do it. E.G. If the code uses semi-colons, put them in.
+
+### Sherlock Holmes of Code
+
+We need to become detectives.
+
+ Remember there is no magic in the world of computing. Everything is discoverable, it was all made by other humans. You just need to be a detective and be able to find things out.
+</details>
+
 </details>
