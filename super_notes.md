@@ -6020,4 +6020,821 @@ https://medium.com/@housecor/react-stateless-functional-components-nine-wins-you
 
 </details>
 
+### Single Component Application - Piggy Bank App
+
+<details>
+<summary>
+Intro
+</summary>
+
+### Introduction
+
+React allows us to render to and update the DOM easily and efficiently. Using the React framework, we can quickly update the UI in response to a user's interaction by giving our components state. When that state is updated, React triggers a rerender, diplaying the most current state of the application.
+
+#### Creating the Piggy Bank Component
+
+We want a simple piggy bank application to get to learn the syntax of React. We want to be able to put money in, take money out, and see the total.
+
+It will contain a single piggy bank component that will display a savings total.  We will then add a 'deposit' button that will update the state of the component, updating the total.
+
+A component's role is to display a section of our user interface.  Good React applications have many small components each doing one job, much like good OO programs.
+</details>
+
+<details>
+<summary>
+Create-react-app
+</summary>
+
+### Create-React-App
+
+Let's begin by using create-react-app to give us a start-point.
+
+```bash
+  create-react-app piggy_bank
+  cd piggy_bank
+  npm start
+```
+
+Great! If everything went as planned, we should see some default stuff in our web browser, at http://localhost:3000.
+
+We're ready to start configuring it, and writing our app. Let's start by removing some of the unecessary boilerplate stuff.
+
+```bash
+rm src/logo.svg
+```
+
+```js
+// src/App.js
+
+import React, { Component } from 'react';
+// REMOVE THIS LINE
+import logo from './logo.svg';
+
+import './App.css';
+
+class App extends Component {
+  render() {
+    return (
+      // REMOVE FROM HERE...
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h1 className="App-title">Welcome to React</h1>
+        </header>
+        <p className="App-intro">
+          To get started, edit <code>src/App.js</code> and save to reload.
+        </p>
+      </div>
+      // TO HERE
+    );
+  }
+}
+
+export default App;
+```
+
+We're removing a whole lot of what _looks_ like HTML here. But... clearly it isn't HTML, because it lives in a JavaScript file! What on earth is going on?
+
+This syntax is called `JSX`.
+
+</details>
+
+<details>
+<summary>
+JSX
+</summary>
+
+### JSX
+
+We saw earlier on that you can use `React.createElement()` to create a new element to insert into the DOM. That's one way of doing it.
+
+We can also use an alternative syntax, called JSX.
+
+JSX looks a lot like HTML, but there are some key differences. For example, we would have to use the `className="my_class"` attribute rather than `class="my_class"`.
+
+***Question:***
+<details>
+<summary>
+Why wouldn't we be able to use the word `class` here?
+</summary>
+Because it's a JavaScript file, so `class` a reserved word.
+</details>
+
+There are some [other gotchas](https://shripadk.github.io/react/docs/jsx-gotchas.html), but you shouldn't run into them too often.
+
+JSX allows us to construct our user interfaces in a much quicker and more natural fashion, declaring our JSX rather than using JavaScript to manually create our HTML.
+
+You should be aware that React and JSX are two independent technologies, but JSX was built with React in mind. We are only able to use it in our JavaScript because we're using create-react-app, which uses Babel under the hood.
+
+If we weren't using create-react-app, we'd need to manually install and configure Babel, which is a hassle we can live without.
+
+Let's make sure that Atom displays JSX correctly by install the `language-babel` extension.
+
+```bash
+apm install language-babel
+```
+
+#### Render Piggy Bank
+
+Let's write a little bit of JSX to get ourselves started.
+
+```bash
+touch src/PiggyBank.js
+```
+
+To create our components we use ES6 classes which inherit from `React.Component`. We can then define methods inside our classes.
+
+The method every React component must implement is `render()`. This (usually) returns a single element to be rendered to the page. You may nest multiple elements in the render but they must always be wrapped inside a single containing element.
+
+It's also possible to return a plain JavaScript array of JSX elements from a `render()` method, and these will be rendered in the app.
+
+```js
+// src/PiggyBank.js
+import React from 'react';
+
+class PiggyBank extends React.Component {
+  render() {
+    return (
+      <div className="bank-box">
+        Hello, world! I am a Piggy Bank.
+      </div>
+    );
+  }
+}
+
+export default PiggyBank;
+
+```
+
+Remember to `export default` so we can `import` it elsewhere!
+
+Next, we need to import and use our PiggyBank into our App.js file.
+
+```js
+// src/App.js
+import React, { Component } from 'react';
+import PiggyBank from './PiggyBank';
+
+class App extends Component {
+  render() {
+    return (
+      <PiggyBank />
+    );
+  }
+}
+
+export default App;
+```
+
+Components have attributes that they can display.  There are two types of attributes.
+
+</details>
+
+<details>
+<summary>
+Properties
+</summary>
+
+### Properties
+
+Properties are attributes that are given to a component that can not change. They are immutable.  They just render it.  Let's give the piggy bank a title component that it can display.
+
+We pass in properties to JSX like we set attributes on an HTML component. These can be in quotes to pass in a string, or in curly braces `{}` to pass in other JavaScript data types or objects.
+
+> Instructor note: You can show this transpiled by Babel to show what's happening.
+
+Note: all JSX tags must be closed, either with a separate closing tag or self-closed.
+
+```js
+// src/App.js
+import React, { Component } from 'react';
+import PiggyBank from './PiggyBank';
+
+class App extends Component {
+  render() {
+    return (
+      <PiggyBank title="Beth's Savings Pig" />
+    );
+  }
+}
+
+export default App;
+```
+
+Our component has use of its properties through its props attribute, this.props.
+Let's use it to show our title.
+
+```js
+// src/PiggyBank.js
+
+class PiggyBank extends React.Component {
+	render() {
+		return (
+			<div className="bank-box">
+				<h1>{this.props.title}</h1>
+			</div>
+		);
+	}
+}
+
+```
+
+</details>
+
+<details>
+<summary>
+State: Displaying a total
+</summary>
+
+### State: Displaying a total
+
+Now we want our bank to display a total. Props are something that are given to us by a parent that we can't change. We need something that belongs to the component that it can change.
+
+State is something that the component is in control of. It generally isn't passed down from a parent, it is something the component sets up itself.
+
+Let's set up our initial state. We want a total property that starts at zero. We can then display this. Our initial state is defined in the constructor of our component class.
+
+```js
+// src/PiggyBank.js
+
+class PiggyBank extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      total: 0
+    }
+  }
+
+  render() {
+      <div className="bank-box">
+        <h1>{this.props.title}</h1>
+        <p>Hello, world! I am a Piggy Bank.</p>
+        <p>I contain £{this.state.total}</p>
+      </div>
+  }
+}
+
+```
+
+</details>
+
+<details>
+<summary>
+Updating & Setting State
+</summary>
+
+### Updating State
+
+Now we want to add a button that will increase the total when we deposit money into the piggy bank.
+
+Clicking on the button will update the state of our application. We will use the `this.setState()` method to update the state.
+
+When updating the state of a component, if its value changes, React will re-render the application!
+
+Seems a bit inefficient but remember the virtual DOM? React will only update the DOM elements that have changed, keeping it quick.
+
+```js
+// src/PiggyBank.js
+
+class PiggyBank extends React.Component {
+
+  constructor(props) {
+    ...
+  }
+
+  deposit() {
+    this.setState(prevState => {
+      return {total: prevState.total + 1};
+    });
+  }
+
+  render() {
+    return (
+      <div>
+      ...
+      <button onClick={ this.deposit }>Add</button>
+      </div>
+    );
+  }
+}
+```
+
+Unfortunately, we've run into a problem with `this`. Inside `deposit()`, `this` has global scope. Which is bad. Fortunately, there are a couple of solutions to this problem.
+
+Option 1 is to use our old friend `bind`:
+
+```js
+  // src/PiggyBank.js
+  constructor(props) {
+    ...
+    this.deposit = this.deposit.bind(this);
+  }
+```
+
+Option 2 is to do something this in the `onClick`:
+
+```js
+  // src/PiggyBank.js
+  <button onClick={ this.deposit.bind(this) }>Add</button>
+```
+
+Option 3 is to wrap the call to `deposit` in an anonymous ES6 arrow function, which does not bind its own `this`:
+
+```js
+  // src/PiggyBank.js
+  <button onClick={ () => { this.deposit() } }>Add</button>
+```
+
+Of the three solutions, binding in the constructor is the preferred option (and the one recommended in the React documentation) is because the bind only has to happen once, when the class is initially set up. If we put it in our `render()` method, it would happen each time the JSX re-renders. (Which could be quite frequently!)
+
+### Using `setState()`
+
+We saw that when we changed the state above, we passed in an callback function that gave us access to the previous state object. *This is the only way to do it if you need reliable access to the previous state.*
+
+When we use a callback function in `setState` like this, React queues up all the requests to change the state. (And bear in mind that in a big app, there could be lots of things looking to change the state.) So if you need to get access to the previous state object, it ensures that you'll get the most accurate, up-to-date object back, with all the queued changes.
+
+If you just want to set the state to a specific value, and you don't care about what the value was before, you can just pass in an object to `setState`, like this:
+
+```js
+  this.setState({ total: 5 });
+```
+
+</details>
+
+<details>
+<summary>
+Chrome Dev Tools
+</summary>
+
+## Chrome Dev Tools
+An other advantage of React is that there are powerful development tools in chrome.
+[Link to React-Dev-Tools] (https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en)
+
+We can see the state and properties of all of our components at any point in time.
+
+We have a dynamically updating single component react application.
+We have seen properties and state on a component and how setting the state forces the application to re-render.
+Next we will see an application with multiple components that will increase our understanding of the one-way flow.
+
+#### Tasks: (15 minutes)
+- Add an owner property to the piggy bank.
+- Add a 'withdraw' button which decreases the total.
+- Add a depositAmount property - pass in a value which depositing or withdrawing will change the total by.
+
+#### Solution:
+
+*Add an owner property to the piggy bank:*
+
+```js
+// src/App.js
+<PiggyBank
+    title="Beth's Money Pig"
+    owner="Beth" />
+
+// src/PiggyBank.js
+<p>Hello, world! I am a Piggy Bank. My owner is {this.props.owner}.</p>
+```
+
+*Add a 'withdraw' button which decreases the total:*
+
+```js
+// src/PiggyBank.js
+
+constructor(props) {
+  // ...
+  this.withdraw = this.withdraw.bind(this)
+}
+
+
+withdraw(){
+  this.setState((prevState) => {
+    let newTotal = prevState.total < 1 ? 0:prevState.total - 1;
+    return {total: newTotal};
+  });
+}
+
+render(){
+    // ...
+    <button onClick={ this.withdraw }>Withdraw</button>
+    // ...
+}
+```
+
+*Add a depositAmount property - pass in a value which depositing or withdrawing will change the total by.*
+
+```js
+  // src/App.js
+  render() {
+    return (
+      <PiggyBank
+        title="Beth's Savings Pig"
+        owner="Beth"
+        depositAmount={5}
+        />
+    );
+  }
+
+  // src/PiggyBank.js
+  deposit(){
+    this.setState((prevState) => {
+      return {total: prevState.total + this.props.depositAmount};
+    });
+  }
+
+  withdraw(){
+    this.setState((prevState) => {
+      let newAmount = prevState.total - this.props.depositAmount;
+      if(newAmount < 0){
+        newAmount = 0;
+      }
+      return {total: newAmount};
+    });
+  }
+```
+</details>
+
+### Multiple Component React App
+
+<details>
+<summary>
+Comments Application
+</summary>
+
+### Comments Application
+
+We want to create a comments feature which displays a list of comments and has a form that allow us to add a comment.
+
+We do this in React by describing how the whole page should be drawn.
+
+There will be nothing more added to our HTML, the whole application will be drawn by Javascript using React. We do this by describing components for our UI in a component **_hierarchy_**.
+
+Let's first build a static application that will render based on a hard coded array of comments. This is often a good place to start with a React application.
+</details>
+
+<details>
+<summary>
+Application Skeleton
+</summary>
+
+### Application Skeleton
+
+We are now going to create a skeleton hierarchy for our application.
+
+> Instructor note: Draw diagram on the board and talk the app's structure through with class...
+
+* CommentBox { state = comments }
+* CommentList { props = comments }
+* Comment { props = comment }
+
+Components can have child components. The child components of our CommentBox are CommentList, and CommentForm. CommentList will have multiple Comment components nested inside it.
+
+#### First Component
+
+Let's use `create-react-app` to bootstrap our application.
+
+```bash
+create-react-app comments
+cd comments
+npm start
+```
+
+OK! Through the magic of `create-react-app`, we've pulled down all the bits and pieces we need to start off. We do need to tidy up a little bit, though.
+
+```bash
+# cmd-t, new tab
+cd src
+rm logo.svg App.css
+```
+
+At this point, the app has broken, because we've removed stuff that we're importing into our app. Let's fix that. And while we're at it, let's remove some default JSX.
+
+```js
+import React, { Component } from "react";
+
+// DELETE THE NEXT TWO LINES
+import logo from "./logo.svg";
+import "./App.css";
+
+class App extends Component {
+  render() {
+    return (
+      // DELETE EVERYTHING FROM HERE...
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h1 className="App-title">Welcome to React</h1>
+        </header>
+        <p className="App-intro">
+          To get started, edit <code>src/App.js</code> and save to reload.
+        </p>
+      </div>
+      // ... TO HERE
+    );
+  }
+}
+
+export default App;
+```
+
+Let's build our first component. It'll be the parent component for all our others.
+
+React components must implement a render method that returns what we want it to display. It is automatically called by React so we have to call it 'render' so that React can find it. This is part of the component lifecycle...  
+[React Component Specs](https://facebook.github.io/react/docs/component-specs.html)
+
+We'll be creating two directories here: `containers` and `components`. Each of the app's elements that we create will live in one or other folder.
+
+So what's the difference? Well, if a particular element just contains presentational code, then it would probably live in the `components` directory. If it contains logic, or holds the _state_ of the program - its data - then it would probably live in the `containers` directory.
+
+> There's a bit more to it than this, but this should suffice for now.
+
+```bash
+mkdir src/components
+mkdir src/containers
+touch src/containers/CommentBox.js
+```
+
+First let's create and render a simple component out to our page to check that everything is hooked up and working correctly.
+
+```js
+// src/containers/CommentBox.js
+import React, { Component } from "react";
+
+class CommentBox extends Component {
+  render() {
+    return <div className="comment-box">Hello, world! I am a CommentBox.</div>;
+  }
+}
+
+export default CommentBox;
+```
+
+```js
+import React, { Component } from "react";
+import CommentBox from "./containers/CommentBox";
+
+class App extends Component {
+  render() {
+    return <CommentBox />;
+  }
+}
+
+export default App;
+```
+
+Similarly we will make the empty component for our CommentList.
+
+```bash
+touch src/components/CommentList.js
+```
+
+```js
+// src/components/CommentList.js
+import React, { Component } from "react";
+
+class CommentList extends Component {
+  render() {
+    return (
+      <div className="comment-list">Hello, world! I am a CommentList.</div>
+    );
+  }
+}
+
+export default CommentList;
+```
+
+We now want our `CommentBox` component to render the `CommentList` component. Let's add it to the hierarchy.
+
+```js
+// src/containers/CommentBox.js
+import React, { Component } from "react";
+import CommentList from "../components/CommentList"; //UPDATED
+
+class CommentBox extends Component {
+  render() {
+    return (
+      <div className="comment-box">
+        <CommentList /> //UPDATED
+      </div>
+    );
+  }
+}
+
+export default CommentBox;
+```
+
+</details>
+
+<details>
+<summary>
+Comment Component
+</summary>
+
+### Comment Component
+
+#### Properties
+
+Let's create the `Comment` component, which will depend on data passed in from its parent. Data passed in from a parent component is available as a 'property' on the child component. These 'properties' are accessed through `this.props`. A special property is `this.props.children`, which refers to any text or elements written between the JSX opening and closing tags.
+
+Properties are immutable, components can not change their properties, they are just given them. Using props, we will be able to read the data passed to the `Comment` from the `CommentList`, and render some markup:
+
+```bash
+touch src/components/Comment.js
+```
+
+```js
+// src/components/CommentList.js
+
+import React, { Component } from "react";
+import Comment from "./Comment"; //UPDATED
+
+class CommentList extends Component {
+  render() {
+    return (
+      <div className="comment-list">
+        <Comment author="Rick Henry">Cool</Comment> // UPDATE
+        <Comment author="Valerie Gibson">Nice</Comment> // UPDATE
+      </div>
+    );
+  }
+}
+
+export default CommentList;
+```
+
+```js
+// src/components/Comment.js
+import React, { Component } from "react";
+
+class Comment extends Component {
+  render() {
+    return (
+      <div className="comment">
+        <h4 className="comment-author">{this.props.author}</h4>
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
+export default Comment;
+```
+
+</details>
+
+<details>
+<summary>
+Data Model & State
+</summary>
+
+### Data Model
+
+We have hard coded the data in a list of comments. We now want to create a simple array of comments which will be drawn by the view. We are going to set up our CommentBox to be in control of the data. It will handle the comment data, and later on updating it.
+
+### State
+
+Our CommentBox is going to be the master of the state of our application, the array of comments.
+
+For now we'll just make some mock data. If we were creating a proper app we could get this from our server.
+
+```js
+// src/containers/CommentBox.js
+class CommentBox extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [{ id: 1, author: "Beth", text: "I love cats!" }] //UPDATED
+    };
+  }
+
+  render() {
+    return (
+      <div className="comment-box">
+        <h2>Comment List</h2> //UPDATED
+        <CommentList data={this.state.data} /> //UPDATED
+      </div>
+    );
+  }
+}
+```
+
+Our comment box controls state and creates a dumb list.
+
+This list has no state (things it can change), it just has the comments it has been given and uses as properties. We'll create an array of comment components and give them the properties of the author and the text.
+
+Any string put inside our tags can be accessed as children properties. React wants a key element on array items to uniquely identify them.
+
+```js
+// src/components/CommentList.js
+class CommentList extends Component {
+  render() {
+    const commentNodes = this.props.data.map(comment => {
+      return (
+        <Comment author={comment.author} key={comment.id}>
+          {comment.text}
+        </Comment>
+      );
+    });
+
+    return <div className="comment-list">{commentNodes}</div>;
+  }
+}
+```
+
+Great we have created a static application that renders a list of comments. Now let's look at how we can alter the state of our application with adding new Comments.
+</details>
+
+### React Lifecycle
+
+<details>
+<summary>
+Intro
+</summary>
+
+### Learning Objectives
+  - Understand that React has lifecycle methods
+  - Look at a few of the methods in action
+
+React automatically looks for functions throughout the life of a component.
+
+We can think of a component as having a birth, life and death, just like us!
+
+You won't be using all of these but they are handy to know, especially for getting AJAX data.
+
+We are not required to implement these 'lifecycle' methods but if we choose to, React will run them automatically for us in the order of the lifecycle.
+
+Think of them like hooks that we can use to run some code if need be.
+
+NOTE: `render` isn't considered to be a part of the lifecycle.
+
+> Open up piggy bank / counter app from first day. Add the following methods in to the main component and see how the lifecycle methods work within it.
+
+</details>
+
+<details>
+<summary>
+Looking at the lifecycle
+</summary>
+
+### Looking at the lifecycle
+
+Firstly add a console.log to the `render` method. `render` is called every time the component re-renders.
+
+Next let's look at where `componentDidMount` and `componentWillMount` are called, and the difference between them:
+
+```js
+// ./src/PiggyBank.jsx
+
+  componentWillMount() {
+    console.log('Component WILL MOUNT!');
+    var button = document.querySelector('button');
+    console.log("Button:", button);
+  }
+
+  componentDidMount() {
+    console.log('Component DID MOUNT!');
+    var button = document.querySelector('button');
+    console.log("Button:", button);
+  }
+```
+
+As we can see, before the component has mounted we don't have access to any of the DOM elements created by the component.
+
+Two more of the lifecycle methods we can look at are:
+
+```js
+// ./src/components/PiggyBank.js
+
+  componentWillUpdate(nextProps, nextState) {
+    console.log('Component WILL UPDATE!');
+    console.log("Next State:", nextState);
+    console.log("Next Props:", nextProps);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log('Component DID UPDATE!')
+    console.log("Previous State:", prevState)
+    console.log("Previous Props:", prevProps)
+  }
+```
+
+These allow us to look at the props and state before and after the component has rendered.
+
+They don't get called on the initial `render`. There is a similar method called `componentWillReceiveProps()` that gets called when a child component is passed new props from its parent.
+
+Similarly we can access the `nextProps` and do any changes to state etc that are needed.
+
+### Resources
+
+Overview:
+
+http://buildwithreact.com/article/component-lifecycle
+http://busypeoples.github.io/post/react-component-lifecycle/
+
+Details of all methods:
+
+https://facebook.github.io/react/docs/component-specs.html
+
+</details>
+
 </details>
